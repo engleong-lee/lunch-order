@@ -1,0 +1,4284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#3b82f6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #60a5fa;
+      --primary-bg: rgba(59, 130, 246, 0.08);
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --shadow-primary: 0 4px 14px rgba(59, 130, 246, 0.35);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --transition: all 0.2s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html, body {
+      height: 100%;
+    }
+    
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #0ea5e9 100%);
+      color: white;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(255,255,255,0.2);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .brand-text h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin: 0;
+    }
+    
+    .brand-text .location {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    .header .subtitle {
+      font-size: 13px;
+      opacity: 0.85;
+      padding-left: 8px;
+      border-left: 1px solid rgba(255,255,255,0.4);
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 14px;
+      border-radius: var(--radius-lg);
+      font-size: 0.85rem;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+    }
+    
+    .help-btn {
+      width: 38px;
+      height: 38px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .help-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.05);
+    }
+    
+    /* Main Container */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 16px 120px;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    /* Menu header with title and toolbar inline */
+    .menu-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .menu-header .card-title {
+      margin-bottom: 0;
+    }
+    
+    .section-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .update-time {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    
+    .icon-btn:hover {
+      background: var(--border);
+    }
+    
+    /* Compact name input row */
+    .name-card {
+      padding: 16px 20px;
+    }
+    
+    .name-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .name-row label {
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .name-row input {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--bg);
+    }
+    
+    .name-row input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .name-row .btn {
+      flex-shrink: 0;
+      width: auto;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+    }
+    
+    @media (max-width: 420px) {
+      .name-row {
+        flex-wrap: wrap;
+      }
+      .name-row label {
+        width: 100%;
+        margin-bottom: -4px;
+      }
+      .name-row input {
+        flex: 1;
+        min-width: 0;
+      }
+      .name-row .btn {
+        width: 100%;
+        margin-top: 4px;
+      }
+    }
+    
+    .btn-sm {
+      padding: 10px 14px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 6px;
+      margin: 20px 0;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    
+    .tab {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 8px;
+      text-align: center;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: var(--transition);
+      color: var(--text-secondary);
+      border: none;
+      background: transparent;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .tab:hover {
+      color: var(--text);
+      background: var(--bg);
+    }
+    
+    .tab.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow-primary);
+    }
+    
+    /* Mobile tabs */
+    @media (max-width: 480px) {
+      .tabs {
+        padding: 4px;
+        margin: 12px 0;
+      }
+      
+      .tab {
+        padding: 10px 4px;
+        font-size: 0.7rem;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      .tab {
+        padding: 8px 2px;
+        font-size: 0.65rem;
+      }
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Input fields */
+    .input-group {
+      margin-bottom: 16px;
+    }
+    
+    .input-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    
+    .input-group input, .input-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--bg);
+    }
+    
+    .input-group input:focus, .input-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Menu Categories */
+    .menu-category {
+      margin-bottom: 12px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+    }
+    
+    .category-header {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      padding: 14px 16px;
+      background: var(--card-bg);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition);
+      border-left: 4px solid var(--primary-light);
+    }
+    
+    .category-header:hover {
+      background: var(--bg);
+    }
+    
+    /* Category color coding */
+    .menu-category[data-category*="鸡"] .category-header,
+    .menu-category[data-category*="chicken"] .category-header { border-left-color: #f97316; }
+    .menu-category[data-category*="猪"] .category-header,
+    .menu-category[data-category*="pork"] .category-header { border-left-color: #ec4899; }
+    .menu-category[data-category*="海鲜"] .category-header,
+    .menu-category[data-category*="seafood"] .category-header { border-left-color: #06b6d4; }
+    .menu-category[data-category*="蛋"] .category-header,
+    .menu-category[data-category*="egg"] .category-header { border-left-color: #eab308; }
+    .menu-category[data-category*="配料"] .category-header,
+    .menu-category[data-category*="others"] .category-header { border-left-color: #0ea5e9; }
+    .menu-category[data-category*="菜"] .category-header,
+    .menu-category[data-category*="vegetable"] .category-header { border-left-color: #22c55e; }
+    .menu-category[data-category*="食物"] .category-header,
+    .menu-category[data-category*="food"] .category-header { border-left-color: #f59e0b; }
+    
+    .category-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .category-count {
+      background: var(--bg);
+      padding: 2px 10px;
+      border-radius: var(--radius-lg);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .category-header .toggle {
+      font-size: 12px;
+      transition: transform 0.3s;
+      color: var(--text-muted);
+    }
+    
+    .category-header.collapsed .toggle {
+      transform: rotate(-90deg);
+    }
+    
+    .menu-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      padding: 12px;
+      background: var(--bg);
+      max-height: 800px;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .menu-items.collapsed {
+      max-height: 0;
+      padding: 0 12px;
+    }
+    
+    .menu-item {
+      display: flex;
+      flex-direction: column;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+      background: var(--card-bg);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .menu-item:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .menu-item:active {
+      transform: scale(0.98);
+    }
+    
+    .menu-item.selected {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(14, 165, 233, 0.08) 100%);
+    }
+    
+    .menu-item.selected::before {
+      content: '✓';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: bold;
+    }
+    
+    .menu-item .item-name-cn {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .menu-item .item-name-en {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+    }
+    
+    .menu-item .emoji {
+      margin-right: 4px;
+    }
+    
+    .menu-item .order-count {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      background: var(--warning);
+      color: #000;
+      border-radius: 11px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    .menu-item .order-count:hover {
+      transform: scale(1.1);
+    }
+    
+    .menu-item.selected .order-count {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--primary-dark);
+    }
+    
+    .menu-item .order-count.zero {
+      display: none;
+    }
+    
+    /* Tooltip for showing who ordered */
+    .ordered-by-tooltip {
+      position: fixed;
+      background: var(--text);
+      color: white;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      max-width: 250px;
+      box-shadow: var(--shadow-lg);
+      z-index: 10000;
+      animation: tooltipFadeIn 0.15s ease-out;
+    }
+    
+    .ordered-by-tooltip::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 20px;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid var(--text);
+    }
+    
+    .ordered-by-tooltip .tooltip-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--warning);
+    }
+    
+    .ordered-by-tooltip .tooltip-names {
+      line-height: 1.5;
+    }
+    
+    @keyframes tooltipFadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* ========== DESKTOP RESPONSIVE STYLES ========== */
+    @media (min-width: 768px) {
+      .container {
+        max-width: 900px;
+        padding: 0 24px 120px;
+      }
+      
+      .header h1 {
+        font-size: 22px;
+      }
+      
+      /* Menu items in grid for desktop - more items per row */
+      .menu-items {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+        max-height: none;
+      }
+      
+      .menu-items.collapsed {
+        display: none;
+      }
+      
+      .menu-item {
+        padding: 14px 16px;
+      }
+      
+      /* Each category is full width row on desktop */
+      #menuContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      
+      .menu-category {
+        width: 100%;
+      }
+      
+      /* Cards have more padding on desktop */
+      .card {
+        padding: 24px;
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .container {
+        max-width: 1100px;
+      }
+      
+      .menu-items {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+    }
+    
+    @media (min-width: 1280px) {
+      .container {
+        max-width: 1200px;
+      }
+      
+      .menu-items {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      }
+    }
+
+    /* Rice options */
+    .rice-options {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .rice-option {
+      flex: 1;
+      padding: 16px 12px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+      background: var(--card-bg);
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .rice-option:hover {
+      border-color: var(--primary-light);
+    }
+    
+    .rice-option.selected {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(14, 165, 233, 0.08) 100%);
+    }
+    
+    .rice-option .rice-icon {
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+    
+    .rice-option .label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    
+    .rice-option.selected .label {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    /* Selected items */
+    .selected-items {
+      background: linear-gradient(135deg, #faf5ff 0%, #f0f9ff 100%);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      min-height: 80px;
+      border: 2px dashed var(--primary-light);
+    }
+    
+    .selected-items h4 {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+    
+    .selected-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .selected-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: 0.85rem;
+      animation: fadeIn 0.2s ease;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+    
+    .selected-tag:hover {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .selected-tag .edit-hint {
+      opacity: 0.5;
+      font-size: 0.7rem;
+    }
+    
+    .selected-tag:hover .edit-hint {
+      opacity: 1;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .selected-tag .remove {
+      cursor: pointer;
+      opacity: 0.5;
+      font-weight: bold;
+      font-size: 0.85rem;
+      line-height: 1;
+      margin-left: 2px;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+    
+    .selected-tag .remove:hover {
+      opacity: 1;
+      background: var(--danger-light);
+      color: var(--danger);
+    }
+    
+    .empty-selection {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 12px;
+    }
+    
+    /* Item note modal */
+    .note-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+    
+    .note-modal {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--shadow-lg);
+      animation: fadeIn 0.2s ease;
+    }
+    
+    .note-modal h3 {
+      margin: 0 0 4px 0;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+    
+    .note-modal .item-hint {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    
+    .note-modal input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--bg);
+    }
+    
+    .note-modal input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .note-modal-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .note-modal-buttons button {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .note-modal-buttons .btn-cancel {
+      background: var(--bg);
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+    
+    .note-modal-buttons .btn-cancel:hover {
+      background: var(--border);
+    }
+    
+    .note-modal-buttons .btn-save {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .note-modal-buttons .btn-save:hover {
+      background: var(--primary-dark);
+    }
+    
+    /* Price display */
+    .price-card {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-primary);
+    }
+    
+    .price-card .label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+    
+    .price-card .price-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    
+    .price-card .amount {
+      font-size: 2.5rem;
+      font-weight: 700;
+      min-width: 100px;
+      text-align: center;
+      transition: transform 0.15s ease;
+    }
+    
+    .price-card .currency {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+    
+    .price-card .price-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.15);
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .price-card .price-btn:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.5);
+    }
+    
+    .price-card .price-btn:active {
+      transform: scale(0.95);
+      background: rgba(255,255,255,0.35);
+    }
+    
+    .price-card .price-hint {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 12px;
+      text-align: center;
+    }
+    
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: white;
+      box-shadow: var(--shadow-primary);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    
+    .btn-primary:disabled {
+      background: var(--border);
+      color: var(--text-muted);
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--border);
+      border-color: var(--text-muted);
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+    
+    .btn-warning {
+      background: var(--warning);
+      color: #000;
+    }
+    
+    .btn-warning:hover {
+      background: #d97706;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    
+    .btn-group .btn {
+      flex: 1;
+    }
+    
+    .btn-group-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .btn-group-3 .btn {
+      padding: 12px 8px;
+      font-size: 0.85rem;
+    }
+    
+    /* Edit mode indicator */
+    .edit-mode-banner {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+    
+    .edit-mode-banner .text {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .edit-mode-banner .cancel-edit {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .edit-mode-banner .cancel-edit:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    /* Payment status in order tab */
+    .payment-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    
+    .payment-status.paid {
+      background: var(--success-light);
+      color: #047857;
+    }
+    
+    .payment-status.unpaid {
+      background: var(--warning-light);
+      color: #b45309;
+    }
+    
+    .payment-status.no-order {
+      display: none;
+    }
+    
+    /* Status messages */
+    .status {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      margin: 16px 0;
+      display: none;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      white-space: pre-line;
+      font-weight: 500;
+    }
+    
+    .status.success {
+      background: var(--success-light);
+      color: #047857;
+      border: 1px solid var(--success);
+      display: block;
+      animation: statusPop 0.3s ease;
+    }
+    
+    .status.error {
+      background: var(--danger-light);
+      color: #b91c1c;
+      border: 1px solid var(--danger);
+      display: block;
+      animation: statusPop 0.3s ease;
+    }
+    
+    @keyframes statusPop {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Orders list */
+    .orders-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .order-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 2px solid transparent;
+    }
+    
+    .order-card:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .order-card:hover .order-edit {
+      opacity: 1;
+    }
+    
+    .order-card:hover .order-actions {
+      opacity: 1;
+    }
+    
+    .order-card-readonly {
+      cursor: default;
+    }
+    
+    .order-card-readonly:hover {
+      border-color: transparent;
+      transform: none;
+      box-shadow: var(--shadow);
+    }
+    
+    .order-card.own-order {
+      border-left: 4px solid var(--primary);
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.05), transparent);
+    }
+    
+    .order-edit {
+      opacity: 0.4;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+    
+    .order-actions {
+      display: flex;
+      gap: 4px;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    
+    .order-action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+    
+    .order-action-btn:hover {
+      background-color: rgba(59, 130, 246, 0.1);
+      transform: scale(1.1);
+    }
+    
+    .order-action-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .order-seq {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    
+    .order-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .order-name {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      min-width: 70px;
+    }
+    
+    .order-details {
+      flex: 1;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .order-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    
+    .order-price {
+      font-weight: 600;
+      color: var(--primary);
+      white-space: nowrap;
+      font-size: 14px;
+    }
+    
+    .order-paid {
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    
+    .order-paid.yes {
+      color: var(--success);
+    }
+    
+    .order-paid.no {
+      color: var(--warning);
+    }
+    
+    /* Mobile: stack vertically */
+    @media (max-width: 500px) {
+      .order-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+      
+      .order-details {
+        white-space: normal;
+        font-size: 12px;
+      }
+      
+      .order-card {
+        align-items: flex-start;
+      }
+    }
+    
+    .orders-summary {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .summary-item {
+      text-align: center;
+    }
+    
+    .summary-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .summary-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    /* Info footer */
+    .info-footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .info-footer span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .info-footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    /* Menu Toolbar */
+    .menu-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    .toolbar-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      font-weight: 500;
+    }
+    
+    .toolbar-btn:hover {
+      background: var(--border);
+      border-color: var(--text-muted);
+    }
+    
+    .refresh-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: var(--transition);
+    }
+    
+    .refresh-btn:hover {
+      background: rgba(59, 130, 246, 0.1);
+    }
+    
+    .refresh-btn.spinning .icon {
+      animation: spin 0.8s linear infinite;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      backdrop-filter: blur(4px);
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow: auto;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px);
+      transition: transform 0.3s;
+    }
+    
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+    
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--card-bg);
+      z-index: 1;
+    }
+    
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      line-height: 1;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+    
+    .modal-close:hover {
+      color: var(--text);
+      background: var(--bg);
+    }
+    
+    .modal-body {
+      padding: 24px;
+    }
+    
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    
+    .modal-footer .btn {
+      width: auto;
+      padding: 12px 24px;
+    }
+    
+    /* Import Menu Textarea */
+    .import-textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+      resize: vertical;
+      margin-bottom: 12px;
+      background: var(--bg);
+      transition: var(--transition);
+    }
+    
+    .import-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .import-hint {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    
+    .import-hint code {
+      background: var(--bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+    
+    /* Order Summary */
+    .summary-content {
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow: auto;
+      border: 1px solid var(--border);
+    }
+    
+    .summary-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    /* All Orders Toolbar */
+    .all-orders-toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .all-orders-toolbar .btn {
+      padding: 12px 16px;
+      font-size: 0.9rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 400px) {
+      .container {
+        padding: 0 12px 120px;
+      }
+      
+      .card {
+        padding: 16px;
+        border-radius: var(--radius-md);
+      }
+      
+      .menu-item {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+      }
+      
+      .rice-option {
+        padding: 14px 10px;
+        font-size: 0.85rem;
+      }
+      
+      .btn {
+        padding: 14px 20px;
+      }
+    }
+    
+    /* Help Button - updated in header section */
+    
+    /* Welcome/Help Modal */
+    .welcome-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .welcome-modal {
+      background: white;
+      border-radius: var(--radius-xl);
+      max-width: 520px;
+      width: calc(100% - 32px);
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
+    }
+    
+    @media (max-width: 560px) {
+      .welcome-modal {
+        max-width: 400px;
+      }
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .welcome-header {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #0ea5e9 100%);
+      color: white;
+      padding: 20px 24px;
+      text-align: center;
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+    
+    .welcome-header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    
+    .welcome-header p {
+      margin: 6px 0 0;
+      opacity: 0.9;
+      font-size: 0.85rem;
+    }
+    
+    .welcome-body {
+      padding: 20px 24px;
+    }
+    
+    .welcome-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    
+    .welcome-step:last-child {
+      margin-bottom: 0;
+    }
+    
+    .step-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .step-content h4 {
+      margin: 0 0 4px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    
+    .step-content p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    
+    .welcome-tips {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(14, 165, 233, 0.08) 100%);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-top: 16px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .welcome-tips h4 {
+      margin: 0 0 8px;
+      font-size: 0.9rem;
+      color: var(--primary);
+    }
+    
+    .welcome-tips ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    
+    .welcome-tips li {
+      margin-bottom: 4px;
+    }
+    
+    .welcome-tips li:last-child {
+      margin-bottom: 0;
+    }
+    
+    .welcome-footer {
+      padding: 16px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .welcome-footer .btn {
+      width: 100%;
+    }
+    
+    .dont-show-again {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    
+    .dont-show-again input {
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+    
+    /* Guided Tour */
+    .tour-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: transparent;
+      z-index: 3000;
+      pointer-events: all;
+    }
+    
+    .tour-highlight {
+      position: fixed;
+      z-index: 3001;
+      box-shadow: 0 0 0 4px var(--primary), 0 0 0 9999px rgba(0,0,0,0.5);
+      border-radius: var(--radius-md);
+      pointer-events: none;
+      transition: all 0.4s ease;
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .tour-tooltip {
+      position: fixed;
+      z-index: 3002;
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      width: 320px;
+      max-width: calc(100vw - 20px);
+      box-shadow: var(--shadow-lg);
+      animation: tooltipPop 0.3s ease;
+    }
+    
+    @keyframes tooltipPop {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    
+    .tour-tooltip h4 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      color: var(--text);
+    }
+    
+    .tour-tooltip p {
+      margin: 0 0 16px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    
+    .tour-tooltip-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    .tour-progress {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    .tour-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .tour-buttons .btn {
+      padding: 10px 18px;
+      font-size: 0.85rem;
+    }
+    
+    .tour-skip {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 8px;
+      transition: var(--transition);
+    }
+    
+    .tour-skip:hover {
+      color: var(--text);
+    }
+    
+    .tour-tooltip-arrow {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: white;
+      transform: rotate(45deg);
+    }
+    
+    .tour-tooltip-arrow.top {
+      top: -8px;
+      left: 30px;
+    }
+    
+    .tour-tooltip-arrow.bottom {
+      bottom: -8px;
+      left: 30px;
+    }
+    
+    .tour-tooltip-arrow.left {
+      left: -8px;
+      top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="brand">
+        <div class="brand-icon">🍱</div>
+        <div class="brand-text">
+          <h1>Lunch Order</h1>
+          <div class="location">TRX Exchange 106, Level 17</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="date-badge" id="dateDisplay">📅 Loading...</div>
+        <button class="help-btn" onclick="showHelpModal()" title="How to use">?</button>
+      </div>
+    </div>
+  </header>
+  
+  <div class="container">
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button class="tab active" onclick="switchTab('order')">📝 Order</button>
+      <button class="tab" id="tabMyOrder" onclick="switchTab('myorder')">👤 My Order</button>
+      <button class="tab" id="tabAllOrders" onclick="switchTab('all')">📋 All</button>
+      <button class="tab" onclick="switchTab('admin')">⚙️ Admin</button>
+    </nav>
+    
+    <!-- ORDER TAB -->
+    <div id="tab-order" class="tab-content active">
+      <!-- Ordering Closed Message (hidden by default) -->
+      <div id="orderingClosedMessage" style="display: none;">
+        <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, var(--warning-light) 0%, #fed7aa 100%); border-radius: var(--radius-lg); margin: 20px 0; border: 1px solid #fdba74;">
+          <div style="font-size: 64px; margin-bottom: 16px;">🔒</div>
+          <h2 style="color: #c2410c; margin: 0 0 12px 0; font-size: 1.5rem; font-weight: 700;">Ordering Closed</h2>
+          <p style="color: #9a3412; margin: 0; font-size: 1rem;" id="closedMessage">
+            Please wait for admin to open today's orders.
+          </p>
+          <p style="color: var(--text-muted); margin-top: 16px; font-size: 0.9rem;">
+            The menu will appear once ordering is open.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Order Content (hidden by default, shown only when ordering is open) -->
+      <div id="orderContent" style="display: none;">
+        <!-- Edit Mode Banner (hidden by default) -->
+        <div id="editModeBanner" class="edit-mode-banner" style="display: none;">
+          <span class="text">✏️ Editing your order</span>
+          <button class="cancel-edit" onclick="cancelEditMode()">Start Fresh</button>
+        </div>
+        
+        <!-- Name Input - Compact inline -->
+        <div class="card name-card">
+          <div class="name-row">
+            <label for="userName">👤 Your Name</label>
+            <input type="text" id="userName" placeholder="Enter your name" autocomplete="name">
+            <button class="btn btn-secondary btn-sm" onclick="loadMyOrder()" id="loadOrderBtn">
+              📥 Load My Order
+            </button>
+          </div>
+        </div>
+        
+        <!-- Status Message (moved to top for visibility) -->
+        <div id="statusMessage" class="status"></div>
+        
+        <!-- Payment Status (shows when order exists) -->
+        <div id="paymentStatus" class="payment-status no-order">
+          <span id="paymentText"></span>
+        </div>
+        
+        <!-- Menu Section -->
+        <div class="card">
+          <div class="menu-header">
+            <div class="card-title">🍽️ Select Your Items</div>
+            <div class="menu-toolbar">
+              <button class="toolbar-btn" onclick="toggleAllCategories()" id="collapseAllBtn">
+                📁 Collapse All
+              </button>
+              <span id="lastRefresh">Updated</span>
+              <button class="refresh-btn" onclick="manualRefresh()" id="refreshBtn">
+                <span class="icon">🔄</span>
+              </button>
+            </div>
+          </div>
+        
+        <div id="menuContainer">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 12px;">Loading menu...</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Selected Items -->
+      <div class="card" id="selectionCard">
+        <div class="selected-items">
+          <h4>🛒 Your Selection</h4>
+          <div id="selectedList" class="selected-list">
+            <span class="empty-selection">Tap items above to add to your order</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Rice Options -->
+      <div class="card" id="riceCard">
+        <div class="card-title">🍚 Rice Portion</div>
+        <div class="rice-options">
+          <div class="rice-option selected" data-value="normal" onclick="selectRice(this)">
+            <div>Normal</div>
+            <div class="label">正常</div>
+          </div>
+          <div class="rice-option" data-value="less" onclick="selectRice(this)">
+            <div>Less</div>
+            <div class="label">少饭</div>
+          </div>
+          <div class="rice-option" data-value="none" onclick="selectRice(this)">
+            <div>No Rice</div>
+            <div class="label">不要饭</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Notes -->
+      <div class="card">
+        <div class="input-group" style="margin-bottom: 0;">
+          <label for="notes">📝 Special Notes (optional)</label>
+          <input type="text" id="notes" placeholder="e.g., 多辣, no 金针菇, extra sauce">
+        </div>
+      </div>
+      
+      <!-- Price Display -->
+      <div class="price-card">
+        <div class="label">Estimated Price</div>
+        <div class="price-controls">
+          <button class="price-btn" onclick="adjustPrice(-1)">−</button>
+          <div class="amount"><span class="currency">RM</span> <span id="priceAmount">0</span></div>
+          <button class="price-btn" onclick="adjustPrice(1)">+</button>
+        </div>
+        <div class="price-hint">Tap +/- to adjust</div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <button class="btn btn-primary" id="submitBtn" onclick="submitOrder()">
+        ✅ Place Order
+      </button>
+      
+      <div class="btn-group-3" id="orderActionsGroup" style="display: none;">
+        <button class="btn btn-success" onclick="showPaymentModal()" id="payBtn">💵 Pay</button>
+        <button class="btn btn-secondary" onclick="clearOrder()">🗑️ Clear</button>
+        <button class="btn btn-danger" onclick="cancelExistingOrder()" id="cancelBtn">❌ Cancel</button>
+      </div>
+      </div><!-- End orderContent -->
+    </div>
+    
+    <!-- MY ORDER TAB -->
+    <div id="tab-myorder" class="tab-content">
+      <div class="card name-card">
+        <div class="name-row">
+          <label for="checkName">👤 Your Name</label>
+          <input type="text" id="checkName" placeholder="Enter your name">
+          <button class="btn btn-primary btn-sm" onclick="checkMyOrder()">🔍 Check My Order</button>
+        </div>
+      </div>
+      
+      <div id="myOrderResult"></div>
+    </div>
+    
+    <!-- ALL ORDERS TAB -->
+    <div id="tab-all" class="tab-content">
+      <div class="all-orders-toolbar">
+        <button class="btn btn-secondary" onclick="loadAllOrders()" style="flex: 1;">
+          🔄 Refresh Orders
+        </button>
+      </div>
+      <div id="allOrdersContainer">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p style="margin-top: 12px;">Loading orders...</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ADMIN TAB -->
+    <div id="tab-admin" class="tab-content">
+      <div class="card">
+        <div class="card-title">📅 Daily Operations</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div id="adminStatus" style="padding: 12px; background: #f5f5f5; border-radius: 8px; text-align: center;">
+            Checking status...
+          </div>
+          <button class="btn btn-primary" onclick="openTodayOrdering()" id="openOrderingBtn">
+            🔓 Open Today's Ordering
+          </button>
+          <button class="btn btn-danger" onclick="closeOrdering()" id="closeOrderingBtn" style="background: #dc3545;">
+            🔒 Close Ordering
+          </button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">📥 Menu Management</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <button class="btn btn-secondary" onclick="showImportMenu()">
+            📥 Import Menu from WhatsApp
+          </button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">📊 Reports</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <button class="btn btn-primary" onclick="showOrderSummary()">
+            📊 Generate Order Summary
+          </button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">ℹ️ Instructions</div>
+        <div style="font-size: 14px; color: #666; line-height: 1.6;">
+          <p><strong>Daily workflow:</strong></p>
+          <ol style="margin: 8px 0; padding-left: 20px;">
+            <li>Copy menu from WhatsApp</li>
+            <li>Click "Import Menu" and paste</li>
+            <li>Click "Open Today's Ordering"</li>
+            <li>Share link with team</li>
+            <li>After cutoff time, click "Close Ordering"</li>
+            <li>Generate summary and share</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Info Footer -->
+    <footer class="info-footer">
+      <span>🕙 Orders before 10am</span>
+      <span>🚗 Delivery 12-12:15pm @ P4</span>
+    </footer>
+  </div>
+  
+  <!-- Import Menu Modal -->
+  <div class="modal-overlay" id="importMenuModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📥 Import Menu</h3>
+        <button class="modal-close" onclick="hideImportMenu()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="import-hint">
+          Paste menu from WhatsApp. Category headers start with <code>✔️</code>.<br>
+          Items start with <code>- </code> (dash and space).
+        </div>
+        <textarea class="import-textarea" id="importMenuText" placeholder="Paste menu with this format:
+
+✔️鸡 Chicken
+- 咖喱鸡 curry chicken
+- 药材蒸鸡 herbal steamed chicken
+- 咸蛋鸡 salted egg chicken
+
+✔️猪 pork
+- 咸鱼花腩 pork belly salted fish
+- 辣椒小炒肉 chili pork
+
+✔️food食物
+- 烧鸡胸饭 rm8
+- 烧鸡二度 rm9"></textarea>
+        <div class="import-hint">
+          💡 For set meals with fixed prices, add <code>rm8</code> at the end.<br>
+          📊 Menu will be saved to F2, then parsed to columns A-E.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="reloadMenuFromSheet(); hideImportMenu();" style="margin-right: auto;">🔄 Reload from Sheet</button>
+        <button class="btn btn-secondary" onclick="hideImportMenu()">Cancel</button>
+        <button class="btn btn-primary" onclick="parseAndImportMenu()">Import Menu</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Welcome/Help Modal -->
+  <div class="welcome-modal-overlay" id="welcomeModal" style="display: none;">
+    <div class="welcome-modal">
+      <div class="welcome-header">
+        <h2>👋 Welcome to Lunch Order!</h2>
+        <p>Quick guide to get you started</p>
+      </div>
+      <div class="welcome-body">
+        <div class="welcome-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>Enter Your Name</h4>
+            <p>Type your name in the "Your Name" field so we know who's ordering.</p>
+          </div>
+        </div>
+        <div class="welcome-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>Select Menu Items</h4>
+            <p>Tap on menu items to add them to your selection. Tap again to remove.</p>
+          </div>
+        </div>
+        <div class="welcome-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>Choose Rice Option</h4>
+            <p>Select normal rice, less rice, or no rice with your meal.</p>
+          </div>
+        </div>
+        <div class="welcome-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h4>Place Your Order</h4>
+            <p>Click the "Place Order" button to submit. You can edit anytime before ordering closes.</p>
+          </div>
+        </div>
+        
+        <div class="welcome-tips">
+          <h4>💡 Pro Tips</h4>
+          <ul>
+            <li>Tap a selected item to add special notes (e.g., "extra spicy")</li>
+            <li>Hover on the count badge to see who ordered each item</li>
+            <li>Use "My Order" tab to check or edit your order</li>
+            <li>Use "All Orders" tab to see everyone's orders</li>
+          </ul>
+        </div>
+      </div>
+      <div class="welcome-footer">
+        <button class="btn btn-primary" onclick="closeWelcomeAndStartTour()">
+          🚀 Take a Quick Tour
+        </button>
+        <button class="btn btn-secondary" onclick="closeWelcomeModal()">
+          ✓ Got it, let's order!
+        </button>
+        <label class="dont-show-again">
+          <input type="checkbox" id="dontShowAgain">
+          Don't show this again
+        </label>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Guided Tour Elements (dynamically positioned) -->
+  <div id="tourContainer" style="display: none;">
+    <div class="tour-overlay" id="tourOverlay"></div>
+    <div class="tour-highlight" id="tourHighlight"></div>
+    <div class="tour-tooltip" id="tourTooltip">
+      <div class="tour-tooltip-arrow top" id="tourArrow"></div>
+      <h4 id="tourTitle">Step Title</h4>
+      <p id="tourDescription">Step description goes here.</p>
+      <div class="tour-tooltip-footer">
+        <span class="tour-progress" id="tourProgress">1 of 5</span>
+        <div class="tour-buttons">
+          <button class="tour-skip" onclick="endTour()">Skip</button>
+          <button class="btn btn-secondary" onclick="prevTourStep()" id="tourPrevBtn">Back</button>
+          <button class="btn btn-primary" onclick="nextTourStep()" id="tourNextBtn">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Order Summary Modal -->
+  <div class="modal-overlay" id="orderSummaryModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📊 Order Summary</h3>
+        <button class="modal-close" onclick="hideOrderSummary()">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="orderSummaryContent" class="summary-content">
+          Loading...
+        </div>
+        <div class="summary-actions">
+          <button class="btn btn-secondary" onclick="copySummary()" style="flex: 1;">
+            📋 Copy to Clipboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment QR Modal -->
+  <div class="modal-overlay" id="paymentModal">
+    <div class="modal" style="max-width: 360px;">
+      <div class="modal-header">
+        <h3>💳 Scan to Pay</h3>
+        <button class="modal-close" onclick="hidePaymentModal()">×</button>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 16px;">
+        <img id="paymentQRImage" src="" alt="Payment QR Code" style="max-width: 100%; border-radius: 8px; margin-bottom: 16px;">
+        <p style="margin: 0 0 16px 0; color: #666; font-size: 14px;">Scan the QR code to make payment.<br>Click OK after payment is complete.</p>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="hidePaymentModal()" style="flex: 1;">Cancel</button>
+          <button class="btn btn-success" onclick="confirmPayment()" style="flex: 1;">✅ OK - I've Paid</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copy Order Confirmation Modal -->
+  <div class="modal-overlay" id="copyModal">
+    <div class="modal" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3>📋 Copy Order</h3>
+        <button class="modal-close" onclick="hideCopyModal()">×</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <p id="copyConfirmMessage" style="margin: 0 0 12px 0; font-size: 15px;"></p>
+        <div id="copyOrderDetails" style="background: #f5f5f5; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;"></div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" onclick="hideCopyModal()" style="flex: 1;">Cancel</button>
+          <button class="btn btn-primary" onclick="confirmCopyOrder()" style="flex: 1;">📋 Copy Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let selectedItems = [];
+    let riceOption = 'normal';
+    let menuData = {};
+    let isEditMode = false;
+    let currentOrderPaid = false;
+    let customPrice = null; // Track if user has manually adjusted price
+    
+    // LocalStorage key for user name (fallback)
+    const STORAGE_KEY_NAME = 'lunchOrderUserName';
+    
+    // Save user name to server (and localStorage as fallback)
+    function saveUserName(name) {
+      // Save to localStorage only (per-device, not shared across users)
+      try {
+        localStorage.setItem(STORAGE_KEY_NAME, name);
+      } catch (e) {
+        console.log('Could not save name to localStorage:', e);
+      }
+    }
+    
+    // Load user name from localStorage
+    function loadUserNameLocal() {
+      try {
+        return localStorage.getItem(STORAGE_KEY_NAME) || '';
+      } catch (e) {
+        console.log('Could not load name from localStorage:', e);
+        return '';
+      }
+    }
+    
+    // Strip bracket content from item name for order storage
+    // e.g., "酿豆腐（茄子，苦瓜，豆腐）" → "酿豆腐"
+    // e.g., "麻辣香锅菜 （白菜，莲藕，午餐肉" → "麻辣香锅菜"
+    function stripBrackets(itemName) {
+      // Remove content starting from Chinese or English opening bracket
+      return itemName.replace(/[\s]*[（(].*$/g, '').trim();
+    }
+    
+    // Extract Chinese characters from a string (for matching)
+    // e.g., "🥦 花椰菜🥦" → "花椰菜"
+    // e.g., "🌿 小白菜🌿" → "小白菜"
+    function extractChineseChars(str) {
+      const match = str.match(/[\u4e00-\u9fff\u3400-\u4dbf]+/g);
+      return match ? match.join('') : str;
+    }
+    
+    // Global ordering status
+    let orderingOpen = true;
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // First check if ordering is open
+      checkOrderingStatus();
+      
+      loadDate();
+      
+      // Load saved name from localStorage
+      const savedNameLocal = loadUserNameLocal();
+      if (savedNameLocal) {
+        document.getElementById('userName').value = savedNameLocal;
+        document.getElementById('checkName').value = savedNameLocal;
+      }
+      
+      // Sync name fields and save to localStorage
+      document.getElementById('userName').addEventListener('input', function() {
+        document.getElementById('checkName').value = this.value;
+        saveUserName(this.value);
+      });
+      document.getElementById('checkName').addEventListener('input', function() {
+        document.getElementById('userName').value = this.value;
+        saveUserName(this.value);
+      });
+      
+      // Also save on blur (in case input event doesn't fire)
+      document.getElementById('userName').addEventListener('blur', function() {
+        saveUserName(this.value);
+      });
+      
+      // Auto-refresh menu counts every 30 seconds (only if ordering is open)
+      setInterval(function() {
+        if (orderingOpen) {
+          refreshMenuCounts();
+        }
+      }, 30000);
+      
+      // Check ordering status every 60 seconds (in case admin opens it)
+      setInterval(function() {
+        if (!orderingOpen) {
+          checkOrderingStatus();
+        }
+      }, 60000);
+      
+      // Check if should show welcome modal for new users
+      checkShowWelcome();
+    });
+    
+    // Check if ordering is open
+    function checkOrderingStatus() {
+      google.script.run
+        .withSuccessHandler(function(status) {
+          console.log('Ordering status:', status);
+          orderingOpen = status.isOpen && !status.isClosed;
+          
+          if (status.isOpen && !status.isClosed) {
+            // Ordering is open - show order form
+            document.getElementById('orderingClosedMessage').style.display = 'none';
+            document.getElementById('orderContent').style.display = 'block';
+            
+            // Load the menu
+            loadMenu();
+          } else {
+            // Ordering is closed or not started - show closed message
+            document.getElementById('orderingClosedMessage').style.display = 'block';
+            document.getElementById('closedMessage').textContent = status.message;
+            document.getElementById('orderContent').style.display = 'none';
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error checking ordering status:', error);
+          // On error, show error in closed message
+          document.getElementById('orderingClosedMessage').style.display = 'block';
+          document.getElementById('closedMessage').textContent = 'Error loading status. Please refresh.';
+          document.getElementById('orderContent').style.display = 'none';
+        })
+        .getOrderingStatus();
+    }
+    
+    // Refresh admin status display
+    function refreshAdminStatus() {
+      google.script.run
+        .withSuccessHandler(function(status) {
+          const statusDiv = document.getElementById('adminStatus');
+          const openBtn = document.getElementById('openOrderingBtn');
+          const closeBtn = document.getElementById('closeOrderingBtn');
+          
+          if (status.isOpen) {
+            if (status.isClosed) {
+              // Ordering was closed by admin
+              statusDiv.innerHTML = '🔒 <strong>Ordering CLOSED</strong> for ' + status.todayDate + '<br><small>No more orders can be added.</small>';
+              statusDiv.style.background = '#ffebee';
+              statusDiv.style.color = '#c62828';
+              openBtn.style.display = 'none';
+              closeBtn.style.display = 'none';
+            } else {
+              // Ordering is open
+              statusDiv.innerHTML = '✅ <strong>Ordering OPEN</strong> for ' + status.todayDate;
+              statusDiv.style.background = '#e8f5e9';
+              statusDiv.style.color = '#2e7d32';
+              openBtn.style.display = 'none';
+              closeBtn.style.display = 'block';
+            }
+          } else {
+            // No sheet for today
+            statusDiv.innerHTML = '⏸️ <strong>Not Started</strong><br><small>Click "Open Today\'s Ordering" to begin.</small>';
+            statusDiv.style.background = '#fff3e0';
+            statusDiv.style.color = '#e65100';
+            openBtn.style.display = 'block';
+            closeBtn.style.display = 'none';
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('adminStatus').innerHTML = '❌ Error: ' + error.message;
+        })
+        .getOrderingStatus();
+    }
+    
+    // Open today's ordering (admin function)
+    function openTodayOrdering() {
+      if (!confirm('This will:\n• Hide all old order sheets\n• Create today\'s order sheet\n• Open ordering for users\n\nContinue?')) {
+        return;
+      }
+      
+      document.getElementById('openOrderingBtn').disabled = true;
+      document.getElementById('openOrderingBtn').textContent = '⏳ Opening...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showStatus('✅ ' + result.message, 'success');
+            refreshAdminStatus();
+            checkOrderingStatus(); // Refresh main UI
+          } else {
+            showStatus('❌ ' + result.message, 'error');
+          }
+          document.getElementById('openOrderingBtn').disabled = false;
+          document.getElementById('openOrderingBtn').textContent = '🔓 Open Today\'s Ordering';
+        })
+        .withFailureHandler(function(error) {
+          showStatus('❌ Error: ' + error.message, 'error');
+          document.getElementById('openOrderingBtn').disabled = false;
+          document.getElementById('openOrderingBtn').textContent = '🔓 Open Today\'s Ordering';
+        })
+        .createNewDayOrderSheet();
+    }
+    
+    // Close ordering (admin function)
+    function closeOrdering() {
+      if (!confirm('This will close ordering for today.\n\nNo more orders can be added, edited, or removed.\n\nContinue?')) {
+        return;
+      }
+      
+      document.getElementById('closeOrderingBtn').disabled = true;
+      document.getElementById('closeOrderingBtn').textContent = '⏳ Closing...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showStatus('✅ ' + result.message, 'success');
+            refreshAdminStatus();
+            checkOrderingStatus(); // Refresh main UI
+          } else {
+            showStatus('❌ ' + result.message, 'error');
+          }
+          document.getElementById('closeOrderingBtn').disabled = false;
+          document.getElementById('closeOrderingBtn').textContent = '🔒 Close Ordering';
+        })
+        .withFailureHandler(function(error) {
+          showStatus('❌ Error: ' + error.message, 'error');
+          document.getElementById('closeOrderingBtn').disabled = false;
+          document.getElementById('closeOrderingBtn').textContent = '🔒 Close Ordering';
+        })
+        .closeOrderingForToday();
+    }
+    
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+      
+      if (tabId === 'all') {
+        loadAllOrders();
+      }
+      if (tabId === 'admin') {
+        refreshAdminStatus();
+      }
+      if (tabId === 'myorder') {
+        // Auto-load order if name exists
+        const savedName = document.getElementById('checkName').value.trim();
+        if (savedName) {
+          checkMyOrder();
+        }
+      }
+    }
+    
+    // Load menu from server (reads from Menu sheet)
+    function loadMenu() {
+      google.script.run
+        .withSuccessHandler(function(menu) {
+          menuData = menu;
+          renderMenu(menu);
+          updateRefreshTime();
+        })
+        .withFailureHandler(showError)
+        .getMenuForSidebar();
+    }
+    
+    // Reload menu from server
+    function reloadMenuFromSheet() {
+      showStatus('⏳ Reloading menu...', 'success');
+      google.script.run
+        .withSuccessHandler(function(menu) {
+          menuData = menu;
+          renderMenu(menu);
+          updateRefreshTime();
+          showStatus('✅ Menu reloaded from spreadsheet.', 'success');
+        })
+        .withFailureHandler(function(error) {
+          showStatus('❌ Error: ' + error.message, 'error');
+        })
+        .getMenuForSidebar();
+    }
+    
+    // Load today's date
+    function loadDate() {
+      google.script.run
+        .withSuccessHandler(function(date) {
+          document.getElementById('dateDisplay').textContent = '📅 ' + formatDate(date);
+        })
+        .getTodayDate();
+    }
+    
+    // Format date for display
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr.length !== 8) return dateStr;
+      const year = dateStr.substring(0, 4);
+      const month = dateStr.substring(4, 6);
+      const day = dateStr.substring(6, 8);
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      const dayName = days[dateObj.getDay()];
+      return `${dayName} ${parseInt(day)} ${months[parseInt(month) - 1]} ${year}`;
+    }
+    
+    // Render menu
+    // Define preferred category order (case-insensitive matching)
+    const CATEGORY_ORDER = ['chicken', 'pork', 'seafood', 'egg', 'others', 'vegetables', 'food'];
+    
+    function getCategoryOrderIndex(categoryName) {
+      const lowerName = categoryName.toLowerCase();
+      for (let i = 0; i < CATEGORY_ORDER.length; i++) {
+        if (lowerName.includes(CATEGORY_ORDER[i])) {
+          return i;
+        }
+      }
+      return CATEGORY_ORDER.length; // Unknown categories go to end
+    }
+    
+    function renderMenu(menu) {
+      menuData = menu;
+      const container = document.getElementById('menuContainer');
+      container.innerHTML = '';
+      
+      // Sort categories by preferred order
+      const sortedCategories = Object.entries(menu).sort((a, b) => {
+        return getCategoryOrderIndex(a[0]) - getCategoryOrderIndex(b[0]);
+      });
+      
+      for (const [category, items] of sortedCategories) {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'menu-category';
+        
+        // Calculate total orders in this category
+        const categoryTotal = items.reduce((sum, item) => sum + (item.count || 0), 0);
+        
+        const header = document.createElement('div');
+        header.className = 'category-header';
+        header.innerHTML = `${category} ${categoryTotal > 0 ? '<span style="opacity:0.7">(' + categoryTotal + ')</span>' : ''} <span class="toggle">▼</span>`;
+        header.onclick = function() {
+          this.classList.toggle('collapsed');
+          this.nextElementSibling.classList.toggle('collapsed');
+        };
+        
+        const itemsDiv = document.createElement('div');
+        itemsDiv.className = 'menu-items';
+        
+        items.forEach(item => {
+          const itemBtn = document.createElement('div');
+          itemBtn.className = 'menu-item';
+          itemBtn.dataset.name = item.name;
+          if (item.fixedPrice) {
+            itemBtn.dataset.fixedPrice = item.fixedPrice;
+          }
+          
+          // Store orderedBy data
+          if (item.orderedBy && item.orderedBy.length > 0) {
+            itemBtn.dataset.orderedBy = JSON.stringify(item.orderedBy);
+          }
+          
+          // Check if this item was previously selected
+          if (selectedItems.find(s => s.name === item.name)) {
+            itemBtn.classList.add('selected');
+          }
+          
+          let displayName = item.name;
+          const count = item.count || 0;
+          const countBadge = `<span class="order-count ${count === 0 ? 'zero' : ''}" onmouseenter="showOrderedBy(this, event);" onmouseleave="hideOrderedByTooltip();">${count}</span>`;
+          
+          if (item.emoji) {
+            itemBtn.innerHTML = `<span class="emoji">${item.emoji}</span>${displayName}${countBadge}`;
+          } else {
+            itemBtn.innerHTML = `${displayName}${countBadge}`;
+          }
+          
+          itemBtn.onclick = function() {
+            toggleItem(this);
+          };
+          
+          itemsDiv.appendChild(itemBtn);
+        });
+        
+        categoryDiv.appendChild(header);
+        categoryDiv.appendChild(itemsDiv);
+        container.appendChild(categoryDiv);
+      }
+    }
+    
+    // Show tooltip with who ordered this item (on hover)
+    function showOrderedBy(countEl, event) {
+      // Remove any existing tooltip
+      hideOrderedByTooltip();
+      
+      const menuItem = countEl.closest('.menu-item');
+      const itemName = menuItem.dataset.name;
+      const orderedByData = menuItem.dataset.orderedBy;
+      
+      if (!orderedByData) return;
+      
+      const orderedBy = JSON.parse(orderedByData);
+      if (orderedBy.length === 0) return;
+      
+      // Create tooltip
+      const tooltip = document.createElement('div');
+      tooltip.className = 'ordered-by-tooltip';
+      tooltip.id = 'orderedByTooltip';
+      
+      // Get Chinese name only for display
+      const chineseName = extractChineseChars(itemName) || itemName.split(' ')[0];
+      
+      tooltip.innerHTML = `
+        <div class="tooltip-title">${chineseName} (${orderedBy.length})</div>
+        <div class="tooltip-names">${orderedBy.join(', ')}</div>
+      `;
+      
+      document.body.appendChild(tooltip);
+      
+      // Position tooltip near the hovered element
+      const rect = countEl.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      
+      let left = rect.left;
+      let top = rect.bottom + 8;
+      
+      // Adjust if tooltip goes off screen
+      if (left + tooltipRect.width > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipRect.width - 10;
+      }
+      if (top + tooltipRect.height > window.innerHeight - 10) {
+        top = rect.top - tooltipRect.height - 8;
+        // Move arrow to bottom
+        tooltip.style.setProperty('--arrow-position', 'bottom');
+      }
+      
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+    }
+    
+    function hideOrderedByTooltip() {
+      const existing = document.getElementById('orderedByTooltip');
+      if (existing) {
+        existing.remove();
+      }
+    }
+    
+    // ==========================================
+    // Welcome Modal & Guided Tour
+    // ==========================================
+    
+    // Show welcome modal
+    function showWelcomeModal() {
+      document.getElementById('welcomeModal').style.display = 'flex';
+      document.addEventListener('keydown', handleWelcomeKeydown);
+    }
+    
+    // Close welcome modal
+    function closeWelcomeModal() {
+      const dontShow = document.getElementById('dontShowAgain').checked;
+      if (dontShow) {
+        // Save preference to localStorage
+        try {
+          localStorage.setItem('lunchOrder_hideWelcome', 'true');
+        } catch (e) {}
+      }
+      document.getElementById('welcomeModal').style.display = 'none';
+      document.removeEventListener('keydown', handleWelcomeKeydown);
+    }
+    
+    function handleWelcomeKeydown(e) {
+      if (e.key === 'Escape') {
+        closeWelcomeModal();
+      }
+    }
+    
+    // Show help modal (same content as welcome)
+    function showHelpModal() {
+      document.getElementById('dontShowAgain').checked = false;
+      document.getElementById('welcomeModal').style.display = 'flex';
+      document.addEventListener('keydown', handleWelcomeKeydown);
+    }
+    
+    // Close welcome and start tour
+    function closeWelcomeAndStartTour() {
+      const dontShow = document.getElementById('dontShowAgain').checked;
+      if (dontShow) {
+        try {
+          localStorage.setItem('lunchOrder_hideWelcome', 'true');
+        } catch (e) {}
+      }
+      document.getElementById('welcomeModal').style.display = 'none';
+      document.removeEventListener('keydown', handleWelcomeKeydown);
+      // Small delay before starting tour
+      setTimeout(startTour, 300);
+    }
+    
+    // Check if should show welcome on load
+    function checkShowWelcome() {
+      try {
+        const hideWelcome = localStorage.getItem('lunchOrder_hideWelcome');
+        if (hideWelcome !== 'true') {
+          // Small delay to let the page render
+          setTimeout(showWelcomeModal, 500);
+        }
+      } catch (e) {
+        // On error (localStorage blocked), show welcome for new users
+        setTimeout(showWelcomeModal, 500);
+      }
+    }
+    
+    // Tour state
+    let currentTourStep = 0;
+    const tourSteps = [
+      {
+        target: '#tab-order .name-card',
+        title: '1️⃣ Enter Your Name',
+        description: 'Start by typing your name here. Your name will be remembered for next time!',
+        position: 'bottom'
+      },
+      {
+        target: '.menu-toolbar',
+        title: '2️⃣ Menu Controls',
+        description: 'Use these buttons to expand/collapse categories. The refresh button updates order counts.',
+        position: 'bottom'
+      },
+      {
+        target: '.menu-category',
+        title: '3️⃣ Select Menu Items',
+        description: 'Tap any item to add it to your order. The number badge shows how many people ordered it. Tap again to remove.',
+        position: 'bottom'
+      },
+      {
+        target: '#selectionCard',
+        title: '4️⃣ Your Selection',
+        description: 'Selected items appear here. Tap an item to add special notes (like "extra spicy" or "no onion").',
+        position: 'bottom'
+      },
+      {
+        target: '#riceCard',
+        title: '5️⃣ Rice Options',
+        description: 'Choose your rice preference - normal, less rice, or no rice.',
+        position: 'top'
+      },
+      {
+        target: '#submitBtn',
+        title: '6️⃣ Place Your Order',
+        description: 'When you\'re ready, click this button to submit your order. You can edit it anytime before ordering closes!',
+        position: 'top'
+      },
+      {
+        target: '#tabMyOrder',
+        title: '7️⃣ Navigation Tabs',
+        description: '"My Order" shows your order. "All Orders" shows everyone\'s orders. Ready to order? Let\'s go! 🎉',
+        position: 'bottom'
+      }
+    ];
+    
+    function startTour() {
+      currentTourStep = 0;
+      document.getElementById('tourContainer').style.display = 'block';
+      showTourStep(currentTourStep);
+      
+      // Add keyboard listener for Escape
+      document.addEventListener('keydown', handleTourKeydown);
+    }
+    
+    function endTour() {
+      document.getElementById('tourContainer').style.display = 'none';
+      document.removeEventListener('keydown', handleTourKeydown);
+    }
+    
+    function handleTourKeydown(e) {
+      if (e.key === 'Escape') {
+        endTour();
+      } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        nextTourStep();
+      } else if (e.key === 'ArrowLeft') {
+        prevTourStep();
+      }
+    }
+    
+    function nextTourStep() {
+      currentTourStep++;
+      if (currentTourStep >= tourSteps.length) {
+        endTour();
+      } else {
+        showTourStep(currentTourStep);
+      }
+    }
+    
+    function prevTourStep() {
+      if (currentTourStep > 0) {
+        currentTourStep--;
+        showTourStep(currentTourStep);
+      }
+    }
+    
+    function showTourStep(stepIndex) {
+      const step = tourSteps[stepIndex];
+      const targetEl = document.querySelector(step.target);
+      
+      const highlight = document.getElementById('tourHighlight');
+      const tooltip = document.getElementById('tourTooltip');
+      const arrow = document.getElementById('tourArrow');
+      
+      if (!targetEl) {
+        // Element not found - show message and allow user to continue
+        console.warn('Tour element not found:', step.target);
+        highlight.style.display = 'none';
+        
+        document.getElementById('tourTitle').textContent = step.title;
+        document.getElementById('tourDescription').textContent = 'This element is not visible right now. Click Next to continue.';
+        document.getElementById('tourProgress').textContent = `${stepIndex + 1} of ${tourSteps.length}`;
+        document.getElementById('tourPrevBtn').style.display = stepIndex === 0 ? 'none' : 'inline-block';
+        document.getElementById('tourNextBtn').textContent = stepIndex === tourSteps.length - 1 ? 'Finish' : 'Next';
+        
+        // Position tooltip in center
+        tooltip.style.left = '50%';
+        tooltip.style.top = '50%';
+        tooltip.style.transform = 'translate(-50%, -50%)';
+        arrow.style.display = 'none';
+        return;
+      }
+      
+      // Reset styles
+      tooltip.style.transform = 'none';
+      arrow.style.display = 'block';
+      highlight.style.display = 'block';
+      
+      // Use INSTANT scroll to avoid timing issues with smooth scroll
+      if (step.target === '#tabMyOrder') {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else {
+        targetEl.scrollIntoView({ behavior: 'instant', block: 'center' });
+      }
+      
+      // Position immediately after instant scroll, then reposition after a short delay for any reflow
+      positionTourElements(targetEl, step, stepIndex);
+      
+      // Reposition again after a short delay to handle any layout shifts
+      setTimeout(() => {
+        positionTourElements(targetEl, step, stepIndex);
+      }, 100);
+    }
+    
+    // Reposition on window scroll (in case user scrolls during tour)
+    let tourRepositionTimeout = null;
+    window.addEventListener('scroll', function() {
+      if (document.getElementById('tourContainer').style.display !== 'none' && currentTourStep >= 0) {
+        clearTimeout(tourRepositionTimeout);
+        tourRepositionTimeout = setTimeout(() => {
+          const step = tourSteps[currentTourStep];
+          if (step) {
+            const targetEl = document.querySelector(step.target);
+            if (targetEl) {
+              positionTourElements(targetEl, step, currentTourStep);
+            }
+          }
+        }, 50);
+      }
+    });
+    
+    // Reposition on window resize
+    window.addEventListener('resize', function() {
+      if (document.getElementById('tourContainer').style.display !== 'none' && currentTourStep >= 0) {
+        clearTimeout(tourRepositionTimeout);
+        tourRepositionTimeout = setTimeout(() => {
+          const step = tourSteps[currentTourStep];
+          if (step) {
+            const targetEl = document.querySelector(step.target);
+            if (targetEl) {
+              positionTourElements(targetEl, step, currentTourStep);
+            }
+          }
+        }, 100);
+      }
+    });
+    
+    function positionTourElements(targetEl, step, stepIndex) {
+      const highlight = document.getElementById('tourHighlight');
+      const tooltip = document.getElementById('tourTooltip');
+      const arrow = document.getElementById('tourArrow');
+      
+      // Get fresh bounding rect after scroll
+      const rect = targetEl.getBoundingClientRect();
+      
+      // Position highlight around target element
+      const padding = 8;
+      highlight.style.left = (rect.left - padding) + 'px';
+      highlight.style.top = (rect.top - padding) + 'px';
+      highlight.style.width = (rect.width + padding * 2) + 'px';
+      highlight.style.height = (rect.height + padding * 2) + 'px';
+      
+      // Update tooltip content
+      document.getElementById('tourTitle').textContent = step.title;
+      document.getElementById('tourDescription').textContent = step.description;
+      document.getElementById('tourProgress').textContent = `${stepIndex + 1} of ${tourSteps.length}`;
+      
+      // Show/hide prev button
+      document.getElementById('tourPrevBtn').style.display = stepIndex === 0 ? 'none' : 'inline-block';
+      
+      // Change next button text on last step
+      document.getElementById('tourNextBtn').textContent = stepIndex === tourSteps.length - 1 ? 'Finish' : 'Next';
+      
+      // Calculate tooltip position
+      const tooltipWidth = Math.min(320, window.innerWidth - 20);
+      const tooltipHeight = tooltip.offsetHeight || 180;
+      
+      let tooltipLeft = rect.left;
+      let tooltipTop;
+      
+      // Calculate available space
+      const spaceBelow = window.innerHeight - rect.bottom - 30;
+      const spaceAbove = rect.top - 30;
+      
+      // Decide position based on available space
+      let useBottom = step.position === 'bottom';
+      if (useBottom && spaceBelow < tooltipHeight && spaceAbove > tooltipHeight) {
+        useBottom = false;
+      } else if (!useBottom && spaceAbove < tooltipHeight && spaceBelow > tooltipHeight) {
+        useBottom = true;
+      }
+      
+      if (useBottom) {
+        tooltipTop = rect.bottom + 16;
+      } else {
+        tooltipTop = rect.top - tooltipHeight - 16;
+      }
+      
+      // Keep tooltip horizontally on screen
+      if (tooltipLeft + tooltipWidth > window.innerWidth - 10) {
+        tooltipLeft = window.innerWidth - tooltipWidth - 10;
+      }
+      if (tooltipLeft < 10) {
+        tooltipLeft = 10;
+      }
+      
+      // Keep tooltip vertically on screen
+      if (tooltipTop < 10) {
+        tooltipTop = 10;
+      }
+      if (tooltipTop + tooltipHeight > window.innerHeight - 10) {
+        tooltipTop = window.innerHeight - tooltipHeight - 10;
+      }
+      
+      tooltip.style.left = tooltipLeft + 'px';
+      tooltip.style.top = tooltipTop + 'px';
+      
+      // NOW set arrow direction based on ACTUAL final position
+      // If tooltip is above the target center, arrow points down (bottom class)
+      // If tooltip is below the target center, arrow points up (top class)
+      arrow.className = 'tour-tooltip-arrow';
+      const targetCenter = rect.top + rect.height / 2;
+      const tooltipCenter = tooltipTop + tooltipHeight / 2;
+      
+      if (tooltipCenter < targetCenter) {
+        // Tooltip is above target - arrow at bottom pointing down
+        arrow.classList.add('bottom');
+        arrow.style.bottom = '-8px';
+        arrow.style.top = '';
+      } else {
+        // Tooltip is below target - arrow at top pointing up
+        arrow.classList.add('top');
+        arrow.style.top = '-8px';
+        arrow.style.bottom = '';
+      }
+      
+      // Position arrow horizontally to point at element center
+      const elementCenter = rect.left + rect.width / 2;
+      let arrowLeft = elementCenter - tooltipLeft - 8;
+      arrowLeft = Math.max(20, Math.min(arrowLeft, tooltipWidth - 40));
+      arrow.style.left = arrowLeft + 'px';
+    }
+    
+    // Update just the counts without re-rendering entire menu
+    function updateMenuCounts(menu) {
+      menuData = menu;
+      
+      for (const [category, items] of Object.entries(menu)) {
+        items.forEach(item => {
+          const count = item.count || 0;
+          const orderedBy = item.orderedBy || [];
+          
+          // Find the menu item button
+          document.querySelectorAll('.menu-item').forEach(btn => {
+            if (btn.dataset.name === item.name) {
+              const countEl = btn.querySelector('.order-count');
+              if (countEl) {
+                countEl.textContent = count;
+                countEl.classList.toggle('zero', count === 0);
+              }
+              
+              // Update orderedBy data
+              if (orderedBy.length > 0) {
+                btn.dataset.orderedBy = JSON.stringify(orderedBy);
+              } else {
+                delete btn.dataset.orderedBy;
+              }
+            }
+          });
+        });
+      }
+    }
+    
+    // Refresh menu counts periodically
+    function refreshMenuCounts() {
+      google.script.run
+        .withSuccessHandler(function(menu) {
+          updateMenuCounts(menu);
+          updateRefreshTime();
+        })
+        .getMenuForSidebar();
+    }
+    
+    // Manual refresh with button animation
+    function manualRefresh() {
+      const btn = document.getElementById('refreshBtn');
+      btn.classList.add('spinning');
+      
+      google.script.run
+        .withSuccessHandler(function(menu) {
+          updateMenuCounts(menu);
+          updateRefreshTime();
+          btn.classList.remove('spinning');
+        })
+        .withFailureHandler(function() {
+          btn.classList.remove('spinning');
+        })
+        .getMenuForSidebar();
+    }
+    
+    // Update last refresh time display
+    function updateRefreshTime() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('lastRefresh').textContent = `Updated ${timeStr}`;
+    }
+    
+    // Toggle item selection
+    function toggleItem(element) {
+      const itemName = element.dataset.name;
+      const fixedPrice = element.dataset.fixedPrice;
+      
+      if (element.classList.contains('selected')) {
+        element.classList.remove('selected');
+        selectedItems = selectedItems.filter(item => item.name !== itemName);
+      } else {
+        element.classList.add('selected');
+        selectedItems.push({ 
+          name: itemName, 
+          fixedPrice: fixedPrice ? parseInt(fixedPrice) : null,
+          note: '' // Initialize empty note
+        });
+      }
+      
+      updateSelectedDisplay();
+      updatePrice();
+    }
+    
+    // Update selected items display
+    function updateSelectedDisplay() {
+      const container = document.getElementById('selectedList');
+      
+      if (selectedItems.length === 0) {
+        container.innerHTML = '<span class="empty-selection">Tap items above to add to your order</span>';
+        return;
+      }
+      
+      container.innerHTML = selectedItems.map((item, index) => {
+        const baseName = stripBrackets(item.name);
+        const hasNote = item.note && item.note.trim();
+        // Display as "baseName (note)" if note exists, otherwise just baseName
+        const displayText = hasNote ? `${baseName} (${item.note})` : baseName;
+        return `
+          <span class="selected-tag" onclick="openItemNoteModal(${index})" title="Click to ${hasNote ? 'edit' : 'add'} note">
+            ${displayText}
+            <span class="edit-hint">✎</span>
+            <span class="remove" onclick="event.stopPropagation(); removeItem(${index})">×</span>
+          </span>
+        `;
+      }).join('');
+    }
+    
+    // Open modal to add/edit item note
+    function openItemNoteModal(index) {
+      const item = selectedItems[index];
+      const baseName = stripBrackets(item.name);
+      const originalHint = item.name.match(/[（(](.+)[）)]/)?.[1] || '';
+      
+      const modal = document.createElement('div');
+      modal.className = 'note-modal-overlay';
+      modal.id = 'itemNoteModal';
+      modal.innerHTML = `
+        <div class="note-modal">
+          <h3>📝 Add Note for ${baseName}</h3>
+          ${originalHint ? `<div class="item-hint">Options: ${originalHint}</div>` : ''}
+          <input type="text" id="itemNoteInput" placeholder="e.g., 茄子x2，苦瓜" value="${item.note || ''}" autofocus>
+          <div class="note-modal-buttons">
+            <button class="btn-cancel" onclick="closeItemNoteModal()">Cancel</button>
+            <button class="btn-save" onclick="saveItemNote(${index})">Save</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Focus and select input
+      setTimeout(() => {
+        const input = document.getElementById('itemNoteInput');
+        input.focus();
+        input.select();
+        
+        // Save on Enter key
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            saveItemNote(index);
+          } else if (e.key === 'Escape') {
+            closeItemNoteModal();
+          }
+        });
+      }, 100);
+      
+      // Close on overlay click
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeItemNoteModal();
+        }
+      });
+    }
+    
+    // Save item note
+    function saveItemNote(index) {
+      const input = document.getElementById('itemNoteInput');
+      const note = input.value.trim();
+      
+      selectedItems[index].note = note;
+      closeItemNoteModal();
+      updateSelectedDisplay();
+    }
+    
+    // Close item note modal
+    function closeItemNoteModal() {
+      const modal = document.getElementById('itemNoteModal');
+      if (modal) {
+        modal.remove();
+      }
+    }
+    
+    // Remove item from selection
+    function removeItem(index) {
+      const itemName = selectedItems[index].name;
+      selectedItems.splice(index, 1);
+      
+      document.querySelectorAll('.menu-item').forEach(el => {
+        if (el.dataset.name === itemName) {
+          el.classList.remove('selected');
+        }
+      });
+      
+      updateSelectedDisplay();
+      updatePrice();
+    }
+    
+    // Select rice option
+    function selectRice(element) {
+      document.querySelectorAll('.rice-option').forEach(el => el.classList.remove('selected'));
+      element.classList.add('selected');
+      riceOption = element.dataset.value;
+    }
+    
+    // Calculate and update price
+    function updatePrice() {
+      // If custom price is set, use it
+      if (customPrice !== null) {
+        document.getElementById('priceAmount').textContent = customPrice;
+        return;
+      }
+      
+      let price = 0;
+      
+      const fixedPriceItem = selectedItems.find(item => item.fixedPrice);
+      if (fixedPriceItem) {
+        price = fixedPriceItem.fixedPrice;
+      } else {
+        const count = selectedItems.length;
+        if (count <= 2) price = 6;
+        else if (count === 3) price = 8;
+        else price = Math.min(12, 6 + (count - 2) * 2);
+      }
+      
+      if (selectedItems.length === 0) price = 0;
+      
+      document.getElementById('priceAmount').textContent = price;
+    }
+    
+    // Adjust price manually with +/- buttons
+    function adjustPrice(delta) {
+      const priceEl = document.getElementById('priceAmount');
+      let currentPrice = parseInt(priceEl.textContent) || 0;
+      let newPrice = Math.max(0, currentPrice + delta); // Don't go below 0
+      
+      customPrice = newPrice;
+      priceEl.textContent = newPrice;
+    }
+    
+    // Reset custom price (called when items change significantly)
+    function resetCustomPrice() {
+      customPrice = null;
+    }
+    
+    // Clear order
+    // Show or hide Pay, Clear, Cancel buttons based on order state
+    function setOrderButtonsEnabled(enabled) {
+      document.getElementById('orderActionsGroup').style.display = enabled ? 'flex' : 'none';
+    }
+    
+    function clearOrder() {
+      selectedItems = [];
+      document.querySelectorAll('.menu-item.selected').forEach(el => el.classList.remove('selected'));
+      document.getElementById('notes').value = '';
+      
+      document.querySelectorAll('.rice-option').forEach(el => el.classList.remove('selected'));
+      document.querySelector('.rice-option[data-value="normal"]').classList.add('selected');
+      riceOption = 'normal';
+      
+      // Reset custom price
+      customPrice = null;
+      
+      updateSelectedDisplay();
+      updatePrice();
+      hideStatus();
+      
+      // Don't reset edit mode here - only cancelEditMode does that
+    }
+    
+    // Submit order
+    function submitOrder() {
+      // Check if ordering is still open
+      if (!orderingOpen) {
+        showStatus('Ordering is closed. No more orders can be added.', 'error');
+        return;
+      }
+      
+      const userName = document.getElementById('userName').value.trim();
+      const notes = document.getElementById('notes').value.trim();
+      
+      if (!userName) {
+        showStatus('Please enter your name!', 'error');
+        document.getElementById('userName').focus();
+        return;
+      }
+      
+      if (selectedItems.length === 0) {
+        showStatus('Please select at least one item!', 'error');
+        return;
+      }
+      
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = isEditMode ? '⏳ Updating...' : '⏳ Submitting...';
+      
+      const orderData = {
+        name: userName,
+        items: selectedItems.map(item => {
+          const baseName = stripBrackets(item.name);
+          // If item has a note, format as "baseName (note)"
+          if (item.note && item.note.trim()) {
+            return `${baseName} (${item.note.trim()})`;
+          }
+          return baseName;
+        }),
+        riceOption: riceOption,
+        notes: notes,
+        price: parseInt(document.getElementById('priceAmount').textContent)
+      };
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.textContent = isEditMode ? '💾 Update Order' : '✅ Place Order';
+          
+          if (result.success) {
+            showStatus(result.message, 'success');
+            // After successful submit, enter edit mode (order now exists)
+            isEditMode = true;
+            document.getElementById('editModeBanner').style.display = 'flex';
+            document.getElementById('submitBtn').textContent = '💾 Update Order';
+            updatePaymentStatus(true, currentOrderPaid);
+            // Enable Pay and Cancel buttons (order exists now)
+            setOrderButtonsEnabled(true);
+            // Refresh menu counts to show updated order counts
+            refreshMenuCounts();
+          } else {
+            showStatus(result.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.textContent = isEditMode ? '💾 Update Order' : '✅ Place Order';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .submitOrder(orderData);
+    }
+    
+    // Cancel existing order
+    function cancelExistingOrder() {
+      const userName = document.getElementById('userName').value.trim();
+      
+      if (!userName) {
+        showStatus('Please enter your name to cancel your order!', 'error');
+        document.getElementById('userName').focus();
+        return;
+      }
+      
+      if (!confirm(`Cancel order for "${userName}"?`)) {
+        return;
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          // Refresh menu counts after cancellation
+          if (result.success) {
+            refreshMenuCounts();
+            cancelEditMode(); // Reset form
+            updatePaymentStatus(false, false); // Hide payment status
+            setOrderButtonsEnabled(false); // Disable Pay and Cancel buttons
+          }
+          // Show status AFTER all resets so it scrolls to visible position
+          showStatus(result.message, result.success ? 'success' : 'error');
+        })
+        .withFailureHandler(function(error) {
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .cancelOrderByName(userName);
+    }
+    
+    // Load existing order for editing
+    function loadMyOrder() {
+      const userName = document.getElementById('userName').value.trim();
+      
+      if (!userName) {
+        showStatus('Please enter your name first!', 'error');
+        document.getElementById('userName').focus();
+        return;
+      }
+      
+      const btn = document.getElementById('loadOrderBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Loading...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.textContent = '📥 Load My Order';
+          
+          if (result.found) {
+            // Load order into form
+            loadOrderIntoForm(result);
+            showStatus(`Order loaded! You can now edit and save.`, 'success');
+            // Enable Pay and Cancel buttons (order exists)
+            setOrderButtonsEnabled(true);
+          } else {
+            showStatus(result.message, 'error');
+            updatePaymentStatus(false, false);
+            // Disable Pay and Cancel buttons (no order)
+            setOrderButtonsEnabled(false);
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.textContent = '📥 Load My Order';
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .getOrderByName(userName);
+    }
+    
+    // Go to Order tab with name filled and order loaded for editing
+    function goToEditOrder(name) {
+      // Check if ordering is open
+      if (!orderingOpen) {
+        showStatus('Ordering is closed. Cannot edit orders.', 'error');
+        return;
+      }
+      
+      // Set the name in the Order tab
+      document.getElementById('userName').value = name;
+      document.getElementById('checkName').value = name;
+      saveUserName(name);
+      
+      // Switch to Order tab
+      switchTab('order');
+      
+      // Load the order
+      loadMyOrder();
+    }
+    
+    // Load order data into the form for editing
+    function loadOrderIntoForm(orderData) {
+      // Clear current selection
+      selectedItems = [];
+      document.querySelectorAll('.menu-item.selected').forEach(el => el.classList.remove('selected'));
+      
+      // Match order items to menu items
+      if (orderData.items && orderData.items.length > 0) {
+        orderData.items.forEach(orderItem => {
+          const cleanItem = orderItem.trim();
+          let matched = false;
+          
+          // Parse item name and note
+          // Format: "酿豆腐 (茄子x2，苦瓜)" → baseName: "酿豆腐", note: "茄子x2，苦瓜"
+          const noteMatch = cleanItem.match(/^(.+?)\s*\(([^)]+)\)$/);
+          const baseName = noteMatch ? noteMatch[1].trim() : cleanItem;
+          const itemNote = noteMatch ? noteMatch[2].trim() : '';
+          
+          // Find matching menu item
+          for (const [category, items] of Object.entries(menuData)) {
+            if (matched) break;
+            for (const menuItem of items) {
+              // Extract Chinese characters from menu item name (ignoring emojis)
+              // e.g., "🥦 花椰菜🥦" → "花椰菜"
+              const menuChineseOnly = extractChineseChars(menuItem.name);
+              // Also get name without brackets for matching
+              const menuNameNoBrackets = stripBrackets(menuItem.name);
+              const menuNameNoBracketsChinese = extractChineseChars(menuNameNoBrackets);
+              
+              // Debug: uncomment to see matching attempts
+              // console.log('Matching:', baseName, 'vs', menuChineseOnly, menuItem.name);
+              
+              // Match if order item contains the Chinese characters
+              if (baseName === menuChineseOnly || 
+                  baseName === menuItem.name ||
+                  baseName === menuNameNoBrackets ||
+                  baseName === menuNameNoBracketsChinese ||
+                  menuChineseOnly.includes(baseName) ||
+                  baseName.includes(menuChineseOnly) ||
+                  menuChineseOnly === baseName) {
+                // Select this item with note
+                selectedItems.push({ 
+                  name: menuItem.name, 
+                  fixedPrice: menuItem.fixedPrice || null,
+                  note: itemNote
+                });
+                // Update UI - find and select the button
+                const menuButtons = document.querySelectorAll('.menu-item');
+                menuButtons.forEach(btn => {
+                  if (btn.dataset.name === menuItem.name) {
+                    btn.classList.add('selected');
+                  }
+                });
+                matched = true;
+                break;
+              }
+            }
+          }
+          
+          // If no match found, still add as custom item (for items not in current menu)
+          if (!matched && cleanItem) {
+            console.log('No match found for:', cleanItem);
+          }
+        });
+      }
+      
+      // Set rice option
+      riceOption = orderData.riceOption || 'normal';
+      document.querySelectorAll('.rice-option').forEach(el => el.classList.remove('selected'));
+      const riceEl = document.querySelector(`.rice-option[data-value="${riceOption}"]`);
+      if (riceEl) riceEl.classList.add('selected');
+      
+      // Set notes
+      document.getElementById('notes').value = orderData.notes || '';
+      
+      // Update displays
+      updateSelectedDisplay();
+      
+      // Set the actual price from the order (user may have customized it)
+      if (orderData.price) {
+        customPrice = orderData.price; // Keep the saved price as custom
+        document.getElementById('priceAmount').textContent = orderData.price;
+      } else {
+        customPrice = null;
+        updatePrice();
+      }
+      
+      // Enter edit mode
+      isEditMode = true;
+      currentOrderPaid = orderData.paid;
+      document.getElementById('editModeBanner').style.display = 'flex';
+      document.getElementById('submitBtn').textContent = '💾 Update Order';
+      
+      // Update payment status
+      updatePaymentStatus(true, orderData.paid);
+    }
+    
+    // Update payment status display
+    function updatePaymentStatus(hasOrder, isPaid) {
+      const statusEl = document.getElementById('paymentStatus');
+      const textEl = document.getElementById('paymentText');
+      
+      if (!hasOrder) {
+        statusEl.className = 'payment-status no-order';
+        return;
+      }
+      
+      if (isPaid) {
+        statusEl.className = 'payment-status paid';
+        textEl.textContent = '💵 Your order is marked as PAID';
+      } else {
+        statusEl.className = 'payment-status unpaid';
+        textEl.textContent = '⏳ Your order is NOT YET PAID';
+      }
+    }
+    
+    // Cancel edit mode and reset form
+    function cancelEditMode() {
+      isEditMode = false;
+      currentOrderPaid = false;
+      customPrice = null;
+      document.getElementById('editModeBanner').style.display = 'none';
+      document.getElementById('submitBtn').textContent = '✅ Place Order';
+      clearOrder();
+      updatePaymentStatus(false, false);
+    }
+    
+    // Mark order as paid
+    // Show payment QR modal
+    function showPaymentModal() {
+      const userName = document.getElementById('userName').value.trim();
+      
+      if (!userName) {
+        showStatus('Please enter your name first!', 'error');
+        document.getElementById('userName').focus();
+        return;
+      }
+      
+      // Load QR image from Google Drive or Apps Script
+      google.script.run
+        .withSuccessHandler(function(imageUrl) {
+          if (imageUrl) {
+            document.getElementById('paymentQRImage').src = imageUrl;
+            document.getElementById('paymentModal').classList.add('active');
+          } else {
+            showStatus('Payment QR image not found. Please contact admin.', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showStatus('Error loading payment QR: ' + error.message, 'error');
+        })
+        .getPaymentQRImage();
+    }
+    
+    // Hide payment modal
+    function hidePaymentModal() {
+      document.getElementById('paymentModal').classList.remove('active');
+    }
+    
+    // Copy order state
+    let pendingCopyOrder = null;
+    
+    // Handle copy button click - extract data and show copy confirmation
+    function handleCopyClick(element) {
+      const fromName = decodeURIComponent(element.dataset.name);
+      const orderDetails = decodeURIComponent(element.dataset.order);
+      const price = parseFloat(element.dataset.price);
+      showCopyConfirmation(fromName, orderDetails, price);
+    }
+    
+    // Show copy confirmation modal
+    function showCopyConfirmation(fromName, orderDetails, price) {
+      // Check if user has entered their name
+      const userName = document.getElementById('userName').value.trim() || 
+                       document.getElementById('checkName').value.trim();
+      
+      if (!userName) {
+        // Prompt user to fill in their name first
+        alert('Please enter your name in the "Order" tab first before copying an order.');
+        switchTab('order');
+        document.getElementById('userName').focus();
+        return;
+      }
+      
+      // Store pending copy data
+      pendingCopyOrder = {
+        orderDetails: orderDetails,
+        price: price,
+        fromName: fromName
+      };
+      
+      // Check if user already has an existing order by looking at All Orders list
+      // Find if any order card has this user's name
+      const orderCards = document.querySelectorAll('.order-card .order-name');
+      let hasExistingOrder = false;
+      for (const card of orderCards) {
+        // Extract just the name (remove "(You)" suffix if present)
+        const cardName = card.textContent.replace(/\s*\(You\)\s*$/, '').trim();
+        if (cardName.toLowerCase() === userName.toLowerCase()) {
+          hasExistingOrder = true;
+          break;
+        }
+      }
+      
+      // Build confirmation message
+      let confirmMessage;
+      if (hasExistingOrder) {
+        confirmMessage = `Copy this order and <strong style="color: #d32f2f;">overwrite</strong> your (<strong>${userName}</strong>) existing order?`;
+      } else {
+        confirmMessage = `Copy this order for <strong>${userName}</strong>?`;
+      }
+      
+      // Update modal content
+      document.getElementById('copyConfirmMessage').innerHTML = confirmMessage;
+      document.getElementById('copyOrderDetails').innerHTML = `
+        <div style="margin-bottom: 8px;"><strong>From:</strong> ${fromName}</div>
+        <div style="margin-bottom: 8px;"><strong>Items:</strong> ${orderDetails}</div>
+        <div><strong>Price:</strong> RM${price}</div>
+      `;
+      
+      // Show modal
+      document.getElementById('copyModal').classList.add('active');
+    }
+    
+    // Hide copy modal
+    function hideCopyModal() {
+      document.getElementById('copyModal').classList.remove('active');
+      pendingCopyOrder = null;
+    }
+    
+    // Confirm and execute copy order
+    function confirmCopyOrder() {
+      if (!pendingCopyOrder) {
+        hideCopyModal();
+        return;
+      }
+      
+      const userName = document.getElementById('userName').value.trim() || 
+                       document.getElementById('checkName').value.trim();
+      
+      if (!userName) {
+        hideCopyModal();
+        alert('Please enter your name first.');
+        return;
+      }
+      
+      // Prepare order data - parse items from the order string
+      const orderDetails = pendingCopyOrder.orderDetails;
+      const price = pendingCopyOrder.price;
+      const fromName = pendingCopyOrder.fromName; // Save before clearing
+      
+      // Parse rice option from order
+      let riceOpt = 'normal';
+      let cleanOrder = orderDetails;
+      if (orderDetails.includes('(少饭)')) {
+        riceOpt = 'less';
+        cleanOrder = orderDetails.replace('(少饭)', '').trim();
+      } else if (orderDetails.includes('(不要饭)')) {
+        riceOpt = 'none';
+        cleanOrder = orderDetails.replace('(不要饭)', '').trim();
+      }
+      
+      // Split items by " + "
+      const items = cleanOrder.split(/\s*\+\s*/).filter(item => item.trim() !== '');
+      
+      hideCopyModal();
+      
+      // Show loading status in All Orders tab
+      showAllOrdersStatus('⏳ Copying order...', 'success');
+      
+      // Submit the copied order
+      const orderData = {
+        name: userName,
+        items: items,
+        riceOption: riceOpt,
+        notes: '',
+        price: price
+      };
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showAllOrdersStatus(`✅ Order copied from ${fromName}!`, 'success');
+            // Update state for Order tab (in background)
+            isEditMode = true;
+            document.getElementById('editModeBanner').style.display = 'flex';
+            document.getElementById('submitBtn').textContent = '💾 Update Order';
+            setOrderButtonsEnabled(true);
+            // Sync name to Order tab
+            document.getElementById('userName').value = userName;
+            document.getElementById('checkName').value = userName;
+            saveUserName(userName);
+            // Refresh All Orders view - stay on this tab
+            loadAllOrders();
+            // Auto-hide status after 3 seconds
+            setTimeout(() => hideAllOrdersStatus(), 3000);
+          } else {
+            showAllOrdersStatus(result.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showAllOrdersStatus('Error: ' + error.message, 'error');
+        })
+        .submitOrder(orderData);
+    }
+    
+    // Show status message in All Orders tab
+    function showAllOrdersStatus(message, type) {
+      let statusEl = document.getElementById('allOrdersStatus');
+      if (!statusEl) {
+        // Create status element if it doesn't exist
+        statusEl = document.createElement('div');
+        statusEl.id = 'allOrdersStatus';
+        statusEl.style.cssText = 'padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; text-align: center; font-weight: 500;';
+        const container = document.getElementById('allOrdersContainer');
+        container.insertBefore(statusEl, container.firstChild);
+      }
+      statusEl.textContent = message;
+      statusEl.style.display = 'block';
+      if (type === 'success') {
+        statusEl.style.background = '#d4edda';
+        statusEl.style.color = '#155724';
+      } else if (type === 'error') {
+        statusEl.style.background = '#f8d7da';
+        statusEl.style.color = '#721c24';
+      }
+    }
+    
+    // Hide status message in All Orders tab
+    function hideAllOrdersStatus() {
+      const statusEl = document.getElementById('allOrdersStatus');
+      if (statusEl) {
+        statusEl.style.display = 'none';
+      }
+    }
+    
+    // Confirm payment - mark as paid
+    function confirmPayment() {
+      hidePaymentModal();
+      markAsPaid();
+    }
+    
+    function markAsPaid() {
+      const userName = document.getElementById('userName').value.trim();
+      
+      if (!userName) {
+        showStatus('Please enter your name first!', 'error');
+        document.getElementById('userName').focus();
+        return;
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showStatus(result.message, result.success ? 'success' : 'error');
+          if (result.success) {
+            currentOrderPaid = true;
+            updatePaymentStatus(true, true);
+          }
+        })
+        .withFailureHandler(function(error) {
+          showStatus('Error: ' + error.message, 'error');
+        })
+        .markOrderAsPaid(userName);
+    }
+    
+    // Check my order
+    function checkMyOrder() {
+      const userName = document.getElementById('checkName').value.trim();
+      
+      if (!userName) {
+        document.getElementById('myOrderResult').innerHTML = 
+          '<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">Please enter your name!</div></div>';
+        return;
+      }
+      
+      document.getElementById('myOrderResult').innerHTML = 
+        '<div class="loading" style="padding: 30px;"><div class="spinner"></div></div>';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.found) {
+            const editButton = orderingOpen 
+              ? `<button class="btn btn-primary" style="margin-top: 12px; width: 100%;" onclick="goToEditOrder('${userName.replace(/'/g, "\\'")}')">
+                  ✏️ Edit My Order
+                </button>`
+              : `<div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 8px; text-align: center; color: var(--text-secondary); font-size: 13px;">
+                  🔒 Ordering is closed. Editing not available.
+                </div>`;
+            
+            document.getElementById('myOrderResult').innerHTML = `
+              <div class="card" style="margin-top: 16px;">
+                <div class="card-title">✅ Your Order Found</div>
+                <div class="order-card order-card-readonly" style="margin-top: 12px;">
+                  <div class="order-seq">${result.row}</div>
+                  <div class="order-content">
+                    <div class="order-name">${userName}</div>
+                    <div class="order-details">${result.order}</div>
+                  </div>
+                  <div class="order-meta">
+                    <span class="order-paid ${result.paid ? 'yes' : 'no'}">
+                      ${result.paid ? '💵' : '⏳'}
+                    </span>
+                    <span class="order-price">RM${result.price}</span>
+                  </div>
+                </div>
+                ${editButton}
+              </div>
+            `;
+          } else {
+            document.getElementById('myOrderResult').innerHTML = 
+              `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">${result.message}</div></div>`;
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('myOrderResult').innerHTML = 
+            `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">Error: ${error.message}</div></div>`;
+        })
+        .getOrderByName(userName);
+    }
+    
+    // Load all orders
+    function loadAllOrders() {
+      document.getElementById('allOrdersContainer').innerHTML = 
+        '<div class="loading"><div class="spinner"></div><p style="margin-top: 12px;">Loading orders...</p></div>';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (!result.success) {
+            document.getElementById('allOrdersContainer').innerHTML = 
+              `<div class="card"><div class="status error" style="display: block; margin: 0;">${result.message}</div></div>`;
+            return;
+          }
+          
+          let html = `
+            <div class="orders-summary">
+              <div class="summary-item">
+                <div class="summary-value">${result.totalOrders}</div>
+                <div class="summary-label">Orders</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-value">RM${result.totalAmount}</div>
+                <div class="summary-label">Total</div>
+              </div>
+            </div>
+          `;
+          
+          if (result.orders.length === 0) {
+            html += '<div class="card"><p style="text-align: center; color: var(--text-secondary);">No orders yet today</p></div>';
+          } else {
+            // Get current user's name to hide copy button on their own order
+            const currentUserName = (document.getElementById('userName').value.trim() || 
+                                     document.getElementById('checkName').value.trim()).toLowerCase();
+            
+            html += '<div class="orders-grid">';
+            result.orders.forEach(order => {
+              // Escape for HTML attributes using encodeURIComponent
+              const encodedName = encodeURIComponent(order.name);
+              const encodedOrder = encodeURIComponent(order.order);
+              const escapedNameJs = order.name.replace(/'/g, "\\'");
+              const isOwnOrder = order.name.toLowerCase() === currentUserName;
+              
+              if (orderingOpen) {
+                // Ordering open - card with Copy and Edit actions
+                html += `
+                  <div class="order-card${isOwnOrder ? ' own-order' : ''}">
+                    <div class="order-seq">${order.row}</div>
+                    <div class="order-content">
+                      <div class="order-name">${order.name}${isOwnOrder ? ' <span style="font-size: 11px; color: var(--primary);">(You)</span>' : ''}</div>
+                      <div class="order-details">${order.order}</div>
+                    </div>
+                    <div class="order-meta">
+                      <span class="order-paid ${order.paid ? 'yes' : 'no'}">
+                        ${order.paid ? '💵' : '⏳'}
+                      </span>
+                      <span class="order-price">RM${order.price}</span>
+                      <span class="order-actions">
+                        ${!isOwnOrder ? `<button class="order-action-btn" 
+                                data-name="${encodedName}" 
+                                data-order="${encodedOrder}" 
+                                data-price="${order.price}"
+                                onclick="event.stopPropagation(); handleCopyClick(this)" 
+                                title="Copy this order">📋</button>` : ''}
+                        <button class="order-action-btn" onclick="event.stopPropagation(); goToEditOrder('${escapedNameJs}')" title="Edit this order">✏️</button>
+                      </span>
+                    </div>
+                  </div>
+                `;
+              } else {
+                // Ordering closed - non-clickable card, no edit icon
+                html += `
+                  <div class="order-card order-card-readonly">
+                    <div class="order-seq">${order.row}</div>
+                    <div class="order-content">
+                      <div class="order-name">${order.name}</div>
+                      <div class="order-details">${order.order}</div>
+                    </div>
+                    <div class="order-meta">
+                      <span class="order-paid ${order.paid ? 'yes' : 'no'}">
+                        ${order.paid ? '💵' : '⏳'}
+                      </span>
+                      <span class="order-price">RM${order.price}</span>
+                    </div>
+                  </div>
+                `;
+              }
+            });
+            html += '</div>';
+          }
+          
+          document.getElementById('allOrdersContainer').innerHTML = html;
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('allOrdersContainer').innerHTML = 
+            `<div class="card"><div class="status error" style="display: block; margin: 0;">Error: ${error.message}</div></div>`;
+        })
+        .getTodayOrders();
+    }
+    
+    // Show status message
+    function showStatus(message, type) {
+      const el = document.getElementById('statusMessage');
+      el.textContent = message;
+      // Reset class to retrigger animation
+      el.className = 'status';
+      // Force reflow
+      void el.offsetWidth;
+      el.className = 'status ' + type;
+      // Scroll to show status message
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    // Hide status message
+    function hideStatus() {
+      document.getElementById('statusMessage').className = 'status';
+    }
+    
+    // Show error
+    function showError(error) {
+      document.getElementById('menuContainer').innerHTML = 
+        '<div class="status error" style="display: block;">Failed to load menu: ' + error.message + '</div>';
+    }
+    
+    // ==================== COLLAPSE ALL / EXPAND ALL ====================
+    let allCollapsed = false;
+    
+    function toggleAllCategories() {
+      const headers = document.querySelectorAll('.category-header');
+      const items = document.querySelectorAll('.menu-items');
+      const btn = document.getElementById('collapseAllBtn');
+      
+      allCollapsed = !allCollapsed;
+      
+      headers.forEach(header => {
+        if (allCollapsed) {
+          header.classList.add('collapsed');
+        } else {
+          header.classList.remove('collapsed');
+        }
+      });
+      
+      items.forEach(item => {
+        if (allCollapsed) {
+          item.classList.add('collapsed');
+        } else {
+          item.classList.remove('collapsed');
+        }
+      });
+      
+      btn.textContent = allCollapsed ? '📂 Expand All' : '📁 Collapse All';
+    }
+    
+    // ==================== IMPORT MENU ====================
+    function showImportMenu() {
+      document.getElementById('importMenuModal').classList.add('active');
+    }
+    
+    function hideImportMenu() {
+      document.getElementById('importMenuModal').classList.remove('active');
+    }
+    
+    function parseAndImportMenu() {
+      const text = document.getElementById('importMenuText').value.trim();
+      if (!text) {
+        alert('Please paste menu content first!');
+        return;
+      }
+      
+      // Show loading state
+      showStatus('⏳ Importing menu to F2 and updating columns...', 'success');
+      
+      // Send raw text to server - it will save to F2 then parse to A-E
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            hideImportMenu();
+            // Reload menu from sheet
+            loadMenu();
+            showStatus('✅ ' + result.message, 'success');
+          } else {
+            showStatus('❌ ' + result.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showStatus('❌ Error: ' + error.message, 'error');
+        })
+        .importMenuToSheet(text);
+    }
+    
+    function parseMenuText(text) {
+      const menu = {};
+      const lines = text.split('\n');
+      let currentCategory = null;
+      
+      for (let line of lines) {
+        line = line.trim();
+        if (!line || line === '---') continue;
+        
+        // Check if this is a category header (starts with ✔️ or ✔)
+        if (line.startsWith('✔️') || line.startsWith('✔')) {
+          // Remove the tick prefix
+          currentCategory = line.replace(/^✔️?\s*/, '').replace(/^✔\s*/, '').trim();
+          menu[currentCategory] = [];
+        } 
+        // Check if this is an item (starts with "- " or "- ")
+        else if (currentCategory && (line.startsWith('- ') || line.startsWith('- ') || line.startsWith('-'))) {
+          // Remove leading "- " or "-"
+          let itemText = line.replace(/^-\s*/, '').trim();
+          
+          if (!itemText) continue;
+          
+          const item = { name: itemText, emoji: '' };
+          
+          // Check for fixed price (e.g., "烧鸡胸饭 rm8")
+          const priceMatch = itemText.match(/rm\s*(\d+)/i);
+          if (priceMatch) {
+            item.fixedPrice = parseInt(priceMatch[1]);
+          }
+          
+          menu[currentCategory].push(item);
+        }
+        // If line doesn't start with - but we have a category, might be a new category without ✔️
+        else if (line && !line.startsWith('-')) {
+          // Check if this looks like a category (short, has Chinese + English)
+          if (line.length < 30 && /[\u4e00-\u9fff]/.test(line) && /[a-zA-Z]/.test(line)) {
+            currentCategory = line;
+            menu[currentCategory] = [];
+          } else if (currentCategory) {
+            // Treat as item without - prefix
+            const item = { name: line, emoji: '' };
+            const priceMatch = line.match(/rm\s*(\d+)/i);
+            if (priceMatch) {
+              item.fixedPrice = parseInt(priceMatch[1]);
+            }
+            menu[currentCategory].push(item);
+          }
+        }
+      }
+      
+      return menu;
+    }
+    
+    function addCountsToMenu(menu) {
+      // Add count: 0 to all items (will be updated by server)
+      for (const [category, items] of Object.entries(menu)) {
+        for (const item of items) {
+          if (typeof item === 'string') {
+            // Convert string to object format
+            items[items.indexOf(item)] = { name: item, emoji: '', count: 0 };
+          } else {
+            item.count = 0;
+          }
+        }
+      }
+      return menu;
+    }
+    
+    // ==================== ORDER SUMMARY ====================
+    function showOrderSummary() {
+      document.getElementById('orderSummaryModal').classList.add('active');
+      document.getElementById('orderSummaryContent').textContent = 'Loading...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (!result.success) {
+            document.getElementById('orderSummaryContent').textContent = 'Error: ' + result.message;
+            return;
+          }
+          
+          const summary = generateSummaryText(result);
+          document.getElementById('orderSummaryContent').textContent = summary;
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('orderSummaryContent').textContent = 'Error: ' + error.message;
+        })
+        .getTodayOrders();
+    }
+    
+    function generateSummaryText(result) {
+      const orders = result.orders;
+      
+      let text = `TRX Exchange 106, Level 17\n`;
+      
+      if (orders.length === 0) {
+        text += 'No orders yet today.\n';
+        return text;
+      }
+      
+      // Order list - simple format with padded numbers
+      orders.forEach(order => {
+        const rowNum = order.row.toString().padStart(2, ' ');
+        text += `${rowNum}. ${order.order} ${order.price}\n`;
+      });
+      
+      return text;
+    }
+    
+    function hideOrderSummary() {
+      document.getElementById('orderSummaryModal').classList.remove('active');
+    }
+    
+    function copySummary() {
+      const text = document.getElementById('orderSummaryContent').textContent;
+      
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Summary copied to clipboard!');
+        }).catch(() => {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+    
+    function fallbackCopy(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      alert('Summary copied to clipboard!');
+    }
+  </script>
+</body>
+</html>

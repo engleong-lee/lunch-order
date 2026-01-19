@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Editor directories
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+
+# Excel lock files
+~$*.xlsx
+~$*.xls
+
+# Node modules (if any)
+node_modules/
+
+# Google Apps Script clasp
+.clasp.json
+.clasprc.json
