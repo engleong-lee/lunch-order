@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-01-19
+
+### Added
+- **Pay Button in My Order Tab**
+  - Added "💵 Pay Now" button that appears when checking unpaid orders
+  - Button shows QR code payment modal (same as Order tab)
+  - Order view automatically refreshes after payment confirmation
+  - Provides consistent payment experience across both Order and My Order tabs
+
+---
+
 ## [1.0.0] - 2026-01-16
 
 ### Added
@@ -75,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 1.1.0 | 2026-01-19 | Pay button in My Order tab |
 | 1.0.0 | 2026-01-16 | Initial release with full ordering system |
 
 ---
