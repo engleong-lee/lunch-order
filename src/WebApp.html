@@ -2914,17 +2914,10 @@
     }
 
     // Check if should show welcome on load
+    // Note: Auto-popup disabled as app has been running for a while.
+    // Users can still access quick guide via the ? button.
     function checkShowWelcome() {
-      try {
-        const hideWelcome = localStorage.getItem('lunchOrder_hideWelcome');
-        if (hideWelcome !== 'true') {
-          // Small delay to let the page render
-          setTimeout(showWelcomeModal, 500);
-        }
-      } catch (e) {
-        // On error (localStorage blocked), show welcome for new users
-        setTimeout(showWelcomeModal, 500);
-      }
+      // Auto-popup disabled - quick guide available via ? button
     }
 
     // Tour state
