@@ -2472,6 +2472,38 @@
       return match ? match.join('') : str;
     }
 
+    // Enrich Chinese-only order text with English names from menuData
+    // e.g., "冬菇焖姜鸡 + 杏鲍菇炒肉" → "冬菇焖姜鸡 mushroom braised ginger chicken + 杏鲍菇炒肉 mushroom pork"
+    function enrichOrderWithEnglish(orderText) {
+      if (!orderText || !menuData || Object.keys(menuData).length === 0) return orderText;
+
+      const items = orderText.split(' + ');
+      const enrichedItems = items.map(item => {
+        // Extract base name (without notes in parentheses)
+        const match = item.match(/^([^(（]+)/);
+        const baseName = match ? match[1].trim() : item.trim();
+        const note = item.substring(baseName.length).trim();
+
+        // Search menuData for matching item
+        for (const [category, categoryItems] of Object.entries(menuData)) {
+          for (const menuItem of categoryItems) {
+            const menuBaseName = stripBrackets(menuItem.name);
+            // Check if Chinese portion matches
+            const menuChinese = extractChineseChars(menuBaseName);
+            if (menuChinese === baseName || menuBaseName.startsWith(baseName)) {
+              // Return full name with note appended
+              return note ? `${menuBaseName} ${note}` : menuBaseName;
+            }
+          }
+        }
+
+        // No match found, return original
+        return item;
+      });
+
+      return enrichedItems.join(' + ');
+    }
+
     // Global ordering status
     let orderingOpen = true;
 
@@ -2683,6 +2715,27 @@
         })
         .withFailureHandler(showError)
         .getMenuForSidebar();
+    }
+
+    // Ensure menu data is loaded (for enriching order display with English names)
+    // Returns a Promise that resolves when menuData is available
+    function ensureMenuDataLoaded() {
+      return new Promise((resolve) => {
+        if (menuData && Object.keys(menuData).length > 0) {
+          resolve();
+          return;
+        }
+        google.script.run
+          .withSuccessHandler(function (menu) {
+            menuData = menu;
+            resolve();
+          })
+          .withFailureHandler(function () {
+            // Even on failure, resolve so we can still display orders without English
+            resolve();
+          })
+          .getMenuForSidebar();
+      });
     }
 
     // Reload menu from server
@@ -4036,31 +4089,33 @@
       document.getElementById('myOrderResult').innerHTML =
         '<div class="loading" style="padding: 30px;"><div class="spinner"></div></div>';
 
-      google.script.run
-        .withSuccessHandler(function (result) {
-          if (result.found) {
-            const editButton = orderingOpen
-              ? `<button class="btn btn-primary" style="margin-top: 12px; width: 100%;" onclick="goToEditOrder('${userName.replace(/'/g, "\\'")}')">
+      // Ensure menu data is loaded for English name display
+      ensureMenuDataLoaded().then(() => {
+        google.script.run
+          .withSuccessHandler(function (result) {
+            if (result.found) {
+              const editButton = orderingOpen
+                ? `<button class="btn btn-primary" style="margin-top: 12px; width: 100%;" onclick="goToEditOrder('${userName.replace(/'/g, "\\'")}')">
                   ✏️ Edit My Order
                 </button>`
-              : `<div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 8px; text-align: center; color: var(--text-secondary); font-size: 13px;">
+                : `<div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 8px; text-align: center; color: var(--text-secondary); font-size: 13px;">
                   🔒 Ordering is closed. Editing not available.
                 </div>`;
 
-            const payButton = !result.paid
-              ? `<button class="btn btn-success" style="margin-top: 12px; width: 100%;" onclick="showPaymentModalForUser('${userName.replace(/'/g, "\\'")}')">
+              const payButton = !result.paid
+                ? `<button class="btn btn-success" style="margin-top: 12px; width: 100%;" onclick="showPaymentModalForUser('${userName.replace(/'/g, "\\'")}')">
                   💵 Pay Now
                 </button>`
-              : '';
+                : '';
 
-            document.getElementById('myOrderResult').innerHTML = `
+              document.getElementById('myOrderResult').innerHTML = `
               <div class="card" style="margin-top: 16px;">
                 <div class="card-title">✅ Your Order Found</div>
                 <div class="order-card order-card-readonly" style="margin-top: 12px;">
                   <div class="order-seq">${result.row}</div>
                   <div class="order-content">
                     <div class="order-name">${userName}</div>
-                    <div class="order-details">${result.order}</div>
+                    <div class="order-details">${enrichOrderWithEnglish(result.order)}</div>
                   </div>
                   <div class="order-meta">
                     <span class="order-paid ${result.paid ? 'yes' : 'no'}">
@@ -4073,16 +4128,17 @@
                 ${editButton}
               </div>
             `;
-          } else {
+            } else {
+              document.getElementById('myOrderResult').innerHTML =
+                `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">${result.message}</div></div>`;
+            }
+          })
+          .withFailureHandler(function (error) {
             document.getElementById('myOrderResult').innerHTML =
-              `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">${result.message}</div></div>`;
-          }
-        })
-        .withFailureHandler(function (error) {
-          document.getElementById('myOrderResult').innerHTML =
-            `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">Error: ${error.message}</div></div>`;
-        })
-        .getOrderByName(userName);
+              `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">Error: ${error.message}</div></div>`;
+          })
+          .getOrderByName(userName);
+      }); // end ensureMenuDataLoaded
     }
 
     // Load all orders
@@ -4090,15 +4146,17 @@
       document.getElementById('allOrdersContainer').innerHTML =
         '<div class="loading"><div class="spinner"></div><p style="margin-top: 12px;">Loading orders...</p></div>';
 
-      google.script.run
-        .withSuccessHandler(function (result) {
-          if (!result.success) {
-            document.getElementById('allOrdersContainer').innerHTML =
-              `<div class="card"><div class="status error" style="display: block; margin: 0;">${result.message}</div></div>`;
-            return;
-          }
+      // Ensure menu data is loaded for English name display
+      ensureMenuDataLoaded().then(() => {
+        google.script.run
+          .withSuccessHandler(function (result) {
+            if (!result.success) {
+              document.getElementById('allOrdersContainer').innerHTML =
+                `<div class="card"><div class="status error" style="display: block; margin: 0;">${result.message}</div></div>`;
+              return;
+            }
 
-          let html = `
+            let html = `
             <div class="orders-summary">
               <div class="summary-item">
                 <div class="summary-value">${result.totalOrders}</div>
@@ -4111,29 +4169,29 @@
             </div>
           `;
 
-          if (result.orders.length === 0) {
-            html += '<div class="card"><p style="text-align: center; color: var(--text-secondary);">No orders yet today</p></div>';
-          } else {
-            // Get current user's name to hide copy button on their own order
-            const currentUserName = (document.getElementById('userName').value.trim() ||
-              document.getElementById('checkName').value.trim()).toLowerCase();
+            if (result.orders.length === 0) {
+              html += '<div class="card"><p style="text-align: center; color: var(--text-secondary);">No orders yet today</p></div>';
+            } else {
+              // Get current user's name to hide copy button on their own order
+              const currentUserName = (document.getElementById('userName').value.trim() ||
+                document.getElementById('checkName').value.trim()).toLowerCase();
 
-            html += '<div class="orders-grid">';
-            result.orders.forEach(order => {
-              // Escape for HTML attributes using encodeURIComponent
-              const encodedName = encodeURIComponent(order.name);
-              const encodedOrder = encodeURIComponent(order.order);
-              const escapedNameJs = order.name.replace(/'/g, "\\'");
-              const isOwnOrder = order.name.toLowerCase() === currentUserName;
+              html += '<div class="orders-grid">';
+              result.orders.forEach(order => {
+                // Escape for HTML attributes using encodeURIComponent
+                const encodedName = encodeURIComponent(order.name);
+                const encodedOrder = encodeURIComponent(order.order);
+                const escapedNameJs = order.name.replace(/'/g, "\\'");
+                const isOwnOrder = order.name.toLowerCase() === currentUserName;
 
-              if (orderingOpen) {
-                // Ordering open - card with Copy and Edit actions
-                html += `
+                if (orderingOpen) {
+                  // Ordering open - card with Copy and Edit actions
+                  html += `
                   <div class="order-card${isOwnOrder ? ' own-order' : ''}">
                     <div class="order-seq">${order.row}</div>
                     <div class="order-content">
                       <div class="order-name">${order.name}${isOwnOrder ? ' <span style="font-size: 11px; color: var(--primary);">(You)</span>' : ''}</div>
-                      <div class="order-details">${order.order}</div>
+                      <div class="order-details">${enrichOrderWithEnglish(order.order)}</div>
                     </div>
                     <div class="order-meta">
                       <span class="order-paid ${order.paid ? 'yes' : 'no'}">
@@ -4152,14 +4210,14 @@
                     </div>
                   </div>
                 `;
-              } else {
-                // Ordering closed - non-clickable card, no edit icon
-                html += `
+                } else {
+                  // Ordering closed - non-clickable card, no edit icon
+                  html += `
                   <div class="order-card order-card-readonly">
                     <div class="order-seq">${order.row}</div>
                     <div class="order-content">
                       <div class="order-name">${order.name}</div>
-                      <div class="order-details">${order.order}</div>
+                      <div class="order-details">${enrichOrderWithEnglish(order.order)}</div>
                     </div>
                     <div class="order-meta">
                       <span class="order-paid ${order.paid ? 'yes' : 'no'}">
@@ -4169,18 +4227,19 @@
                     </div>
                   </div>
                 `;
-              }
-            });
-            html += '</div>';
-          }
+                }
+              });
+              html += '</div>';
+            }
 
-          document.getElementById('allOrdersContainer').innerHTML = html;
-        })
-        .withFailureHandler(function (error) {
-          document.getElementById('allOrdersContainer').innerHTML =
-            `<div class="card"><div class="status error" style="display: block; margin: 0;">Error: ${error.message}</div></div>`;
-        })
-        .getTodayOrders();
+            document.getElementById('allOrdersContainer').innerHTML = html;
+          })
+          .withFailureHandler(function (error) {
+            document.getElementById('allOrdersContainer').innerHTML =
+              `<div class="card"><div class="status error" style="display: block; margin: 0;">Error: ${error.message}</div></div>`;
+          })
+          .getTodayOrders();
+      }); // end ensureMenuDataLoaded
     }
 
     // Show status message
