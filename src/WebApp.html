@@ -1682,6 +1682,186 @@
       font-size: 0.9rem;
     }
 
+    /* Statistics Table */
+    .stats-header {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .stats-header-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .stats-header-meta {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .stats-table thead {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: white;
+    }
+
+    .stats-table th {
+      padding: 14px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .stats-table th:last-child {
+      text-align: center;
+    }
+
+    .stats-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .stats-table tbody tr:hover {
+      background: var(--bg);
+    }
+
+    .stats-table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .stats-table td {
+      padding: 14px 16px;
+      font-size: 0.9rem;
+    }
+
+    .stats-item-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .stats-count {
+      color: var(--primary);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .stats-percentage {
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .stats-add-btn {
+      padding: 6px 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 500;
+    }
+
+    .stats-add-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .stats-add-btn:disabled {
+      background: var(--border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .stats-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .stats-empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    /* Mobile: Stack statistics as cards */
+    @media (max-width: 600px) {
+      .stats-table {
+        display: block;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+      }
+
+      .stats-table thead {
+        display: none;
+      }
+
+      .stats-table tbody {
+        display: block;
+      }
+
+      .stats-table tbody tr {
+        display: block;
+        background: var(--card-bg);
+        border-radius: var(--radius-md);
+        margin-bottom: 10px;
+        padding: 14px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+
+      .stats-table tbody tr:hover {
+        box-shadow: var(--shadow-md);
+      }
+
+      .stats-table td {
+        display: block;
+        padding: 6px 0;
+        border: none;
+        text-align: left !important;
+      }
+
+      .stats-item-name {
+        font-size: 1rem;
+        margin-bottom: 8px;
+      }
+
+      .stats-count::before {
+        content: '📊 Count: ';
+        font-weight: 400;
+        color: var(--text-secondary);
+      }
+
+      .stats-percentage::before {
+        content: '📈 Percentage: ';
+        font-weight: 400;
+        color: var(--text-secondary);
+      }
+
+      .stats-table td:last-child {
+        margin-top: 8px;
+      }
+    }
+
     /* Responsive */
     @media (max-width: 400px) {
       .container {
@@ -2027,6 +2207,7 @@
       <button class="tab active" onclick="switchTab('order')">📝 Order</button>
       <button class="tab" id="tabMyOrder" onclick="switchTab('myorder')">👤 My Order</button>
       <button class="tab" id="tabAllOrders" onclick="switchTab('all')">📋 All</button>
+      <button class="tab" id="tabStats" onclick="switchTab('stats')">📊 Stats</button>
       <button class="tab" onclick="switchTab('admin')">⚙️ Admin</button>
     </nav>
 
@@ -2184,6 +2365,19 @@
           <p style="margin-top: 12px;">Loading orders...</p>
         </div>
       </div>
+    </div>
+
+    <!-- STATS TAB -->
+    <div id="tab-stats" class="tab-content">
+      <div class="card name-card">
+        <div class="name-row">
+          <label for="statsName">👤 Your Name</label>
+          <input type="text" id="statsName" placeholder="Enter your name (or leave blank for all)">
+          <button class="btn btn-primary btn-sm" onclick="loadStatistics()">📊 Load Statistics</button>
+        </div>
+      </div>
+
+      <div id="statsResult"></div>
     </div>
 
     <!-- ADMIN TAB -->
@@ -2519,20 +2713,34 @@
       if (savedNameLocal) {
         document.getElementById('userName').value = savedNameLocal;
         document.getElementById('checkName').value = savedNameLocal;
+        document.getElementById('statsName').value = savedNameLocal;
       }
 
       // Sync name fields and save to localStorage
       document.getElementById('userName').addEventListener('input', function () {
         document.getElementById('checkName').value = this.value;
+        document.getElementById('statsName').value = this.value;
         saveUserName(this.value);
       });
       document.getElementById('checkName').addEventListener('input', function () {
         document.getElementById('userName').value = this.value;
+        document.getElementById('statsName').value = this.value;
+        saveUserName(this.value);
+      });
+      document.getElementById('statsName').addEventListener('input', function () {
+        document.getElementById('userName').value = this.value;
+        document.getElementById('checkName').value = this.value;
         saveUserName(this.value);
       });
 
       // Also save on blur (in case input event doesn't fire)
       document.getElementById('userName').addEventListener('blur', function () {
+        saveUserName(this.value);
+      });
+      document.getElementById('checkName').addEventListener('blur', function () {
+        saveUserName(this.value);
+      });
+      document.getElementById('statsName').addEventListener('blur', function () {
         saveUserName(this.value);
       });
 
@@ -2687,7 +2895,19 @@
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-      event.target.classList.add('active');
+      // Activate the clicked tab button
+      const tabButtons = {
+        'order': document.querySelector('.tab[onclick*="order"]'),
+        'myorder': document.getElementById('tabMyOrder'),
+        'all': document.getElementById('tabAllOrders'),
+        'stats': document.getElementById('tabStats'),
+        'admin': document.querySelector('.tab[onclick*="admin"]')
+      };
+
+      if (tabButtons[tabId]) {
+        tabButtons[tabId].classList.add('active');
+      }
+
       document.getElementById('tab-' + tabId).classList.add('active');
 
       if (tabId === 'all') {
@@ -2703,6 +2923,7 @@
           checkMyOrder();
         }
       }
+      // Note: Name fields are now synced via event listeners in DOMContentLoaded
     }
 
     // Load menu from server (reads from Menu sheet)
@@ -4240,6 +4461,147 @@
           })
           .getTodayOrders();
       }); // end ensureMenuDataLoaded
+    }
+
+    // Load statistics
+    function loadStatistics() {
+      const userName = document.getElementById('statsName').value.trim();
+
+      document.getElementById('statsResult').innerHTML =
+        '<div class="loading"><div class="spinner"></div><p style="margin-top: 12px;">Computing statistics...be patient...</p></div>';
+
+      google.script.run
+        .withSuccessHandler(function (result) {
+          if (!result.success) {
+            document.getElementById('statsResult').innerHTML =
+              `<div class="card"><div class="status error" style="display: block; margin: 0;">${result.message}</div></div>`;
+            return;
+          }
+
+          renderStatistics(result);
+        })
+        .withFailureHandler(function (error) {
+          document.getElementById('statsResult').innerHTML =
+            `<div class="card"><div class="status error" style="display: block; margin: 0;">Error: ${error.message}</div></div>`;
+        })
+        .getOrderStatistics(userName);
+    }
+
+    // Render statistics table
+    function renderStatistics(data) {
+      if (!data.stats || data.stats.length === 0) {
+        document.getElementById('statsResult').innerHTML = `
+          <div class="card stats-empty">
+            <div class="stats-empty-icon">📊</div>
+            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px;">No Statistics Available</div>
+            <div>No order history found${data.userName !== 'All Users' ? ' for ' + data.userName : ''}.</div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = `
+        <div class="card">
+          <div class="stats-header">
+            <div class="stats-header-title">📊 Order Statistics${data.filterByUser ? ' for ' + data.userName : ' (All Users)'}</div>
+            <div class="stats-header-meta">
+              <span>📅 ${data.dateRange.from} - ${data.dateRange.to}</span>
+              <span>📦 ${data.totalOrders} total orders</span>
+              <span>💰 Total: RM${data.totalSpent.toFixed(2)}</span>
+              <span>📉 Avg: RM${data.averageSpent.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th>Menu Item</th>
+                <th style="text-align: center;">Count</th>
+                <th style="text-align: center;">%</th>
+                <th style="text-align: center;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      for (const stat of data.stats) {
+        const escapedItem = stat.item.replace(/'/g, "\\'");
+        const addButtonDisabled = !orderingOpen ? 'disabled' : '';
+        const addButtonTitle = orderingOpen ? 'Add to your order' : 'Ordering is closed';
+
+        // Format display name: Chinese + English (if available)
+        const displayName = stat.itemEnglish
+          ? `${stat.item} <span style="color: var(--text-secondary); font-weight: 400;">${stat.itemEnglish}</span>`
+          : stat.item;
+
+        html += `
+          <tr>
+            <td class="stats-item-name">${displayName}</td>
+            <td class="stats-count">${stat.count}</td>
+            <td class="stats-percentage">${stat.percentage}%</td>
+            <td style="text-align: center;">
+              <button class="stats-add-btn" 
+                      onclick="addStatItemToOrder('${escapedItem}')" 
+                      ${addButtonDisabled}
+                      title="${addButtonTitle}">
+                ➕ Add
+              </button>
+            </td>
+          </tr>
+        `;
+      }
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      document.getElementById('statsResult').innerHTML = html;
+    }
+
+    // Add item from statistics to order
+    function addStatItemToOrder(itemName) {
+      if (!orderingOpen) {
+        alert('Ordering is closed. Cannot add items.');
+        return;
+      }
+
+      // Switch to Order tab first
+      switchTab('order');
+
+      // Wait a bit for the menu to render
+      setTimeout(() => {
+        // Find the menu item element by data-name attribute
+        const menuItems = document.querySelectorAll('.menu-item');
+        let foundElement = null;
+
+        for (const element of menuItems) {
+          const elementName = element.dataset.name;
+          if (!elementName) continue;
+
+          // Check if the Chinese name matches
+          const chineseName = elementName.split(' ')[0].trim();
+          if (chineseName === itemName || elementName === itemName) {
+            foundElement = element;
+            break;
+          }
+        }
+
+        if (foundElement) {
+          // Check if already selected
+          if (!foundElement.classList.contains('selected')) {
+            toggleItem(foundElement);
+            showStatus(`Added "${itemName}" to your order`, 'success');
+            setTimeout(hideStatus, 3000);
+          } else {
+            showStatus(`"${itemName}" is already in your order`, 'success');
+            setTimeout(hideStatus, 2000);
+          }
+        } else {
+          alert(`Item "${itemName}" not found in today's menu. It may have been removed or renamed.`);
+        }
+      }, 200);
     }
 
     // Show status message

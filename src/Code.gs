@@ -1443,6 +1443,234 @@ function isOrderTimeValid() {
   return true; // Change to: return new Date().getHours() < 10; for production
 }
 
+// ==================== STATISTICS ====================
+/**
+ * Get order statistics from all historical order sheets
+ * @param {string} userName - Optional: filter statistics by user name
+ * @returns {Object} - Statistics data with success status
+ */
+function getOrderStatistics(userName) {
+  try {
+    const ss = getSpreadsheet();
+    const allSheets = ss.getSheets();
+    
+    // Filter sheets with YYYYMMDD format (8 digits) - these are historical order sheets
+    const orderSheets = [];
+    const sheetPattern = /^\d{8}$/;
+    
+    for (const sheet of allSheets) {
+      const sheetName = sheet.getName();
+      if (sheetPattern.test(sheetName)) {
+        orderSheets.push({
+          name: sheetName,
+          sheet: sheet,
+          date: formatDateForDisplay(sheetName)
+        });
+      }
+    }
+    
+    if (orderSheets.length === 0) {
+      return {
+        success: false,
+        message: 'No historical order data found. Statistics will be available after the first day of orders.'
+      };
+    }
+    
+    // Sort sheets by date (oldest first)
+    orderSheets.sort((a, b) => a.name.localeCompare(b.name));
+    
+    // Load menu data to identify valid menu items
+    const menuData = getMenuData();
+    const allMenuItems = [];
+    
+    // Extract all menu item names (Chinese part only)
+    for (const category in menuData) {
+      for (const item of menuData[category]) {
+        // Extract Chinese name from "咸蛋鸡 salted egg chicken" format
+        const chineseName = extractChineseName(item.name);
+        if (chineseName) {
+          allMenuItems.push(chineseName);
+        }
+      }
+    }
+    
+    // Sort menu items by length (longest first) for better matching
+    allMenuItems.sort((a, b) => b.length - a.length);
+    
+    // Load translations from Translation sheet
+    const translationMap = {}; // { chineseName: englishName }
+    try {
+      const translationSheet = ss.getSheetByName('Translation');
+      if (translationSheet) {
+        const lastRow = translationSheet.getLastRow();
+        if (lastRow >= 1) {
+          // Read columns A (Chinese) and B (English)
+          const translationData = translationSheet.getRange(1, 1, lastRow, 2).getValues();
+          for (const row of translationData) {
+            const chinese = row[0] ? row[0].toString().trim() : '';
+            const english = row[1] ? row[1].toString().trim() : '';
+            if (chinese && english) {
+              translationMap[chinese] = english;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // Translation sheet not found or error reading it - continue without translations
+      console.log('Translation sheet not found or error:', e);
+    }
+    
+    // Rice portion keywords to exclude
+    const riceKeywords = ['少饭', '不要饭', '正常', '加饭', '多饭'];
+    
+    // Collect all orders from all sheets
+    const itemCounts = {}; // { itemName: count }
+    let totalOrdersProcessed = 0;
+    let totalSpent = 0;
+    const filterByUser = userName && userName.trim() !== '';
+    const userNameLower = filterByUser ? userName.trim().toLowerCase() : '';
+    
+    for (const sheetInfo of orderSheets) {
+      const sheet = sheetInfo.sheet;
+      const lastRow = sheet.getLastRow();
+      
+      if (lastRow < CONFIG.ORDER_START_ROW) continue;
+      
+      // Read order data (columns B:D - Who, What, Price)
+      const dataRange = sheet.getRange(CONFIG.ORDER_START_ROW, CONFIG.COLUMNS.WHO, 
+                                       lastRow - CONFIG.ORDER_START_ROW + 1, 3);
+      const data = dataRange.getValues();
+      
+      for (const row of data) {
+        const name = row[0] ? row[0].toString().trim() : '';
+        let orderText = row[1] ? row[1].toString().trim() : '';
+        const price = row[2] ? parseFloat(row[2]) : 0;
+        
+        if (!name || !orderText) continue;
+        
+        // Check if we should filter by user
+        if (filterByUser && name.toLowerCase() !== userNameLower) {
+          continue;
+        }
+        
+        // Add to total amount
+        totalSpent += !isNaN(price) ? price : 0;
+        
+        // Clean up order text
+        // Remove rice portion info in parentheses: (normal), (less), (none)
+        orderText = orderText.replace(/\s*\((normal|less|none)\)/gi, '');
+        // Remove notes after 📝
+        orderText = orderText.replace(/📝.*$/g, '');
+        // Remove English translations (anything after space if it contains English letters)
+        orderText = orderText.replace(/\s+[a-zA-Z].*/g, '');
+        orderText = orderText.trim();
+        
+        // Extract individual menu items from concatenated text
+        const extractedItems = extractMenuItemsFromOrder(orderText, allMenuItems, riceKeywords);
+        
+        for (const item of extractedItems) {
+          itemCounts[item] = (itemCounts[item] || 0) + 1;
+        }
+        
+        totalOrdersProcessed++;
+      }
+    }
+    
+    // Convert to array and calculate percentages
+    const stats = [];
+    const totalItems = Object.values(itemCounts).reduce((sum, count) => sum + count, 0);
+    
+    for (const [item, count] of Object.entries(itemCounts)) {
+      // Look up English translation
+      const englishName = translationMap[item] || '';
+      
+      stats.push({
+        item: item,
+        itemEnglish: englishName,
+        count: count,
+        percentage: totalItems > 0 ? ((count / totalItems) * 100).toFixed(1) : 0
+      });
+    }
+    
+    // Sort by count descending
+    stats.sort((a, b) => b.count - a.count);
+    
+    return {
+      success: true,
+      userName: userName || 'All Users',
+      filterByUser: filterByUser,
+      stats: stats,
+      totalOrders: totalOrdersProcessed,
+      totalSpent: parseFloat(totalSpent.toFixed(2)),
+      averageSpent: totalOrdersProcessed > 0 ? parseFloat((totalSpent / totalOrdersProcessed).toFixed(2)) : 0,
+      dateRange: {
+        from: orderSheets[0].date,
+        to: orderSheets[orderSheets.length - 1].date
+      }
+    };
+    
+  } catch (error) {
+    return {
+      success: false,
+      message: 'Error loading statistics: ' + error.message
+    };
+  }
+}
+
+/**
+ * Extract individual menu items from concatenated order text
+ * @param {string} orderText - Concatenated order text (e.g., "白滑鸡腿肉煎蛋番薯叶树苗少饭")
+ * @param {Array} menuItems - Array of known menu item names
+ * @param {Array} excludeKeywords - Keywords to exclude (e.g., rice portions)
+ * @returns {Array} - Array of extracted menu item names
+ */
+function extractMenuItemsFromOrder(orderText, menuItems, excludeKeywords) {
+  const extractedItems = [];
+  let remainingText = orderText;
+  
+  // Remove exclude keywords first
+  for (const keyword of excludeKeywords) {
+    remainingText = remainingText.replace(new RegExp(keyword, 'g'), '');
+  }
+  
+  // Try to match menu items greedily (longest first)
+  while (remainingText.length > 0) {
+    let matched = false;
+    
+    // Try to find a menu item that matches the start of remaining text
+    for (const menuItem of menuItems) {
+      if (remainingText.startsWith(menuItem)) {
+        extractedItems.push(menuItem);
+        remainingText = remainingText.substring(menuItem.length);
+        matched = true;
+        break;
+      }
+    }
+    
+    // If no match found, try to find menu item anywhere in the remaining text
+    if (!matched) {
+      for (const menuItem of menuItems) {
+        const index = remainingText.indexOf(menuItem);
+        if (index !== -1) {
+          extractedItems.push(menuItem);
+          // Remove the matched item from remaining text
+          remainingText = remainingText.substring(0, index) + 
+                         remainingText.substring(index + menuItem.length);
+          matched = true;
+          break;
+        }
+      }
+    }
+    
+    // If still no match, skip one character to avoid infinite loop
+    if (!matched) {
+      remainingText = remainingText.substring(1);
+    }
+  }
+  
+  return extractedItems;
+}
+
 // ==================== SPREADSHEET UI (Optional) ====================
 function onOpen() {
   try {

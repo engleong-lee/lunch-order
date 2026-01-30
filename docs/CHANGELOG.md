@@ -5,6 +5,82 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4] - 2026-01-30
+
+### Added
+- **Stats Tab - Financial Analytics**
+  - Added "Total Spent" calculation from historical orders
+  - Added "Average Spent per Order" calculation
+  - Removed "Unique Items" count to focus on financial metrics
+
+---
+
+## [1.3.3] - 2026-01-30
+
+### Added
+- **Stats Tab - English Translations**
+  - Stats now display both Chinese and English names (e.g., "咸蛋鸡 salted egg chicken")
+  - Loads translations from hidden "Translation" sheet (Column A: Chinese, Column B: English)
+  - Gracefully falls back to Chinese-only if Translation sheet is missing or item not found
+  - Improves readability for users who prefer English names
+
+---
+
+## [1.3.2] - 2026-01-30
+
+### Improved
+- **Stats Tab - Name Field Synchronization**
+  - Stats tab "Your Name" field now syncs with localStorage
+  - Bidirectional sync between Order, My Order, and Stats tabs
+  - Name persists across page reloads
+  - Typing in any name field updates all other name fields automatically
+
+---
+
+## [1.3.1] - 2026-01-30
+
+### Fixed
+- **Stats Tab - Improved Order Parsing**
+  - Fixed statistics to show individual menu items instead of full concatenated orders
+  - Added `extractMenuItemsFromOrder()` helper function with greedy matching algorithm
+  - Parser now correctly extracts items from concatenated text (e.g., "白滑鸡腿肉煎蛋番薯叶树苗少饭" → ["白滑鸡腿肉", "煎蛋", "番薯叶树苗"])
+  - Loads current menu to identify valid menu items
+  - Excludes rice portion keywords: 少饭, 不要饭, 正常, 加饭, 多饭
+  - Statistics now accurately reflect individual dish popularity
+
+---
+
+## [1.3.0] - 2026-01-30
+
+### Added
+- **Stats Tab - Historical Order Analytics**
+  - New "📊 Stats" tab for viewing order statistics from all historical data
+  - Query all past order sheets (YYYYMMDD format) to analyze ordering patterns
+  - Display statistics table with:
+    - Menu item name (Chinese)
+    - Order count (number of times ordered historically)
+    - Percentage of total orders
+    - Sorted by popularity (descending)
+  - Filter by username or view all users' statistics
+  - Metadata display: date range, total orders, total items, unique items
+  - **One-click "Add to Order"** - Quickly reorder favorite items
+    - Button is disabled when ordering is closed
+    - Automatically switches to Order tab and selects the item
+    - Shows confirmation message
+  - **Mobile-responsive design**:
+    - Desktop: Clean table layout
+    - Mobile (< 600px): Converts to card-based layout with labeled fields
+  - Name field auto-syncs with Order tab for convenience
+  - Backend function: `getOrderStatistics(userName)` in Code.gs
+
+### Technical Details
+- Backend: 130 lines added to Code.gs
+- Frontend: 180 lines CSS + 130 lines JavaScript added to WebApp.html
+- Tab navigation updated to handle 5 tabs on mobile devices
+- Improved `switchTab()` function to work when called programmatically
+
+---
+
 ## [1.2.0] - 2026-01-22
 
 ### Added
@@ -97,6 +173,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 1.3.4 | 2026-01-30 | Stats tab financial analytics (Total/Avg spent) |
+| 1.3.3 | 2026-01-30 | Stats tab English translations from Translation sheet |
+| 1.3.2 | 2026-01-30 | Stats tab name field localStorage sync |
+| 1.3.1 | 2026-01-30 | Fixed Stats tab parsing for individual menu items |
+| 1.3.0 | 2026-01-30 | Stats tab with historical order analytics |
 | 1.2.0 | 2026-01-22 | English names in order displays |
 | 1.1.0 | 2026-01-19 | Pay button in My Order tab |
 | 1.0.0 | 2026-01-16 | Initial release with full ordering system |
