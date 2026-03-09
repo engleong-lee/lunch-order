@@ -2319,11 +2319,11 @@
         <div class="price-card">
           <div class="label">Estimated Price</div>
           <div class="price-controls">
-            <button class="price-btn" onclick="adjustPrice(-1)">−</button>
+            <button class="price-btn" id="priceMinusBtn" onclick="adjustPrice(-1)">−</button>
             <div class="amount"><span class="currency">RM</span> <span id="priceAmount">0</span></div>
-            <button class="price-btn" onclick="adjustPrice(1)">+</button>
+            <button class="price-btn" id="pricePlusBtn" onclick="adjustPrice(1)">+</button>
           </div>
-          <div class="price-hint">Tap +/- to adjust</div>
+          <div class="price-hint" id="priceHint">Tap +/- to adjust</div>
         </div>
 
         <!-- Action Buttons -->
@@ -3528,13 +3528,31 @@
       const fixedPrice = element.dataset.fixedPrice;
 
       if (element.classList.contains('selected')) {
+        // Deselecting - always allowed
         element.classList.remove('selected');
         selectedItems = selectedItems.filter(item => item.name !== itemName);
       } else {
+        // Selecting - check mutual exclusivity rules
+        const hasFixedPriceSelected = selectedItems.some(item => item.fixedPrice);
+
+        if (fixedPrice) {
+          // Selecting a fixed-price item: deselect ALL other items first
+          selectedItems = [];
+          document.querySelectorAll('.menu-item.selected').forEach(el => el.classList.remove('selected'));
+          customPrice = null; // Reset custom price
+        } else if (hasFixedPriceSelected) {
+          // Trying to select a non-fixed-price item while a fixed-price item is selected: block it
+          // Show a brief visual feedback
+          element.style.animation = 'none';
+          element.offsetHeight; // trigger reflow
+          element.style.animation = 'statusPop 0.3s ease';
+          return;
+        }
+
         element.classList.add('selected');
         selectedItems.push({
           name: itemName,
-          fixedPrice: fixedPrice ? parseInt(fixedPrice) : null,
+          fixedPrice: fixedPrice ? parseFloat(fixedPrice) : null,
           note: '' // Initialize empty note
         });
       }
@@ -3677,12 +3695,39 @@
       if (selectedItems.length === 0) price = 0;
 
       document.getElementById('priceAmount').textContent = price;
+
+      // Disable +/- buttons when a fixed-price item is selected
+      const hasFixedPrice = selectedItems.some(item => item.fixedPrice);
+      const minusBtn = document.getElementById('priceMinusBtn');
+      const plusBtn = document.getElementById('pricePlusBtn');
+      const hint = document.getElementById('priceHint');
+      if (hasFixedPrice) {
+        minusBtn.disabled = true;
+        plusBtn.disabled = true;
+        minusBtn.style.opacity = '0.3';
+        plusBtn.style.opacity = '0.3';
+        minusBtn.style.cursor = 'not-allowed';
+        plusBtn.style.cursor = 'not-allowed';
+        hint.textContent = 'Fixed price item selected';
+      } else {
+        minusBtn.disabled = false;
+        plusBtn.disabled = false;
+        minusBtn.style.opacity = '1';
+        plusBtn.style.opacity = '1';
+        minusBtn.style.cursor = 'pointer';
+        plusBtn.style.cursor = 'pointer';
+        hint.textContent = 'Tap +/- to adjust';
+      }
     }
 
     // Adjust price manually with +/- buttons
     function adjustPrice(delta) {
+      // Block adjustment when a fixed-price item is selected
+      const hasFixedPrice = selectedItems.some(item => item.fixedPrice);
+      if (hasFixedPrice) return;
+
       const priceEl = document.getElementById('priceAmount');
-      let currentPrice = parseInt(priceEl.textContent) || 0;
+      let currentPrice = parseFloat(priceEl.textContent) || 0;
       let newPrice = Math.max(0, currentPrice + delta); // Don't go below 0
 
       customPrice = newPrice;
@@ -3757,7 +3802,7 @@
         }),
         riceOption: riceOption,
         notes: notes,
-        price: parseInt(document.getElementById('priceAmount').textContent)
+        price: parseFloat(document.getElementById('priceAmount').textContent)
       };
 
       google.script.run
@@ -4718,10 +4763,10 @@
 
           const item = { name: itemText, emoji: '' };
 
-          // Check for fixed price (e.g., "烧鸡胸饭 rm8")
-          const priceMatch = itemText.match(/rm\s*(\d+)/i);
+          // Check for fixed price (e.g., "烧鸡胸饭 rm8.5")
+          const priceMatch = itemText.match(/rm\s*(\d+\.?\d*)/i);
           if (priceMatch) {
-            item.fixedPrice = parseInt(priceMatch[1]);
+            item.fixedPrice = parseFloat(priceMatch[1]);
           }
 
           menu[currentCategory].push(item);
@@ -4735,9 +4780,9 @@
           } else if (currentCategory) {
             // Treat as item without - prefix
             const item = { name: line, emoji: '' };
-            const priceMatch = line.match(/rm\s*(\d+)/i);
+            const priceMatch = line.match(/rm\s*(\d+\.?\d*)/i);
             if (priceMatch) {
-              item.fixedPrice = parseInt(priceMatch[1]);
+              item.fixedPrice = parseFloat(priceMatch[1]);
             }
             menu[currentCategory].push(item);
           }

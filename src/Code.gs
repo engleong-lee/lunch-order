@@ -128,10 +128,10 @@ function getMenuData() {
           
           const item = { name: itemText, emoji: '' };
           
-          // Check for fixed price (e.g., "烧鸡胸饭 rm8")
-          const priceMatch = itemText.match(/rm\s*(\d+)/i);
+          // Check for fixed price (e.g., "烧鸡胸饭 rm8.5")
+          const priceMatch = itemText.match(/rm\s*(\d+\.?\d*)/i);
           if (priceMatch) {
-            item.fixedPrice = parseInt(priceMatch[1]);
+            item.fixedPrice = parseFloat(priceMatch[1]);
           }
           
           item.emoji = getAutoEmoji(itemText);
@@ -923,8 +923,8 @@ function submitOrder(orderData) {
  */
 function calculatePrice(items) {
   for (const item of items) {
-    if (item.includes('RM8') || item.includes('rm8')) return 8;
-    if (item.includes('RM9') || item.includes('rm9')) return 9;
+    const rmMatch = item.match(/rm\s*(\d+\.?\d*)/i);
+    if (rmMatch) return parseFloat(rmMatch[1]);
   }
   
   const itemCount = items.length;
