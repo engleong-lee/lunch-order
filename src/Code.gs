@@ -1726,6 +1726,98 @@ function generateOrderSummary() {
 /**
  * Get payment QR image URL
  */
+/**
+ * Gets previous orders for a user from historical order sheets.
+ * Returns the last N distinct order days (most recent first).
+ * @param {string} userName - The user's name
+ * @param {number} count - Number of distinct days to return (default 3)
+ * @returns {Object} - { success, orders: [{ date, displayDate, items, riceOption, notes, price }] }
+ */
+function getPreviousOrders(userName, count) {
+  try {
+    if (!userName || userName.trim() === '') {
+      return { success: false, message: 'Please enter your name.' };
+    }
+
+    count = count || 3;
+    const ss = getSpreadsheet();
+    const allSheets = ss.getSheets();
+    const userNameLower = userName.trim().toLowerCase();
+    const todaySheetName = getTodaySheetName();
+
+    // Collect all YYYYMMDD sheets (excluding today)
+    const orderSheets = [];
+    for (const sheet of allSheets) {
+      const name = sheet.getName();
+      if (/^\d{8}$/.test(name) && name !== todaySheetName) {
+        orderSheets.push({ name: name, sheet: sheet });
+      }
+    }
+
+    // Sort descending (most recent first)
+    orderSheets.sort((a, b) => b.name.localeCompare(a.name));
+
+    const previousOrders = [];
+
+    for (const sheetInfo of orderSheets) {
+      if (previousOrders.length >= count) break;
+
+      const sheet = sheetInfo.sheet;
+      const lastRow = sheet.getLastRow();
+      if (lastRow < CONFIG.ORDER_START_ROW) continue;
+
+      // Read Who + What + Price columns
+      const rows = Math.min(lastRow - CONFIG.ORDER_START_ROW + 1, CONFIG.MAX_ORDERS);
+      const data = sheet.getRange(CONFIG.ORDER_START_ROW, CONFIG.COLUMNS.WHO, rows, 3).getValues();
+
+      for (const row of data) {
+        const who = row[0] ? row[0].toString().trim() : '';
+        const what = row[1] ? row[1].toString().trim() : '';
+        const price = row[2] ? parseFloat(row[2]) : 0;
+
+        if (who.toLowerCase() === userNameLower && what) {
+          // Parse the order text to extract items, rice option
+          let orderText = what;
+          let riceOption = 'normal';
+
+          if (orderText.includes('(少饭)')) {
+            riceOption = 'less';
+            orderText = orderText.replace('(少饭)', '').trim();
+          } else if (orderText.includes('(不要饭)')) {
+            riceOption = 'none';
+            orderText = orderText.replace('(不要饭)', '').trim();
+          }
+
+          // Split items by " + "
+          const items = orderText.split(/\s*\+\s*/).filter(i => i.trim() !== '');
+
+          previousOrders.push({
+            date: sheetInfo.name,
+            displayDate: formatDateForDisplay(sheetInfo.name),
+            orderText: what,
+            items: items,
+            riceOption: riceOption,
+            price: price
+          });
+          break; // Only one order per day per user, move to next sheet
+        }
+      }
+    }
+
+    if (previousOrders.length === 0) {
+      return { success: true, orders: [], message: 'No previous orders found.' };
+    }
+
+    return { success: true, orders: previousOrders };
+
+  } catch (error) {
+    return { success: false, message: 'Error: ' + error.message };
+  }
+}
+
+/**
+ * Get payment QR image URL
+ */
 function getPaymentQRImage() {
   // File ID from: https://drive.google.com/file/d/1wRvkPHxrIFAGT1aMyNUt59uGmXWymthe/view
   const fileId = '1wRvkPHxrIFAGT1aMyNUt59uGmXWymthe';

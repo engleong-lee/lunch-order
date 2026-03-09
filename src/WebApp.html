@@ -4395,8 +4395,8 @@
               </div>
             `;
             } else {
-              document.getElementById('myOrderResult').innerHTML =
-                `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">${result.message}</div></div>`;
+              // No order found today — load previous orders
+              loadPreviousOrders(userName, result.message);
             }
           })
           .withFailureHandler(function (error) {
@@ -4405,6 +4405,156 @@
           })
           .getOrderByName(userName);
       }); // end ensureMenuDataLoaded
+    }
+
+    // Load previous orders when no order exists today
+    function loadPreviousOrders(userName, noOrderMessage) {
+      let html = `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">${noOrderMessage}</div></div>`;
+      html += '<div style="margin-top: 16px;"><div class="loading" style="padding: 20px;"><div class="spinner"></div><p style="margin-top: 8px; font-size: 0.85rem;">Loading previous orders...</p></div></div>';
+      document.getElementById('myOrderResult').innerHTML = html;
+
+      google.script.run
+        .withSuccessHandler(function (result) {
+          let container = `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">${noOrderMessage}</div></div>`;
+
+          if (result.success && result.orders && result.orders.length > 0) {
+            container += `<div class="card" style="margin-top: 16px;">`;
+            container += `<div class="card-title">📜 Your Previous Orders</div>`;
+            container += `<p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">Click "Use This Order" to re-order from a previous day.</p>`;
+
+            result.orders.forEach((order, index) => {
+              const enriched = enrichOrderWithEnglish(order.orderText);
+              const itemsJson = encodeURIComponent(JSON.stringify(order.items));
+              const riceOpt = order.riceOption || 'normal';
+
+              container += `
+                <div style="background: var(--bg); border-radius: var(--radius-md); padding: 14px; margin-bottom: 10px; border: 1px solid var(--border);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-weight: 600; font-size: 0.9rem; color: var(--primary);">📅 ${order.displayDate}</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">RM${order.price}</span>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--text); margin-bottom: 10px; line-height: 1.5;">${enriched}</div>
+                  <button class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 0.85rem;"
+                    onclick="usePreviousOrder('${itemsJson}', '${riceOpt}', ${order.price})">
+                    📋 Use This Order
+                  </button>
+                </div>
+              `;
+            });
+
+            container += `</div>`;
+          } else if (result.success && (!result.orders || result.orders.length === 0)) {
+            container += `<div class="card" style="margin-top: 16px; text-align: center; padding: 30px; color: var(--text-muted);">
+              <div style="font-size: 2rem; margin-bottom: 8px;">📭</div>
+              <div>No previous order history found.</div>
+            </div>`;
+          } else {
+            container += `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">${result.message}</div></div>`;
+          }
+
+          document.getElementById('myOrderResult').innerHTML = container;
+        })
+        .withFailureHandler(function (error) {
+          let container = `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">${noOrderMessage}</div></div>`;
+          container += `<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">Error loading previous orders: ${error.message}</div></div>`;
+          document.getElementById('myOrderResult').innerHTML = container;
+        })
+        .getPreviousOrders(userName, 3);
+    }
+
+    // Use a previous order: navigate to Order tab and auto-select items
+    function usePreviousOrder(itemsJsonEncoded, riceOpt, price) {
+      if (!orderingOpen) {
+        alert('Ordering is closed. Cannot place orders.');
+        return;
+      }
+
+      const items = JSON.parse(decodeURIComponent(itemsJsonEncoded));
+      const userName = document.getElementById('checkName').value.trim();
+
+      // Ensure name is synced
+      document.getElementById('userName').value = userName;
+      saveUserName(userName);
+
+      // Switch to Order tab
+      switchTab('order');
+
+      // Wait for menu to be rendered, then match items
+      setTimeout(() => {
+        // Clear current selection first
+        selectedItems = [];
+        customPrice = null;
+        document.querySelectorAll('.menu-item.selected').forEach(el => el.classList.remove('selected'));
+
+        const notFoundItems = [];
+        let matchedCount = 0;
+
+        items.forEach(orderItem => {
+          const cleanItem = orderItem.trim();
+          let matched = false;
+
+          // Parse item name and note (same logic as loadOrderIntoForm)
+          const noteMatch = cleanItem.match(/^(.+?)\s*\(([^)]+)\)$/);
+          const baseName = noteMatch ? noteMatch[1].trim() : cleanItem;
+          const itemNote = noteMatch ? noteMatch[2].trim() : '';
+
+          // Find matching menu item
+          for (const [category, categoryItems] of Object.entries(menuData)) {
+            if (matched) break;
+            for (const menuItem of categoryItems) {
+              const menuChineseOnly = extractChineseChars(menuItem.name);
+              const menuNameNoBrackets = stripBrackets(menuItem.name);
+              const menuNameNoBracketsChinese = extractChineseChars(menuNameNoBrackets);
+
+              if (baseName === menuChineseOnly ||
+                  baseName === menuItem.name ||
+                  baseName === menuNameNoBrackets ||
+                  baseName === menuNameNoBracketsChinese ||
+                  menuChineseOnly.includes(baseName) ||
+                  baseName.includes(menuChineseOnly)) {
+
+                selectedItems.push({
+                  name: menuItem.name,
+                  fixedPrice: menuItem.fixedPrice || null,
+                  note: itemNote
+                });
+
+                // Select the button in UI
+                document.querySelectorAll('.menu-item').forEach(btn => {
+                  if (btn.dataset.name === menuItem.name) {
+                    btn.classList.add('selected');
+                  }
+                });
+
+                matched = true;
+                matchedCount++;
+                break;
+              }
+            }
+          }
+
+          if (!matched) {
+            notFoundItems.push(baseName);
+          }
+        });
+
+        // Set rice option
+        riceOption = riceOpt || 'normal';
+        document.querySelectorAll('.rice-option').forEach(el => el.classList.remove('selected'));
+        const riceEl = document.querySelector(`.rice-option[data-value="${riceOption}"]`);
+        if (riceEl) riceEl.classList.add('selected');
+
+        // Update displays
+        updateSelectedDisplay();
+        updatePrice();
+
+        // Show feedback
+        if (notFoundItems.length > 0) {
+          showStatus(`⚠️ Copied ${matchedCount} item(s). Not found in today's menu: ${notFoundItems.join(', ')}`, 'error');
+        } else {
+          showStatus(`✅ Copied ${matchedCount} item(s) from previous order. Review and click "Place Order" to confirm.`, 'success');
+        }
+      }, 300);
     }
 
     // Load all orders
