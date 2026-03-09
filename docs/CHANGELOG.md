@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-03-09
+
+### Fixed
+- **Decimal Price Support**
+  - Fixed price parsing to support decimal values (e.g., rm8.5, rm9.5)
+  - Changed `parseInt` to `parseFloat` and regex `(\d+)` to `(\d+\.?\d*)` across both Code.gs and WebApp.html
+  - Prices like rm8.5 now correctly display as RM 8.5 instead of rounding down to RM 8
+  - Fixed in: menu parsing (server + client), price adjustment buttons, order submission
+
+### Added
+- **Fixed-Price Item Exclusivity**
+  - Selecting a fixed-price menu item (e.g., 烧鸡胸饭 rm8.5) now deselects all other items automatically
+  - Cannot select regular menu items while a fixed-price item is selected
+  - Selecting a different fixed-price item switches the selection (deselects the previous one)
+  - Deselecting a fixed-price item re-enables regular item selection
+  - Works correctly when editing existing orders — clicking a fixed-price item clears previous selections
+
+- **Price Lock for Fixed-Price Items**
+  - +/- price adjustment buttons are disabled when a fixed-price item is selected
+  - Buttons appear greyed out with `cursor: not-allowed` styling
+  - Hint text changes from "Tap +/- to adjust" to "Fixed price item selected"
+  - Buttons and hint automatically re-enable when the fixed-price item is deselected
+
+---
+
 ## [1.3.4] - 2026-01-30
 
 ### Added
@@ -173,6 +198,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 1.4.0 | 2026-03-09 | Decimal price support, fixed-price item exclusivity, price lock |
 | 1.3.4 | 2026-01-30 | Stats tab financial analytics (Total/Avg spent) |
 | 1.3.3 | 2026-01-30 | Stats tab English translations from Translation sheet |
 | 1.3.2 | 2026-01-30 | Stats tab name field localStorage sync |
