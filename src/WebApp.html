@@ -2708,6 +2708,9 @@
 
       loadDate();
 
+      // Initialize Place Order button state (disabled when price is RM 0)
+      updateSubmitButtonState();
+
       // Load saved name from localStorage
       const savedNameLocal = loadUserNameLocal();
       if (savedNameLocal) {
@@ -3695,6 +3698,7 @@
       if (selectedItems.length === 0) price = 0;
 
       document.getElementById('priceAmount').textContent = price;
+      updateSubmitButtonState();
 
       // Disable +/- buttons when a fixed-price item is selected
       const hasFixedPrice = selectedItems.some(item => item.fixedPrice);
@@ -3732,6 +3736,21 @@
 
       customPrice = newPrice;
       priceEl.textContent = newPrice;
+      updateSubmitButtonState();
+    }
+
+    // Visually mark the Place Order button as invalid when Estimated Price is RM 0.
+    // Note: we do NOT set `disabled=true` because we still want the click to fire so
+    // submitOrder() can show the alert/toast — disabled buttons swallow clicks silently.
+    function updateSubmitButtonState() {
+      const priceEl = document.getElementById('priceAmount');
+      const btn = document.getElementById('submitBtn');
+      if (!priceEl || !btn) return;
+      const price = parseFloat(priceEl.textContent) || 0;
+      const invalid = price <= 0;
+      btn.style.opacity = invalid ? '0.5' : '';
+      btn.style.cursor = invalid ? 'not-allowed' : '';
+      btn.title = invalid ? 'Estimated Price must be greater than RM 0' : '';
     }
 
     // Reset custom price (called when items change significantly)
@@ -3783,6 +3802,13 @@
 
       if (selectedItems.length === 0) {
         showStatus('Please select at least one item!', 'error');
+        return;
+      }
+
+      const estimatedPrice = parseFloat(document.getElementById('priceAmount').textContent) || 0;
+      if (estimatedPrice <= 0) {
+        alert('⚠️ Estimated Price cannot be RM 0!\n\nPlease use the +/− buttons to set a valid price before placing your order.');
+        showStatus('Estimated Price cannot be RM 0! Use the +/− buttons to set a valid price.', 'error');
         return;
       }
 
