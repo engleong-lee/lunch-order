@@ -2629,6 +2629,9 @@
 
   <script>
     // Configuration
+    // NOTE: keep in sync with the price tiers in updatePrice() — RM 6/8/12 currently
+    // tops out at 4+ items; raising this cap without updating tiers will produce
+    // unpriced selections.
     const MAX_NON_FOOD_ITEMS = 5;
 
     // State
@@ -3783,6 +3786,7 @@
     // Visually mark the Place Order button as invalid when Estimated Price is RM 0.
     // Note: we do NOT set `disabled=true` because we still want the click to fire so
     // submitOrder() can show the alert/toast — disabled buttons swallow clicks silently.
+    // Use aria-disabled instead so screen readers announce the invalid state correctly.
     function updateSubmitButtonState() {
       const priceEl = document.getElementById('priceAmount');
       const btn = document.getElementById('submitBtn');
@@ -3792,6 +3796,11 @@
       btn.style.opacity = invalid ? '0.5' : '';
       btn.style.cursor = invalid ? 'not-allowed' : '';
       btn.title = invalid ? 'Estimated Price must be greater than RM 0' : '';
+      if (invalid) {
+        btn.setAttribute('aria-disabled', 'true');
+      } else {
+        btn.removeAttribute('aria-disabled');
+      }
     }
 
     // Reset custom price (called when items change significantly)
@@ -4076,6 +4085,7 @@
       if (orderData.price) {
         customPrice = orderData.price; // Keep the saved price as custom
         document.getElementById('priceAmount').textContent = orderData.price;
+        updateSubmitButtonState();
       } else {
         customPrice = null;
         updatePrice();
