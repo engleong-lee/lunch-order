@@ -11,6 +11,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600&display=swap"
     rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-25..200&icon_names=add,bar_chart,calendar_today,check,check_circle,close,content_paste,credit_card,delete,description,directions_car,download,edit,edit_note,error,folder,folder_open,hourglass_top,inventory_2,lightbulb,lock,lock_open,lunch_dining,mail,pause_circle,payments,person,refresh,restaurant,rice_bowl,rocket_launch,save,savings,schedule,search,settings,shopping_cart,tips_and_updates,trending_down,waving_hand"
+    rel="stylesheet">
   <style>
     :root {
       --primary: #3b82f6;
@@ -39,6 +42,33 @@
       --radius-xl: 24px;
       --transition: all 0.2s ease;
     }
+
+    /* Material Symbols icon utility — sized 35% larger than typographic baseline */
+    .icon {
+      font-family: 'Material Symbols Rounded';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 1.55em;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+      vertical-align: -0.24em;
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .icon.filled {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .icon.sm { font-size: 1.35em; vertical-align: -0.20em; }
+    .icon.lg { font-size: 1.89em; vertical-align: -0.30em; }
 
     * {
       box-sizing: border-box;
@@ -999,13 +1029,18 @@
       font-size: 2.5rem;
       font-weight: 700;
       min-width: 100px;
-      text-align: center;
+      line-height: 1;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
       transition: transform 0.15s ease;
     }
 
     .price-card .currency {
       font-size: 1.2rem;
       opacity: 0.9;
+      line-height: 1;
     }
 
     .price-card .price-btn {
@@ -1855,13 +1890,13 @@
       }
 
       .stats-count::before {
-        content: '📊 Count: ';
+        content: 'Count: ';
         font-weight: 400;
         color: var(--text-secondary);
       }
 
       .stats-percentage::before {
-        content: '📈 Percentage: ';
+        content: 'Percentage: ';
         font-weight: 400;
         color: var(--text-secondary);
       }
@@ -2197,14 +2232,14 @@
   <header class="header">
     <div class="header-content">
       <div class="brand">
-        <div class="brand-icon">🍱</div>
+        <div class="brand-icon"><span class="icon" style="font-size:26px;">lunch_dining</span></div>
         <div class="brand-text">
           <h1>Lunch Order</h1>
           <div class="location">TRX Exchange 106, Level 17</div>
         </div>
       </div>
       <div class="header-right">
-        <div class="date-badge" id="dateDisplay">📅 Loading...</div>
+        <div class="date-badge" id="dateDisplay"><span class="icon sm">calendar_today</span> Loading...</div>
         <button class="help-btn" onclick="showHelpModal()" title="How to use">?</button>
       </div>
     </div>
@@ -2213,11 +2248,11 @@
   <div class="container">
     <!-- Tabs -->
     <nav class="tabs">
-      <button class="tab active" onclick="switchTab('order')">📝 Order</button>
-      <button class="tab" id="tabMyOrder" onclick="switchTab('myorder')">👤 My Order</button>
-      <button class="tab" id="tabAllOrders" onclick="switchTab('all')">📋 All</button>
-      <button class="tab" id="tabStats" onclick="switchTab('stats')">📊 Stats</button>
-      <button class="tab" onclick="switchTab('admin')">⚙️ Admin</button>
+      <button class="tab active" onclick="switchTab('order')"><span class="icon">edit_note</span> Order</button>
+      <button class="tab" id="tabMyOrder" onclick="switchTab('myorder')"><span class="icon">person</span> My Order</button>
+      <button class="tab" id="tabAllOrders" onclick="switchTab('all')"><span class="icon">content_paste</span> All</button>
+      <button class="tab" id="tabStats" onclick="switchTab('stats')"><span class="icon">bar_chart</span> Stats</button>
+      <button class="tab" onclick="switchTab('admin')"><span class="icon">settings</span> Admin</button>
     </nav>
 
     <!-- ORDER TAB -->
@@ -2226,7 +2261,7 @@
       <div id="orderingClosedMessage" style="display: none;">
         <div
           style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, var(--warning-light) 0%, #fed7aa 100%); border-radius: var(--radius-lg); margin: 20px 0; border: 1px solid #fdba74;">
-          <div style="font-size: 64px; margin-bottom: 16px;">🔒</div>
+          <div style="margin-bottom: 16px;"><span class="icon" style="font-size:64px;color:#c2410c;">lock</span></div>
           <h2 style="color: #c2410c; margin: 0 0 12px 0; font-size: 1.5rem; font-weight: 700;">Ordering Closed</h2>
           <p style="color: #9a3412; margin: 0; font-size: 1rem;" id="closedMessage">
             Please wait for admin to open today's orders.
@@ -2241,17 +2276,17 @@
       <div id="orderContent" style="display: none;">
         <!-- Edit Mode Banner (hidden by default) -->
         <div id="editModeBanner" class="edit-mode-banner" style="display: none;">
-          <span class="text">✏️ Editing your order</span>
+          <span class="text"><span class="icon">edit</span> Editing your order</span>
           <button class="cancel-edit" onclick="cancelEditMode()">Start Fresh</button>
         </div>
 
         <!-- Name Input - Compact inline -->
         <div class="card name-card">
           <div class="name-row">
-            <label for="userName">👤 Your Name</label>
+            <label for="userName"><span class="icon">person</span> Your Name</label>
             <input type="text" id="userName" placeholder="Enter your name" autocomplete="name">
             <button class="btn btn-secondary btn-sm" onclick="loadMyOrder()" id="loadOrderBtn">
-              📥 Load My Order
+              <span class="icon">download</span> Load My Order
             </button>
           </div>
         </div>
@@ -2267,14 +2302,14 @@
         <!-- Menu Section -->
         <div class="card">
           <div class="menu-header">
-            <div class="card-title">🍽️ Select Your Items</div>
+            <div class="card-title"><span class="icon">restaurant</span> Select Your Items</div>
             <div class="menu-toolbar">
               <button class="toolbar-btn" onclick="toggleAllCategories()" id="collapseAllBtn">
-                📁 Collapse All
+                <span class="icon">folder</span> Collapse All
               </button>
               <span id="lastRefresh">Updated</span>
               <button class="refresh-btn" onclick="manualRefresh()" id="refreshBtn">
-                <span class="icon">🔄</span>
+                <span class="icon">refresh</span>
               </button>
             </div>
           </div>
@@ -2290,7 +2325,7 @@
         <!-- Selected Items -->
         <div class="card" id="selectionCard">
           <div class="selected-items">
-            <h4>🛒 Your Selection</h4>
+            <h4><span class="icon">shopping_cart</span> Your Selection</h4>
             <div id="selectedList" class="selected-list">
               <span class="empty-selection">Tap items above to add to your order</span>
             </div>
@@ -2299,7 +2334,7 @@
 
         <!-- Rice Options -->
         <div class="card" id="riceCard">
-          <div class="card-title">🍚 Rice Portion</div>
+          <div class="card-title"><span class="icon">rice_bowl</span> Rice Portion</div>
           <div class="rice-options">
             <div class="rice-option selected" data-value="normal" onclick="selectRice(this)">
               <div>Normal</div>
@@ -2319,7 +2354,7 @@
         <!-- Notes -->
         <div class="card">
           <div class="input-group" style="margin-bottom: 0;">
-            <label for="notes">📝 Special Notes (optional)</label>
+            <label for="notes"><span class="icon">edit_note</span> Special Notes (optional)</label>
             <input type="text" id="notes" placeholder="e.g., 多辣, no 金针菇, extra sauce">
           </div>
         </div>
@@ -2337,13 +2372,13 @@
 
         <!-- Action Buttons -->
         <button class="btn btn-primary" id="submitBtn" onclick="submitOrder()">
-          ✅ Place Order
+          <span class="icon">check_circle</span> Place Order
         </button>
 
         <div class="btn-group-3" id="orderActionsGroup" style="display: none;">
-          <button class="btn btn-success" onclick="showPaymentModal()" id="payBtn">💵 Pay</button>
-          <button class="btn btn-secondary" onclick="clearOrder()">🗑️ Clear</button>
-          <button class="btn btn-danger" onclick="cancelExistingOrder()" id="cancelBtn">❌ Cancel</button>
+          <button class="btn btn-success" onclick="showPaymentModal()" id="payBtn"><span class="icon">payments</span> Pay</button>
+          <button class="btn btn-secondary" onclick="clearOrder()"><span class="icon">delete</span> Clear</button>
+          <button class="btn btn-danger" onclick="cancelExistingOrder()" id="cancelBtn"><span class="icon">close</span> Cancel</button>
         </div>
       </div><!-- End orderContent -->
     </div>
@@ -2352,9 +2387,9 @@
     <div id="tab-myorder" class="tab-content">
       <div class="card name-card">
         <div class="name-row">
-          <label for="checkName">👤 Your Name</label>
+          <label for="checkName"><span class="icon">person</span> Your Name</label>
           <input type="text" id="checkName" placeholder="Enter your name">
-          <button class="btn btn-primary btn-sm" onclick="checkMyOrder()">🔍 Check My Order</button>
+          <button class="btn btn-primary btn-sm" onclick="checkMyOrder()"><span class="icon">search</span> Check My Order</button>
         </div>
       </div>
 
@@ -2365,7 +2400,7 @@
     <div id="tab-all" class="tab-content">
       <div class="all-orders-toolbar">
         <button class="btn btn-secondary" onclick="loadAllOrders()" style="flex: 1;">
-          🔄 Refresh Orders
+          <span class="icon">refresh</span> Refresh Orders
         </button>
       </div>
       <div id="allOrdersContainer">
@@ -2380,9 +2415,9 @@
     <div id="tab-stats" class="tab-content">
       <div class="card name-card">
         <div class="name-row">
-          <label for="statsName">👤 Your Name</label>
+          <label for="statsName"><span class="icon">person</span> Your Name</label>
           <input type="text" id="statsName" placeholder="Enter your name (or leave blank for all)">
-          <button class="btn btn-primary btn-sm" onclick="loadStatistics()">📊 Load Statistics</button>
+          <button class="btn btn-primary btn-sm" onclick="loadStatistics()"><span class="icon">bar_chart</span> Load Statistics</button>
         </div>
       </div>
 
@@ -2392,40 +2427,40 @@
     <!-- ADMIN TAB -->
     <div id="tab-admin" class="tab-content">
       <div class="card">
-        <div class="card-title">📅 Daily Operations</div>
+        <div class="card-title"><span class="icon">calendar_today</span> Daily Operations</div>
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <div id="adminStatus" style="padding: 12px; background: #f5f5f5; border-radius: 8px; text-align: center;">
             Checking status...
           </div>
           <button class="btn btn-primary" onclick="openTodayOrdering()" id="openOrderingBtn">
-            🔓 Open Today's Ordering
+            <span class="icon">lock_open</span> Open Today's Ordering
           </button>
           <button class="btn btn-danger" onclick="closeOrdering()" id="closeOrderingBtn" style="background: #dc3545;">
-            🔒 Close Ordering
+            <span class="icon">lock</span> Close Ordering
           </button>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">📥 Menu Management</div>
+        <div class="card-title"><span class="icon">download</span> Menu Management</div>
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <button class="btn btn-secondary" onclick="showImportMenu()">
-            📥 Import Menu from WhatsApp
+            <span class="icon">download</span> Import Menu from WhatsApp
           </button>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">📊 Reports</div>
+        <div class="card-title"><span class="icon">bar_chart</span> Reports</div>
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <button class="btn btn-primary" onclick="showOrderSummary()">
-            📊 Generate Order Summary
+            <span class="icon">bar_chart</span> Generate Order Summary
           </button>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">ℹ️ Instructions</div>
+        <div class="card-title"><span class="icon">description</span> Instructions</div>
         <div style="font-size: 14px; color: #666; line-height: 1.6;">
           <p><strong>Daily workflow:</strong></p>
           <ol style="margin: 8px 0; padding-left: 20px;">
@@ -2442,8 +2477,8 @@
 
     <!-- Info Footer -->
     <footer class="info-footer">
-      <span>🕙 Orders before 10am</span>
-      <span>🚗 Delivery 12-12:15pm @ P4</span>
+      <span><span class="icon sm">schedule</span> Orders before 10am</span>
+      <span><span class="icon sm">directions_car</span> Delivery 12-12:15pm @ P4</span>
     </footer>
   </div>
 
@@ -2451,7 +2486,7 @@
   <div class="modal-overlay" id="importMenuModal">
     <div class="modal">
       <div class="modal-header">
-        <h3>📥 Import Menu</h3>
+        <h3><span class="icon">download</span> Import Menu</h3>
         <button class="modal-close" onclick="hideImportMenu()">×</button>
       </div>
       <div class="modal-body">
@@ -2474,13 +2509,13 @@
 - 烧鸡胸饭 rm8
 - 烧鸡二度 rm9"></textarea>
         <div class="import-hint">
-          💡 For set meals with fixed prices, add <code>rm8</code> at the end.<br>
-          📊 Menu will be saved to F2, then parsed to columns A-E.
+          <span class="icon sm">lightbulb</span> For set meals with fixed prices, add <code>rm8</code> at the end.<br>
+          <span class="icon sm">bar_chart</span> Menu will be saved to F2, then parsed to columns A-E.
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="reloadMenuFromSheet(); hideImportMenu();"
-          style="margin-right: auto;">🔄 Reload from Sheet</button>
+          style="margin-right: auto;"><span class="icon">refresh</span> Reload from Sheet</button>
         <button class="btn btn-secondary" onclick="hideImportMenu()">Cancel</button>
         <button class="btn btn-primary" onclick="parseAndImportMenu()">Import Menu</button>
       </div>
@@ -2491,7 +2526,7 @@
   <div class="welcome-modal-overlay" id="welcomeModal" style="display: none;">
     <div class="welcome-modal">
       <div class="welcome-header">
-        <h2>👋 Welcome to Lunch Order!</h2>
+        <h2><span class="icon">waving_hand</span> Welcome to Lunch Order!</h2>
         <p>Quick guide to get you started</p>
       </div>
       <div class="welcome-body">
@@ -2525,7 +2560,7 @@
         </div>
 
         <div class="welcome-tips">
-          <h4>💡 Pro Tips</h4>
+          <h4><span class="icon">tips_and_updates</span> Pro Tips</h4>
           <ul>
             <li>Tap a selected item to add special notes (e.g., "extra spicy")</li>
             <li>Hover on the count badge to see who ordered each item</li>
@@ -2536,10 +2571,10 @@
       </div>
       <div class="welcome-footer">
         <button class="btn btn-primary" onclick="closeWelcomeAndStartTour()">
-          🚀 Take a Quick Tour
+          <span class="icon">rocket_launch</span> Take a Quick Tour
         </button>
         <button class="btn btn-secondary" onclick="closeWelcomeModal()">
-          ✓ Got it, let's order!
+          <span class="icon">check</span> Got it, let's order!
         </button>
         <label class="dont-show-again">
           <input type="checkbox" id="dontShowAgain">
@@ -2572,7 +2607,7 @@
   <div class="modal-overlay" id="orderSummaryModal">
     <div class="modal">
       <div class="modal-header">
-        <h3>📊 Order Summary</h3>
+        <h3><span class="icon">bar_chart</span> Order Summary</h3>
         <button class="modal-close" onclick="hideOrderSummary()">×</button>
       </div>
       <div class="modal-body">
@@ -2581,7 +2616,7 @@
         </div>
         <div class="summary-actions">
           <button class="btn btn-secondary" onclick="copySummary()" style="flex: 1;">
-            📋 Copy to Clipboard
+            <span class="icon">content_paste</span> Copy to Clipboard
           </button>
         </div>
       </div>
@@ -2592,7 +2627,7 @@
   <div class="modal-overlay" id="paymentModal">
     <div class="modal" style="max-width: 360px;">
       <div class="modal-header">
-        <h3>💳 Scan to Pay</h3>
+        <h3><span class="icon">credit_card</span> Scan to Pay</h3>
         <button class="modal-close" onclick="hidePaymentModal()">×</button>
       </div>
       <div class="modal-body" style="text-align: center; padding: 16px;">
@@ -2602,7 +2637,7 @@
           payment is complete.</p>
         <div style="display: flex; gap: 12px;">
           <button class="btn btn-secondary" onclick="hidePaymentModal()" style="flex: 1;">Cancel</button>
-          <button class="btn btn-success" onclick="confirmPayment()" style="flex: 1;">✅ OK - I've Paid</button>
+          <button class="btn btn-success" onclick="confirmPayment()" style="flex: 1;"><span class="icon">check_circle</span> OK - I've Paid</button>
         </div>
       </div>
     </div>
@@ -2612,7 +2647,7 @@
   <div class="modal-overlay" id="copyModal">
     <div class="modal" style="max-width: 400px;">
       <div class="modal-header">
-        <h3>📋 Copy Order</h3>
+        <h3><span class="icon">content_paste</span> Copy Order</h3>
         <button class="modal-close" onclick="hideCopyModal()">×</button>
       </div>
       <div class="modal-body" style="padding: 16px;">
@@ -2621,7 +2656,7 @@
           style="background: #f5f5f5; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;"></div>
         <div style="display: flex; gap: 12px;">
           <button class="btn btn-secondary" onclick="hideCopyModal()" style="flex: 1;">Cancel</button>
-          <button class="btn btn-primary" onclick="confirmCopyOrder()" style="flex: 1;">📋 Copy Order</button>
+          <button class="btn btn-primary" onclick="confirmCopyOrder()" style="flex: 1;"><span class="icon">content_paste</span> Copy Order</button>
         </div>
       </div>
     </div>
@@ -2822,14 +2857,14 @@
           if (status.isOpen) {
             if (status.isClosed) {
               // Ordering was closed by admin
-              statusDiv.innerHTML = '🔒 <strong>Ordering CLOSED</strong> for ' + status.todayDate + '<br><small>No more orders can be added.</small>';
+              statusDiv.innerHTML = '<span class="icon">lock</span> <strong>Ordering CLOSED</strong> for ' + status.todayDate + '<br><small>No more orders can be added.</small>';
               statusDiv.style.background = '#ffebee';
               statusDiv.style.color = '#c62828';
               openBtn.style.display = 'none';
               closeBtn.style.display = 'none';
             } else {
               // Ordering is open
-              statusDiv.innerHTML = '✅ <strong>Ordering OPEN</strong> for ' + status.todayDate;
+              statusDiv.innerHTML = '<span class="icon">check_circle</span> <strong>Ordering OPEN</strong> for ' + status.todayDate;
               statusDiv.style.background = '#e8f5e9';
               statusDiv.style.color = '#2e7d32';
               openBtn.style.display = 'none';
@@ -2837,7 +2872,7 @@
             }
           } else {
             // No sheet for today
-            statusDiv.innerHTML = '⏸️ <strong>Not Started</strong><br><small>Click "Open Today\'s Ordering" to begin.</small>';
+            statusDiv.innerHTML = '<span class="icon">pause_circle</span> <strong>Not Started</strong><br><small>Click "Open Today\'s Ordering" to begin.</small>';
             statusDiv.style.background = '#fff3e0';
             statusDiv.style.color = '#e65100';
             openBtn.style.display = 'block';
@@ -2845,7 +2880,7 @@
           }
         })
         .withFailureHandler(function (error) {
-          document.getElementById('adminStatus').innerHTML = '❌ Error: ' + error.message;
+          document.getElementById('adminStatus').innerHTML = '<span class="icon">error</span> Error: ' + error.message;
         })
         .getOrderingStatus();
     }
@@ -2857,24 +2892,24 @@
       }
 
       document.getElementById('openOrderingBtn').disabled = true;
-      document.getElementById('openOrderingBtn').textContent = '⏳ Opening...';
+      document.getElementById('openOrderingBtn').innerHTML = '<span class="icon">hourglass_top</span> Opening...';
 
       google.script.run
         .withSuccessHandler(function (result) {
           if (result.success) {
-            showStatus('✅ ' + result.message, 'success');
+            showStatus(result.message, 'success');
             refreshAdminStatus();
             checkOrderingStatus(); // Refresh main UI
           } else {
-            showStatus('❌ ' + result.message, 'error');
+            showStatus(result.message, 'error');
           }
           document.getElementById('openOrderingBtn').disabled = false;
-          document.getElementById('openOrderingBtn').textContent = '🔓 Open Today\'s Ordering';
+          document.getElementById('openOrderingBtn').innerHTML = '<span class="icon">lock_open</span> Open Today\'s Ordering';
         })
         .withFailureHandler(function (error) {
-          showStatus('❌ Error: ' + error.message, 'error');
+          showStatus('Error: ' + error.message, 'error');
           document.getElementById('openOrderingBtn').disabled = false;
-          document.getElementById('openOrderingBtn').textContent = '🔓 Open Today\'s Ordering';
+          document.getElementById('openOrderingBtn').innerHTML = '<span class="icon">lock_open</span> Open Today\'s Ordering';
         })
         .createNewDayOrderSheet();
     }
@@ -2886,24 +2921,24 @@
       }
 
       document.getElementById('closeOrderingBtn').disabled = true;
-      document.getElementById('closeOrderingBtn').textContent = '⏳ Closing...';
+      document.getElementById('closeOrderingBtn').innerHTML = '<span class="icon">hourglass_top</span> Closing...';
 
       google.script.run
         .withSuccessHandler(function (result) {
           if (result.success) {
-            showStatus('✅ ' + result.message, 'success');
+            showStatus(result.message, 'success');
             refreshAdminStatus();
             checkOrderingStatus(); // Refresh main UI
           } else {
-            showStatus('❌ ' + result.message, 'error');
+            showStatus(result.message, 'error');
           }
           document.getElementById('closeOrderingBtn').disabled = false;
-          document.getElementById('closeOrderingBtn').textContent = '🔒 Close Ordering';
+          document.getElementById('closeOrderingBtn').innerHTML = '<span class="icon">lock</span> Close Ordering';
         })
         .withFailureHandler(function (error) {
-          showStatus('❌ Error: ' + error.message, 'error');
+          showStatus('Error: ' + error.message, 'error');
           document.getElementById('closeOrderingBtn').disabled = false;
-          document.getElementById('closeOrderingBtn').textContent = '🔒 Close Ordering';
+          document.getElementById('closeOrderingBtn').innerHTML = '<span class="icon">lock</span> Close Ordering';
         })
         .closeOrderingForToday();
     }
@@ -2985,10 +3020,10 @@
           menuData = menu;
           renderMenu(menu);
           updateRefreshTime();
-          showStatus('✅ Menu reloaded from spreadsheet.', 'success');
+          showStatus('Menu reloaded from spreadsheet.', 'success');
         })
         .withFailureHandler(function (error) {
-          showStatus('❌ Error: ' + error.message, 'error');
+          showStatus('Error: ' + error.message, 'error');
         })
         .getMenuForSidebar();
     }
@@ -2997,7 +3032,7 @@
     function loadDate() {
       google.script.run
         .withSuccessHandler(function (date) {
-          document.getElementById('dateDisplay').textContent = '📅 ' + formatDate(date);
+          document.getElementById('dateDisplay').innerHTML = '<span class="icon sm">calendar_today</span> ' + formatDate(date);
         })
         .getTodayDate();
     }
@@ -3029,6 +3064,23 @@
       return CATEGORY_ORDER.length; // Unknown categories go to end
     }
 
+    // Replace UI-marker emojis embedded in spreadsheet menu strings (category
+    // names, item names) with Material Symbols icons. Food/nature emojis like
+    // 🥦/🌿 are intentionally preserved — they're decorative content, not UI chrome.
+    const MENU_EMOJI_TO_ICON = {
+      '❌': 'close',
+      '✅': 'check_circle',
+      '➕': 'add',
+      '➖': 'remove'
+    };
+    function replaceMenuEmojis(str) {
+      if (!str) return str;
+      return String(str).replace(/[❌✅➕➖]/g, m => {
+        const name = MENU_EMOJI_TO_ICON[m];
+        return name ? `<span class="icon sm">${name}</span>` : m;
+      });
+    }
+
     function renderMenu(menu) {
       menuData = menu;
       const container = document.getElementById('menuContainer');
@@ -3048,7 +3100,7 @@
 
         const header = document.createElement('div');
         header.className = 'category-header';
-        header.innerHTML = `${category} ${categoryTotal > 0 ? '<span style="opacity:0.7">(' + categoryTotal + ')</span>' : ''} <span class="toggle">▼</span>`;
+        header.innerHTML = `<span class="category-title">${replaceMenuEmojis(category)}${categoryTotal > 0 ? ' <span style="opacity:0.7">(' + categoryTotal + ')</span>' : ''}</span><span class="toggle">▼</span>`;
         header.onclick = function () {
           this.classList.toggle('collapsed');
           this.nextElementSibling.classList.toggle('collapsed');
@@ -3075,7 +3127,7 @@
             itemBtn.classList.add('selected');
           }
 
-          let displayName = item.name;
+          let displayName = replaceMenuEmojis(item.name);
           const count = item.count || 0;
           const countBadge = `<span class="order-count ${count === 0 ? 'zero' : ''}" onmouseenter="showOrderedBy(this, event);" onmouseleave="hideOrderedByTooltip();">${count}</span>`;
 
@@ -3219,44 +3271,44 @@
     const tourSteps = [
       {
         target: '#tab-order .name-card',
-        title: '1️⃣ Enter Your Name',
+        title: '1. Enter Your Name',
         description: 'Start by typing your name here. Your name will be remembered for next time!',
         position: 'bottom'
       },
       {
         target: '.menu-toolbar',
-        title: '2️⃣ Menu Controls',
+        title: '2. Menu Controls',
         description: 'Use these buttons to expand/collapse categories. The refresh button updates order counts.',
         position: 'bottom'
       },
       {
         target: '.menu-category',
-        title: '3️⃣ Select Menu Items',
+        title: '3. Select Menu Items',
         description: 'Tap any item to add it to your order. The number badge shows how many people ordered it. Tap again to remove.',
         position: 'bottom'
       },
       {
         target: '#selectionCard',
-        title: '4️⃣ Your Selection',
+        title: '4. Your Selection',
         description: 'Selected items appear here. Tap an item to add special notes (like "extra spicy" or "no onion").',
         position: 'bottom'
       },
       {
         target: '#riceCard',
-        title: '5️⃣ Rice Options',
+        title: '5. Rice Options',
         description: 'Choose your rice preference - normal, less rice, or no rice.',
         position: 'top'
       },
       {
         target: '#submitBtn',
-        title: '6️⃣ Place Your Order',
+        title: '6. Place Your Order',
         description: 'When you\'re ready, click this button to submit your order. You can edit it anytime before ordering closes!',
         position: 'top'
       },
       {
         target: '#tabMyOrder',
-        title: '7️⃣ Navigation Tabs',
-        description: '"My Order" shows your order. "All Orders" shows everyone\'s orders. Ready to order? Let\'s go! 🎉',
+        title: '7. Navigation Tabs',
+        description: '"My Order" shows your order. "All Orders" shows everyone\'s orders. Ready to order? Let\'s go!',
         position: 'bottom'
       }
     ];
@@ -3601,7 +3653,7 @@
         return `
           <span class="selected-tag" onclick="openItemNoteModal(${index})" title="Click to ${hasNote ? 'edit' : 'add'} note">
             ${displayText}
-            <span class="edit-hint">✎</span>
+            <span class="edit-hint"><span class="icon sm">edit</span></span>
             <span class="remove" onclick="event.stopPropagation(); removeItem(${index})">×</span>
           </span>
         `;
@@ -3619,7 +3671,7 @@
       modal.id = 'itemNoteModal';
       modal.innerHTML = `
         <div class="note-modal">
-          <h3>📝 Add Note for ${baseName}</h3>
+          <h3><span class="icon">edit_note</span> Add Note for ${baseName}</h3>
           ${originalHint ? `<div class="item-hint">Options: ${originalHint}</div>` : ''}
           <input type="text" id="itemNoteInput" placeholder="e.g., 茄子x2，苦瓜" value="${item.note || ''}" autofocus>
           <div class="note-modal-buttons">
@@ -3858,7 +3910,7 @@
 
       const estimatedPrice = parseFloat(document.getElementById('priceAmount').textContent) || 0;
       if (estimatedPrice <= 0) {
-        alert('⚠️ Estimated Price cannot be RM 0!\n\nPlease use the +/− buttons to set a valid price before placing your order.');
+        alert('Estimated Price cannot be RM 0!\n\nPlease use the +/− buttons to set a valid price before placing your order.');
         showStatus('Estimated Price cannot be RM 0! Use the +/− buttons to set a valid price.', 'error');
         return;
       }
@@ -3885,14 +3937,14 @@
       google.script.run
         .withSuccessHandler(function (result) {
           btn.disabled = false;
-          btn.textContent = isEditMode ? '💾 Update Order' : '✅ Place Order';
+          btn.innerHTML = isEditMode ? '<span class="icon">save</span> Update Order' : '<span class="icon">check_circle</span> Place Order';
 
           if (result.success) {
             showStatus(result.message, 'success');
             // After successful submit, enter edit mode (order now exists)
             isEditMode = true;
             document.getElementById('editModeBanner').style.display = 'flex';
-            document.getElementById('submitBtn').textContent = '💾 Update Order';
+            document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
             updatePaymentStatus(true, currentOrderPaid);
             // Enable Pay and Cancel buttons (order exists now)
             setOrderButtonsEnabled(true);
@@ -3904,7 +3956,7 @@
         })
         .withFailureHandler(function (error) {
           btn.disabled = false;
-          btn.textContent = isEditMode ? '💾 Update Order' : '✅ Place Order';
+          btn.innerHTML = isEditMode ? '<span class="icon">save</span> Update Order' : '<span class="icon">check_circle</span> Place Order';
           showStatus('Error: ' + error.message, 'error');
         })
         .submitOrder(orderData);
@@ -3954,12 +4006,12 @@
 
       const btn = document.getElementById('loadOrderBtn');
       btn.disabled = true;
-      btn.textContent = '⏳ Loading...';
+      btn.innerHTML = '<span class="icon">hourglass_top</span> Loading...';
 
       google.script.run
         .withSuccessHandler(function (result) {
           btn.disabled = false;
-          btn.textContent = '📥 Load My Order';
+          btn.innerHTML = '<span class="icon">download</span> Load My Order';
 
           if (result.found) {
             // Load order into form
@@ -3976,7 +4028,7 @@
         })
         .withFailureHandler(function (error) {
           btn.disabled = false;
-          btn.textContent = '📥 Load My Order';
+          btn.innerHTML = '<span class="icon">download</span> Load My Order';
           showStatus('Error: ' + error.message, 'error');
         })
         .getOrderByName(userName);
@@ -4095,7 +4147,7 @@
       isEditMode = true;
       currentOrderPaid = orderData.paid;
       document.getElementById('editModeBanner').style.display = 'flex';
-      document.getElementById('submitBtn').textContent = '💾 Update Order';
+      document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
 
       // Update payment status
       updatePaymentStatus(true, orderData.paid);
@@ -4113,10 +4165,10 @@
 
       if (isPaid) {
         statusEl.className = 'payment-status paid';
-        textEl.textContent = '💵 Your order is marked as PAID';
+        textEl.innerHTML = '<span class="icon">payments</span> Your order is marked as PAID';
       } else {
         statusEl.className = 'payment-status unpaid';
-        textEl.textContent = '⏳ Your order is NOT YET PAID';
+        textEl.innerHTML = '<span class="icon">hourglass_top</span> Your order is NOT YET PAID';
       }
     }
 
@@ -4126,7 +4178,7 @@
       currentOrderPaid = false;
       customPrice = null;
       document.getElementById('editModeBanner').style.display = 'none';
-      document.getElementById('submitBtn').textContent = '✅ Place Order';
+      document.getElementById('submitBtn').innerHTML = '<span class="icon">check_circle</span> Place Order';
       clearOrder();
       updatePaymentStatus(false, false);
     }
@@ -4331,11 +4383,11 @@
       google.script.run
         .withSuccessHandler(function (result) {
           if (result.success) {
-            showAllOrdersStatus(`✅ Order copied from ${fromName}!`, 'success');
+            showAllOrdersStatus(`Order copied from ${fromName}!`, 'success');
             // Update state for Order tab (in background)
             isEditMode = true;
             document.getElementById('editModeBanner').style.display = 'flex';
-            document.getElementById('submitBtn').textContent = '💾 Update Order';
+            document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
             setOrderButtonsEnabled(true);
             // Sync name to Order tab
             document.getElementById('userName').value = userName;
@@ -4441,21 +4493,21 @@
             if (result.found) {
               const editButton = orderingOpen
                 ? `<button class="btn btn-primary" style="margin-top: 12px; width: 100%;" onclick="goToEditOrder('${userName.replace(/'/g, "\\'")}')">
-                  ✏️ Edit My Order
+                  <span class="icon">edit</span> Edit My Order
                 </button>`
                 : `<div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 8px; text-align: center; color: var(--text-secondary); font-size: 13px;">
-                  🔒 Ordering is closed. Editing not available.
+                  <span class="icon">lock</span> Ordering is closed. Editing not available.
                 </div>`;
 
               const payButton = !result.paid
                 ? `<button class="btn btn-success" style="margin-top: 12px; width: 100%;" onclick="showPaymentModalForUser('${userName.replace(/'/g, "\\'")}')">
-                  💵 Pay Now
+                  <span class="icon">payments</span> Pay Now
                 </button>`
                 : '';
 
               document.getElementById('myOrderResult').innerHTML = `
               <div class="card" style="margin-top: 16px;">
-                <div class="card-title">✅ Your Order Found</div>
+                <div class="card-title"><span class="icon">check_circle</span> Your Order Found</div>
                 <div class="order-card order-card-readonly" style="margin-top: 12px;">
                   <div class="order-seq">${result.row}</div>
                   <div class="order-content">
@@ -4464,7 +4516,7 @@
                   </div>
                   <div class="order-meta">
                     <span class="order-paid ${result.paid ? 'yes' : 'no'}">
-                      ${result.paid ? '💵' : '⏳'}
+                      <span class="icon">${result.paid ? 'payments' : 'hourglass_top'}</span>
                     </span>
                     <span class="order-price">RM${result.price}</span>
                   </div>
@@ -4498,7 +4550,7 @@
 
           if (result.success && result.orders && result.orders.length > 0) {
             container += `<div class="card" style="margin-top: 16px;">`;
-            container += `<div class="card-title">📜 Your Previous Orders</div>`;
+            container += `<div class="card-title"><span class="icon">description</span> Your Previous Orders</div>`;
             container += `<p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">Click "Use This Order" to re-order from a previous day.</p>`;
 
             result.orders.forEach((order, index) => {
@@ -4509,13 +4561,13 @@
               container += `
                 <div style="background: var(--bg); border-radius: var(--radius-md); padding: 14px; margin-bottom: 10px; border: 1px solid var(--border);">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: 600; font-size: 0.9rem; color: var(--primary);">📅 ${order.displayDate}</span>
+                    <span style="font-weight: 600; font-size: 0.9rem; color: var(--primary);"><span class="icon sm">calendar_today</span> ${order.displayDate}</span>
                     <span style="font-size: 0.85rem; color: var(--text-secondary);">RM${order.price}</span>
                   </div>
                   <div style="font-size: 0.85rem; color: var(--text); margin-bottom: 10px; line-height: 1.5;">${enriched}</div>
                   <button class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 0.85rem;"
                     onclick="usePreviousOrder('${itemsJson}', '${riceOpt}', ${order.price})">
-                    📋 Use This Order
+                    <span class="icon">content_paste</span> Use This Order
                   </button>
                 </div>
               `;
@@ -4524,7 +4576,7 @@
             container += `</div>`;
           } else if (result.success && (!result.orders || result.orders.length === 0)) {
             container += `<div class="card" style="margin-top: 16px; text-align: center; padding: 30px; color: var(--text-muted);">
-              <div style="font-size: 2rem; margin-bottom: 8px;">📭</div>
+              <div style="margin-bottom: 8px;"><span class="icon" style="font-size:2rem;">mail</span></div>
               <div>No previous order history found.</div>
             </div>`;
           } else {
@@ -4630,9 +4682,9 @@
 
         // Show feedback
         if (notFoundItems.length > 0) {
-          showStatus(`⚠️ Copied ${matchedCount} item(s). Not found in today's menu: ${notFoundItems.join(', ')}`, 'error');
+          showStatus(`Copied ${matchedCount} item(s). Not found in today's menu: ${notFoundItems.join(', ')}`, 'error');
         } else {
-          showStatus(`✅ Copied ${matchedCount} item(s) from previous order. Review and click "Place Order" to confirm.`, 'success');
+          showStatus(`Copied ${matchedCount} item(s) from previous order. Review and click "Place Order" to confirm.`, 'success');
         }
       }, 300);
     }
@@ -4691,17 +4743,17 @@
                     </div>
                     <div class="order-meta">
                       <span class="order-paid ${order.paid ? 'yes' : 'no'}">
-                        ${order.paid ? '💵' : '⏳'}
+                        <span class="icon">${order.paid ? 'payments' : 'hourglass_top'}</span>
                       </span>
                       <span class="order-price">RM${order.price}</span>
                       <span class="order-actions">
-                        ${!isOwnOrder ? `<button class="order-action-btn" 
-                                data-name="${encodedName}" 
-                                data-order="${encodedOrder}" 
+                        ${!isOwnOrder ? `<button class="order-action-btn"
+                                data-name="${encodedName}"
+                                data-order="${encodedOrder}"
                                 data-price="${order.price}"
-                                onclick="event.stopPropagation(); handleCopyClick(this)" 
-                                title="Copy this order">📋</button>` : ''}
-                        <button class="order-action-btn" onclick="event.stopPropagation(); goToEditOrder('${escapedNameJs}')" title="Edit this order">✏️</button>
+                                onclick="event.stopPropagation(); handleCopyClick(this)"
+                                title="Copy this order"><span class="icon">content_paste</span></button>` : ''}
+                        <button class="order-action-btn" onclick="event.stopPropagation(); goToEditOrder('${escapedNameJs}')" title="Edit this order"><span class="icon">edit</span></button>
                       </span>
                     </div>
                   </div>
@@ -4717,7 +4769,7 @@
                     </div>
                     <div class="order-meta">
                       <span class="order-paid ${order.paid ? 'yes' : 'no'}">
-                        ${order.paid ? '💵' : '⏳'}
+                        <span class="icon">${order.paid ? 'payments' : 'hourglass_top'}</span>
                       </span>
                       <span class="order-price">RM${order.price}</span>
                     </div>
@@ -4767,7 +4819,7 @@
       if (!data.stats || data.stats.length === 0) {
         document.getElementById('statsResult').innerHTML = `
           <div class="card stats-empty">
-            <div class="stats-empty-icon">📊</div>
+            <div class="stats-empty-icon"><span class="icon" style="font-size:3rem;">bar_chart</span></div>
             <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px;">No Statistics Available</div>
             <div>No order history found${data.userName !== 'All Users' ? ' for ' + data.userName : ''}.</div>
           </div>
@@ -4778,12 +4830,12 @@
       let html = `
         <div class="card">
           <div class="stats-header">
-            <div class="stats-header-title">📊 Order Statistics${data.filterByUser ? ' for ' + data.userName : ' (All Users)'}</div>
+            <div class="stats-header-title"><span class="icon">bar_chart</span> Order Statistics${data.filterByUser ? ' for ' + data.userName : ' (All Users)'}</div>
             <div class="stats-header-meta">
-              <span>📅 ${data.dateRange.from} - ${data.dateRange.to}</span>
-              <span>📦 ${data.totalOrders} total orders</span>
-              <span>💰 Total: RM${data.totalSpent.toFixed(2)}</span>
-              <span>📉 Avg: RM${data.averageSpent.toFixed(2)}</span>
+              <span><span class="icon sm">calendar_today</span> ${data.dateRange.from} - ${data.dateRange.to}</span>
+              <span><span class="icon sm">inventory_2</span> ${data.totalOrders} total orders</span>
+              <span><span class="icon sm">savings</span> Total: RM${data.totalSpent.toFixed(2)}</span>
+              <span><span class="icon sm">trending_down</span> Avg: RM${data.averageSpent.toFixed(2)}</span>
             </div>
           </div>
 
@@ -4819,7 +4871,7 @@
                       onclick="addStatItemToOrder('${escapedItem}')" 
                       ${addButtonDisabled}
                       title="${addButtonTitle}">
-                ➕ Add
+                <span class="icon sm">add</span> Add
               </button>
             </td>
           </tr>
@@ -4929,7 +4981,7 @@
         }
       });
 
-      btn.textContent = allCollapsed ? '📂 Expand All' : '📁 Collapse All';
+      btn.innerHTML = allCollapsed ? '<span class="icon">folder_open</span> Expand All' : '<span class="icon">folder</span> Collapse All';
     }
 
     // ==================== IMPORT MENU ====================
@@ -4958,13 +5010,13 @@
             hideImportMenu();
             // Reload menu from sheet
             loadMenu();
-            showStatus('✅ ' + result.message, 'success');
+            showStatus(result.message, 'success');
           } else {
-            showStatus('❌ ' + result.message, 'error');
+            showStatus(result.message, 'error');
           }
         })
         .withFailureHandler(function (error) {
-          showStatus('❌ Error: ' + error.message, 'error');
+          showStatus('Error: ' + error.message, 'error');
         })
         .importMenuToSheet(text);
     }
