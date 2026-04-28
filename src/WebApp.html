@@ -574,6 +574,15 @@
       font-weight: bold;
     }
 
+    .menu-item.disabled {
+      opacity: 0.45;
+      background: var(--border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      pointer-events: none;
+      box-shadow: none;
+    }
+
     .menu-item .item-name-cn {
       font-weight: 600;
       font-size: 0.9rem;
@@ -2619,6 +2628,9 @@
   </div>
 
   <script>
+    // Configuration
+    const MAX_NON_FOOD_ITEMS = 5;
+
     // State
     let selectedItems = [];
     let riceOption = 'normal';
@@ -3081,6 +3093,8 @@
         categoryDiv.appendChild(itemsDiv);
         container.appendChild(categoryDiv);
       }
+
+      updateMenuItemDisabledState();
     }
 
     // Show tooltip with who ordered this item (on hover)
@@ -3527,6 +3541,8 @@
 
     // Toggle item selection
     function toggleItem(element) {
+      if (element.classList.contains('disabled')) return;
+
       const itemName = element.dataset.name;
       const fixedPrice = element.dataset.fixedPrice;
 
@@ -3562,6 +3578,7 @@
 
       updateSelectedDisplay();
       updatePrice();
+      updateMenuItemDisabledState();
     }
 
     // Update selected items display
@@ -3666,6 +3683,7 @@
 
       updateSelectedDisplay();
       updatePrice();
+      updateMenuItemDisabledState();
     }
 
     // Select rice option
@@ -3739,6 +3757,29 @@
       updateSubmitButtonState();
     }
 
+    // Grey-out unselected menu items based on the current selection state:
+    //   (a) 5 non-food items already selected (cap reached) → disable ALL unselected.
+    //   (b) A food/食物 (fixed-price) item is currently selected → disable ALL unselected
+    //       (set meals are exclusive; deselect first before picking anything else).
+    //   (c) Any non-food item is selected (1–4) → disable only the food/食物 items, so
+    //       the user can't accidentally wipe their non-food picks by tapping a set meal.
+    function updateMenuItemDisabledState() {
+      const nonFoodCount = selectedItems.filter(item => !item.fixedPrice).length;
+      const hasFoodSelected = selectedItems.some(item => item.fixedPrice);
+      const hasNonFoodSelected = nonFoodCount > 0;
+      const atCap = nonFoodCount >= MAX_NON_FOOD_ITEMS;
+      const lockEverythingElse = atCap || hasFoodSelected;
+      document.querySelectorAll('.menu-item').forEach(btn => {
+        if (btn.classList.contains('selected')) {
+          btn.classList.remove('disabled');
+          return;
+        }
+        const isFoodItem = btn.dataset.fixedPrice !== undefined;
+        const shouldDisable = lockEverythingElse || (hasNonFoodSelected && isFoodItem);
+        btn.classList.toggle('disabled', shouldDisable);
+      });
+    }
+
     // Visually mark the Place Order button as invalid when Estimated Price is RM 0.
     // Note: we do NOT set `disabled=true` because we still want the click to fire so
     // submitOrder() can show the alert/toast — disabled buttons swallow clicks silently.
@@ -3778,6 +3819,7 @@
 
       updateSelectedDisplay();
       updatePrice();
+      updateMenuItemDisabledState();
       hideStatus();
 
       // Don't reset edit mode here - only cancelEditMode does that
@@ -4028,6 +4070,7 @@
 
       // Update displays
       updateSelectedDisplay();
+      updateMenuItemDisabledState();
 
       // Set the actual price from the order (user may have customized it)
       if (orderData.price) {
@@ -4573,6 +4616,7 @@
         // Update displays
         updateSelectedDisplay();
         updatePrice();
+        updateMenuItemDisabledState();
 
         // Show feedback
         if (notFoundItems.length > 0) {
