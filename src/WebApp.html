@@ -7173,10 +7173,7 @@
       const sfPreview = document.getElementById('sfItemsPreview');
       if (sfCount) sfCount.textContent = selectedItems.length + ' item' + (selectedItems.length !== 1 ? 's' : '');
       if (sfPreview) {
-        sfPreview.textContent = selectedItems.map(it => {
-          const cn = it.name.match(/[\u4e00-\u9fff]+/)?.[0];
-          return cn || stripBrackets(it.name);
-        }).join('・');
+        sfPreview.textContent = selectedItems.map(it => stripBrackets(it.name)).join('・');
       }
     }
 
