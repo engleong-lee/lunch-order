@@ -3532,16 +3532,14 @@
     }
     .sticky-footer .sf-main {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      flex-direction: column;
+      gap: 8px;
     }
     .sticky-footer .sf-left {
       display: flex;
       flex-direction: column;
       gap: 1px;
       min-width: 0;
-      flex: 1;
     }
     .sticky-footer .sf-label {
       font-size: 12px;
@@ -3570,8 +3568,8 @@
     .sticky-footer .sf-right {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 10px;
-      flex-shrink: 0;
     }
     .sticky-footer .sf-place-order {
       background: var(--cta);
