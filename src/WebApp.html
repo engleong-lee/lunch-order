@@ -1670,9 +1670,9 @@
     /* === Refined order-row component (shared by My Order + All Orders) === */
     .order-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 12px;
-      padding: 12px 14px;
+      padding: 14px 16px;
       background: var(--surface);
       border: 0.5px solid var(--border);
       border-radius: var(--r-md);
@@ -1690,9 +1690,9 @@
     }
 
     .order-row .row-seq {
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       background: var(--brand-500);
       color: white;
       display: inline-flex;
@@ -1702,22 +1702,28 @@
       font-size: 13px;
       font-variant-numeric: tabular-nums;
       flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .order-row .row-content {
       flex: 1;
       min-width: 0;
       display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .order-row .row-header {
+      display: flex;
       align-items: baseline;
-      gap: 2px 10px;
+      justify-content: space-between;
+      gap: 8px;
     }
 
     .order-row .row-name {
-      font-weight: 600;
+      font-weight: 700;
       color: var(--ink-900);
-      font-size: 13.5px;
+      font-size: 15px;
       white-space: nowrap;
     }
 
@@ -1728,12 +1734,17 @@
       margin-left: 4px;
     }
 
+    .order-row .row-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
     .order-row .row-items {
       font-family: 'Noto Sans SC', 'Inter', sans-serif;
       font-size: 13px;
       color: var(--ink-500);
-      flex: 1;
-      min-width: 140px;
       line-height: 1.5;
     }
 
@@ -1745,8 +1756,8 @@
     }
 
     .order-row .row-pay {
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -1764,13 +1775,13 @@
     }
 
     .order-row .row-pay .icon {
-      font-size: 1.15em;
+      font-size: 1.1em;
     }
 
     .order-row .row-price {
       font-variant-numeric: tabular-nums;
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 14.5px;
+      font-weight: 700;
       color: var(--brand-700);
       white-space: nowrap;
       letter-spacing: -0.01em;
@@ -1780,7 +1791,7 @@
       font-size: 11px;
       font-weight: 400;
       color: var(--ink-500);
-      margin-right: 2px;
+      margin-right: 1px;
     }
 
     .order-row .row-actions {
@@ -1815,18 +1826,8 @@
     }
 
     @media (max-width: 600px) {
-      .order-row {
-        flex-wrap: wrap;
-      }
-
-      .order-row .row-content {
-        flex-basis: calc(100% - 40px);
-      }
-
-      .order-row .row-meta {
-        flex-basis: 100%;
-        margin-left: 40px;
-        margin-top: 4px;
+      .order-row .row-actions {
+        margin-top: 2px;
       }
     }
 
@@ -6479,14 +6480,16 @@
                 <div class="order-row">
                   <div class="row-seq">${result.row}</div>
                   <div class="row-content">
-                    <span class="row-name">${userName}</span>
+                    <div class="row-header">
+                      <span class="row-name">${userName}</span>
+                      <span class="row-right">
+                        <span class="row-pay ${result.paid ? 'paid' : 'unpaid'}">
+                          <span class="icon">${result.paid ? 'credit_card' : 'hourglass_top'}</span>
+                        </span>
+                        <span class="row-price"><span class="price-currency">RM</span>${result.price}</span>
+                      </span>
+                    </div>
                     <span class="row-items">${orderItemsText}</span>
-                  </div>
-                  <div class="row-meta">
-                    <span class="row-pay ${result.paid ? 'paid' : 'unpaid'}">
-                      <span class="icon">${result.paid ? 'credit_card' : 'hourglass_top'}</span>
-                    </span>
-                    <span class="row-price"><span class="price-currency">RM</span>${result.price}</span>
                   </div>
                 </div>
                 ${payButton}
@@ -6717,15 +6720,17 @@
                   <div class="order-row${isOwnOrder ? ' own-order' : ''}">
                     <div class="row-seq">${order.row}</div>
                     <div class="row-content">
-                      <span class="row-name">${order.name}${isOwnOrder ? ' <span class="you-marker">(You)</span>' : ''}</span>
+                      <div class="row-header">
+                        <span class="row-name">${order.name}${isOwnOrder ? ' <span class="you-marker">(You)</span>' : ''}</span>
+                        <span class="row-right">
+                          <span class="row-pay ${order.paid ? 'paid' : 'unpaid'}">
+                            <span class="icon">${order.paid ? 'credit_card' : 'hourglass_top'}</span>
+                          </span>
+                          <span class="row-price"><span class="price-currency">RM</span>${order.price}</span>
+                          ${actions}
+                        </span>
+                      </div>
                       <span class="row-items">${itemsText}</span>
-                    </div>
-                    <div class="row-meta">
-                      <span class="row-pay ${order.paid ? 'paid' : 'unpaid'}">
-                        <span class="icon">${order.paid ? 'credit_card' : 'hourglass_top'}</span>
-                      </span>
-                      <span class="row-price"><span class="price-currency">RM</span>${order.price}</span>
-                      ${actions}
                     </div>
                   </div>
                 `;
