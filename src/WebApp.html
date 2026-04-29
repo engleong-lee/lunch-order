@@ -3225,27 +3225,6 @@
     }
 
     /* ===================== NEW DESIGN: Greeting ===================== */
-    .order-greeting {
-      padding: 20px 0 8px;
-    }
-    .greeting-title {
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--ink-900);
-      margin: 0;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-    .greeting-sub {
-      font-size: 14px;
-      color: var(--ink-500);
-      margin: 4px 0 0;
-    }
-    .greeting-meta {
-      font-size: 12.5px;
-      color: var(--ink-400);
-      margin: 2px 0 0;
-    }
 
     /* ===================== NEW DESIGN: Search bar ===================== */
     .search-bar-wrap {
@@ -3967,7 +3946,7 @@
         <div class="brand-icon"><span class="icon" style="font-size:22px;">lunch_dining</span></div>
         <div class="brand-text">
           <h1>Lunch Order</h1>
-          <div class="location">TRX Exchange · Level 17</div>
+          <div class="location">TRX Exchange · Level 17 · <span id="dateDisplay">Loading...</span></div>
         </div>
       </div>
       <nav class="header-nav">
@@ -4030,15 +4009,6 @@
         <!-- Desktop 2-column layout wrapper -->
         <div class="order-layout">
           <div class="order-layout-main">
-
-            <!-- Greeting + date (mobile) / Date line (desktop) -->
-            <div class="order-greeting">
-              <div>
-                <h2 class="greeting-title" id="greetingTitle">Good morning 👋</h2>
-                <p class="greeting-sub" id="greetingSub">Today's lunch · <span id="dateDisplay">Loading...</span></p>
-                <p class="greeting-meta" id="greetingMeta"></p>
-              </div>
-            </div>
 
             <!-- Edit Mode Banner (hidden by default) -->
             <div id="editModeBanner" class="edit-mode-banner" style="display: none;">
@@ -7266,16 +7236,6 @@
       riceOption = val;
     }
 
-    // Greeting based on time of day
-    function updateGreeting() {
-      const h = new Date().getHours();
-      let msg = 'Good morning 👋';
-      if (h >= 12 && h < 17) msg = 'Good afternoon 👋';
-      else if (h >= 17) msg = 'Good evening 👋';
-      const el = document.getElementById('greetingTitle');
-      if (el) el.textContent = msg;
-    }
-
     // ==================== MONKEY-PATCHES to integrate new UI ====================
 
     // Patch switchTab to sync header nav links
@@ -7309,11 +7269,6 @@
       _origRenderMenu(menu);
       buildCategoryPills(menu);
     };
-
-    // Init greeting on load
-    document.addEventListener('DOMContentLoaded', function() {
-      updateGreeting();
-    });
   </script>
 </body>
 
