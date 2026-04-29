@@ -3498,6 +3498,34 @@
       flex-direction: column;
       gap: 2px;
     }
+    .sidebar-total-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sidebar-stepper {
+      display: flex;
+      gap: 4px;
+    }
+    .sidebar-stepper .sf-step-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink-700);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      font-family: inherit;
+      padding: 0;
+      line-height: 1;
+    }
+    .sidebar-stepper .sf-step-btn:hover { background: var(--ink-50); }
     .sidebar-total-label {
       font-size: 11px;
       font-weight: 600;
@@ -4148,7 +4176,13 @@
                   <span class="sidebar-total-label">TOTAL</span>
                   <span class="sidebar-total-detail" id="sidebarTotalDetail"></span>
                 </div>
-                <span class="sidebar-total-amount" id="sidebarTotalAmount">RM0</span>
+                <div class="sidebar-total-right">
+                  <div class="sidebar-stepper">
+                    <button class="sf-step-btn" onclick="adjustPrice(-1)">−</button>
+                    <button class="sf-step-btn" onclick="adjustPrice(1)">+</button>
+                  </div>
+                  <span class="sidebar-total-amount" id="sidebarTotalAmount">RM0</span>
+                </div>
               </div>
 
               <button class="sidebar-place-order" id="sidebarPlaceOrder" onclick="submitOrder()">Place order →</button>
@@ -4174,7 +4208,7 @@
             </div>
             <div class="sf-right">
               <div class="sf-amount"><span class="sf-currency">RM</span><span id="priceAmount">0</span></div>
-              <div class="sf-stepper" style="display:none;">
+              <div class="sf-stepper">
                 <button class="sf-step-btn" id="priceMinusBtn" onclick="adjustPrice(-1)" aria-label="Decrease price">−</button>
                 <span class="sf-step-value" id="priceStepValue">0</span>
                 <button class="sf-step-btn" id="pricePlusBtn" onclick="adjustPrice(1)" aria-label="Increase price">+</button>
