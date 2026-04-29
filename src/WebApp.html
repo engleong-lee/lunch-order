@@ -1402,6 +1402,32 @@
     /* Legacy alias — old code paths still touch .price-card */
     .price-card { display: none; }
 
+    /* Paid state: drop sticky positioning and hide all interactive controls.
+       Leaves only the ESTIMATED TOTAL readout as a passive summary. */
+    .sticky-footer.paid {
+      position: static;
+      bottom: auto;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .sticky-footer.paid .sf-actions,
+    .sticky-footer.paid .sf-stepper,
+    .sticky-footer.paid .sf-place-order {
+      display: none;
+    }
+
+    .sticky-footer.paid .sf-main {
+      justify-content: flex-start;
+    }
+
+    .sticky-footer.paid .sf-right {
+      display: none;
+    }
+
+    .sticky-footer.paid .sf-hint {
+      display: none;
+    }
+
     /* Buttons */
     .btn {
       width: 100%;
@@ -1686,14 +1712,48 @@
 
     /* Status messages */
     .status {
-      padding: 16px;
-      border-radius: var(--radius-md);
-      margin: 16px 0;
+      padding: 14px 16px;
+      border-radius: var(--r-lg);
+      margin: 14px 0;
       display: none;
-      font-size: 0.9rem;
-      line-height: 1.6;
-      white-space: pre-line;
+      font-size: 13.5px;
+      line-height: 1.55;
       font-weight: 500;
+      border: 0.5px solid transparent;
+    }
+
+    .status .srv-msg-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .status .srv-msg-line:last-child {
+      margin-bottom: 0;
+    }
+
+    .status .srv-msg-line .icon {
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 1.25em;
+      color: currentColor;
+      opacity: 0.85;
+    }
+
+    .status .srv-msg-line .srv-msg-text {
+      flex: 1;
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    .status .srv-msg-spacer {
+      height: 6px;
+    }
+
+    .status .srv-msg-spacer:first-child,
+    .status .srv-msg-spacer:last-child {
+      display: none;
     }
 
     .status.success {
@@ -1934,6 +1994,330 @@
     .summary-label {
       font-size: 0.75rem;
       color: var(--text-secondary);
+    }
+
+    /* === Refined order-row component (shared by My Order + All Orders) === */
+    .order-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-md);
+      transition: var(--transition);
+    }
+
+    .order-row + .order-row {
+      margin-top: 6px;
+    }
+
+    .order-row.own-order {
+      background: var(--brand-50);
+      border-color: var(--brand-500);
+      box-shadow: 0 0 0 0.5px var(--brand-500);
+    }
+
+    .order-row .row-seq {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--brand-500);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+
+    .order-row .row-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 2px 10px;
+    }
+
+    .order-row .row-name {
+      font-weight: 600;
+      color: var(--ink-900);
+      font-size: 13.5px;
+      white-space: nowrap;
+    }
+
+    .order-row .row-name .you-marker {
+      color: var(--brand-600);
+      font-weight: 500;
+      font-size: 12px;
+      margin-left: 4px;
+    }
+
+    .order-row .row-items {
+      font-family: 'Noto Sans SC', 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--ink-500);
+      flex: 1;
+      min-width: 140px;
+      line-height: 1.5;
+    }
+
+    .order-row .row-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .order-row .row-pay {
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+    }
+
+    .order-row .row-pay.paid {
+      color: var(--green-600);
+      background: var(--green-100);
+    }
+
+    .order-row .row-pay.unpaid {
+      color: var(--amber-600);
+      background: var(--amber-100);
+    }
+
+    .order-row .row-pay .icon {
+      font-size: 1.15em;
+    }
+
+    .order-row .row-price {
+      font-variant-numeric: tabular-nums;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--brand-700);
+      white-space: nowrap;
+      letter-spacing: -0.01em;
+    }
+
+    .order-row .row-price .price-currency {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--ink-500);
+      margin-right: 2px;
+    }
+
+    .order-row .row-actions {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .order-row .row-action-btn {
+      background: transparent;
+      border: 0.5px solid var(--border);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--ink-500);
+      transition: var(--transition);
+      font-family: inherit;
+      padding: 0;
+    }
+
+    .order-row .row-action-btn:hover {
+      background: var(--ink-50);
+      color: var(--ink-700);
+      border-color: var(--ink-300);
+    }
+
+    .order-row .row-action-btn .icon {
+      font-size: 1.25em;
+    }
+
+    @media (max-width: 600px) {
+      .order-row {
+        flex-wrap: wrap;
+      }
+
+      .order-row .row-content {
+        flex-basis: calc(100% - 40px);
+      }
+
+      .order-row .row-meta {
+        flex-basis: 100%;
+        margin-left: 40px;
+        margin-top: 4px;
+      }
+    }
+
+    /* === My Order result wrapper === */
+    .my-order-result {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-xs);
+      margin-top: 14px;
+    }
+
+    .my-order-result .mor-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+
+    .my-order-result .mor-check {
+      color: var(--green-600);
+      font-size: 1.5em;
+    }
+
+    .my-order-result .order-row {
+      background: var(--ink-50);
+      border-color: transparent;
+    }
+
+    .my-order-result .mor-edit-btn {
+      margin-top: 10px;
+      width: 100%;
+      background: var(--brand-600);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .my-order-result .mor-edit-btn:hover {
+      background: var(--brand-700);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .my-order-result .mor-pay-btn {
+      margin-top: 8px;
+      width: 100%;
+      background: var(--green-600);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .my-order-result .mor-pay-btn:hover {
+      background: var(--green-700);
+      transform: translateY(-1px);
+    }
+
+    .my-order-result .mor-closed-note {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: var(--ink-50);
+      border-radius: 8px;
+      text-align: center;
+      color: var(--ink-500);
+      font-size: 12.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* === All Orders summary stats card === */
+    .orders-summary-card {
+      background: linear-gradient(135deg, var(--brand-50) 0%, #e0f2fe 100%);
+      border: 0.5px solid var(--brand-100);
+      border-radius: var(--r-lg);
+      padding: 18px 24px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .orders-summary-card .summary-stat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .orders-summary-card .summary-stat.right {
+      align-items: flex-end;
+    }
+
+    .orders-summary-card .stat-value {
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--brand-700);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .orders-summary-card .stat-value .stat-currency {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-500);
+      letter-spacing: 0;
+    }
+
+    .orders-summary-card .stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-500);
+    }
+
+    .orders-summary-card .summary-divider {
+      width: 1px;
+      align-self: stretch;
+      background: rgba(59, 130, 246, 0.2);
+    }
+
+    @media (max-width: 480px) {
+      .orders-summary-card {
+        padding: 14px 16px;
+        gap: 14px;
+      }
+
+      .orders-summary-card .stat-value {
+        font-size: 24px;
+      }
     }
 
     /* Info footer */
@@ -2180,72 +2564,105 @@
     .all-orders-toolbar {
       display: flex;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .all-orders-toolbar .btn {
       padding: 12px 16px;
-      font-size: 0.9rem;
+      font-size: 13.5px;
+    }
+
+    .all-orders-toolbar .btn-refresh-all {
+      flex: 1;
+      width: 100%;
     }
 
     /* Statistics Table */
     .stats-header {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
-      border-radius: var(--radius-md);
-      padding: 16px 20px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(59, 130, 246, 0.2);
+      background: linear-gradient(135deg, var(--brand-50) 0%, #e0f2fe 100%);
+      border-radius: var(--r-lg);
+      padding: 14px 18px;
+      margin-bottom: 0;
+      border: 0.5px solid var(--brand-100);
+      border-bottom: 0;
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
     }
 
     .stats-header-title {
-      font-size: 1rem;
+      font-size: 14px;
       font-weight: 600;
-      color: var(--text);
+      color: var(--brand-700);
       margin-bottom: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .stats-header-title .icon {
+      color: var(--brand-600);
+      font-size: 1.35em;
     }
 
     .stats-header-meta {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
+      font-size: 12.5px;
+      color: var(--ink-500);
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .stats-header-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stats-header-meta .icon {
+      font-size: 1.15em;
+      color: var(--ink-500);
     }
 
     .stats-table {
       width: 100%;
       border-collapse: collapse;
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
+      background: var(--surface);
+      border-radius: 0 0 var(--r-lg) var(--r-lg);
       overflow: hidden;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      box-shadow: none;
+      border: 0.5px solid var(--border);
     }
 
     .stats-table thead {
-      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-      color: white;
+      background: var(--ink-50);
+      color: var(--ink-500);
+      border-bottom: 0.5px solid var(--border);
     }
 
     .stats-table th {
-      padding: 14px 16px;
+      padding: 10px 18px;
       text-align: left;
-      font-weight: 600;
-      font-size: 0.9rem;
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
-    .stats-table th:last-child {
+    .stats-table th:last-child,
+    .stats-table th:nth-child(2),
+    .stats-table th:nth-child(3) {
       text-align: center;
     }
 
     .stats-table tbody tr {
-      border-bottom: 1px solid var(--border);
+      border-bottom: 0.5px solid var(--border);
       transition: var(--transition);
-      cursor: pointer;
     }
 
     .stats-table tbody tr:hover {
-      background: var(--bg);
+      background: var(--ink-50);
     }
 
     .stats-table tbody tr:last-child {
@@ -2253,48 +2670,494 @@
     }
 
     .stats-table td {
-      padding: 14px 16px;
-      font-size: 0.9rem;
+      padding: 12px 18px;
+      font-size: 13.5px;
+      vertical-align: middle;
     }
 
     .stats-item-name {
-      font-weight: 600;
-      color: var(--text);
+      font-family: 'Noto Sans SC', 'Inter', sans-serif;
+      font-weight: 500;
+      color: var(--ink-900);
     }
 
     .stats-count {
-      color: var(--primary);
+      color: var(--ink-900);
       font-weight: 600;
       text-align: center;
+      font-variant-numeric: tabular-nums;
     }
 
     .stats-percentage {
-      color: var(--text-secondary);
+      color: var(--ink-500);
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stats-table td:last-child {
       text-align: center;
     }
 
     .stats-add-btn {
-      padding: 6px 12px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
+      padding: 5px 12px;
+      background: var(--brand-50);
+      color: var(--brand-700);
+      border: 0.5px solid var(--brand-200);
+      border-radius: 6px;
+      font-size: 12px;
       cursor: pointer;
       transition: var(--transition);
       font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
     }
 
     .stats-add-btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
+      background: var(--brand-100);
+      border-color: var(--brand-500);
     }
 
     .stats-add-btn:disabled {
-      background: var(--border);
-      color: var(--text-muted);
+      background: var(--ink-50);
+      color: var(--ink-400);
+      border-color: var(--border);
       cursor: not-allowed;
-      transform: none;
+    }
+
+    .stats-add-btn .icon {
+      font-size: 1.2em;
+    }
+
+    /* Hint text on labels (e.g. "— or leave blank for all") */
+    .label-hint {
+      color: var(--ink-400);
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      margin-left: 4px;
+    }
+
+    /* === Payment Confirmed toast === */
+    .pay-toast {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      max-width: 420px;
+      min-width: 320px;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border: 0.5px solid var(--green-100);
+      border-radius: var(--r-lg);
+      padding: 14px 14px 12px;
+      box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22), 0 0 0 0.5px rgba(16, 185, 129, 0.12);
+      z-index: 1100;
+      opacity: 0;
+      transform: translateY(-10px) scale(0.94);
+      transition: opacity 0.25s ease, transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    .pay-toast.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .pay-toast.hide {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.96);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .pay-toast-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 26px;
+      height: 26px;
+      border: 0.5px solid rgba(16, 185, 129, 0.2);
+      background: rgba(255, 255, 255, 0.55);
+      border-radius: 6px;
+      color: var(--green-700);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      transition: var(--transition);
+      padding: 0;
+    }
+
+    .pay-toast-close:hover {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: var(--green-500);
+    }
+
+    .pay-toast-header {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding-right: 30px;
+      margin-bottom: 10px;
+    }
+
+    .pay-toast-check {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--green-500);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+      animation: payToastCheckPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both;
+    }
+
+    .pay-toast-check .icon {
+      font-size: 1.5em;
+      color: white;
+      font-weight: 700;
+    }
+
+    .pay-toast-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .pay-toast-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--green-700);
+      margin-bottom: 2px;
+      letter-spacing: -0.01em;
+    }
+
+    .pay-toast-sub {
+      font-size: 12.5px;
+      color: var(--green-700);
+      opacity: 0.85;
+      line-height: 1.5;
+    }
+
+    .pay-toast-body {
+      background: rgba(255, 255, 255, 0.7);
+      border: 0.5px solid rgba(255, 255, 255, 0.5);
+      border-radius: var(--r-md);
+      padding: 10px 12px;
+    }
+
+    .pay-toast-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .pay-toast-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink-900);
+      flex: 1;
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    .pay-toast-price {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--green-700);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+
+    .pay-toast-price .pay-toast-currency {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--ink-500);
+      margin-right: 2px;
+    }
+
+    .pay-toast-dishes {
+      font-family: 'Noto Sans SC', 'Inter', sans-serif;
+      font-size: 12.5px;
+      color: var(--ink-700);
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 0.5px solid rgba(15, 23, 42, 0.08);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    @keyframes payToastCheckPop {
+      0% { transform: scale(0); }
+      60% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 480px) {
+      .pay-toast {
+        top: auto;
+        bottom: 14px;
+        left: 12px;
+        right: 12px;
+        max-width: none;
+        min-width: 0;
+      }
+    }
+
+    /* === Ordering-closed empty state === */
+    .closed-state {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 56px 24px 40px;
+      margin: 16px 0;
+      text-align: center;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .closed-icon-wrap {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: var(--ink-50);
+      border: 0.5px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .closed-icon-wrap .icon {
+      font-size: 28px;
+      color: var(--ink-500);
+    }
+
+    .closed-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink-900);
+      margin: 0 0 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .closed-subtitle {
+      font-size: 13.5px;
+      color: var(--ink-500);
+      line-height: 1.55;
+      margin: 0 auto 20px;
+      max-width: 420px;
+    }
+
+    .closed-info {
+      background: var(--ink-50);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-md);
+      margin: 0 auto 22px;
+      max-width: 380px;
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .closed-info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      gap: 16px;
+    }
+
+    .closed-info-row + .closed-info-row {
+      border-top: 0.5px solid var(--border);
+    }
+
+    .closed-info-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--ink-700);
+    }
+
+    .closed-info-label .icon {
+      font-size: 1.2em;
+      color: var(--ink-500);
+    }
+
+    .closed-info-value {
+      font-variant-numeric: tabular-nums;
+      font-size: 12.5px;
+      color: var(--ink-900);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .closed-actions {
+      display: inline-flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .closed-action {
+      background: var(--surface);
+      border: 0.5px solid var(--border-strong);
+      color: var(--ink-700);
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .closed-action:hover {
+      background: var(--ink-50);
+      border-color: var(--ink-300);
+    }
+
+    .closed-action .icon {
+      font-size: 1.25em;
+      color: var(--ink-500);
+    }
+
+    @media (max-width: 480px) {
+      .closed-state {
+        padding: 40px 16px 28px;
+      }
+
+      .closed-info-row {
+        padding: 9px 12px;
+      }
+
+      .closed-actions {
+        width: 100%;
+      }
+
+      .closed-action {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+
+    /* === Admin tab === */
+    .admin-card {
+      padding: 16px 18px;
+    }
+
+    .admin-card .card-title {
+      margin-bottom: 12px;
+    }
+
+    .admin-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .admin-status {
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 0.5px solid transparent;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .admin-status .icon {
+      font-size: 1.3em;
+    }
+
+    .admin-status.idle {
+      background: var(--amber-50);
+      color: var(--amber-700);
+      border-color: var(--amber-100);
+    }
+
+    .admin-status.open {
+      background: var(--green-50);
+      color: var(--green-700);
+      border-color: var(--green-100);
+    }
+
+    .admin-status.closed {
+      background: #fef2f2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+
+    .admin-cta {
+      width: 100%;
+      padding: 11px 16px;
+      font-size: 13.5px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      box-shadow: none;
+    }
+
+    .admin-cta.btn-primary {
+      background: var(--brand-600);
+      color: white;
+      border: none;
+    }
+
+    .admin-cta.btn-primary:hover {
+      background: var(--brand-700);
+      transform: translateY(-1px);
+    }
+
+    .admin-cta.btn-danger {
+      background: #dc2626;
+      color: white;
+      border: none;
+    }
+
+    .admin-cta.btn-danger:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+    }
+
+    .admin-instructions {
+      font-size: 13px;
+      color: var(--ink-700);
+      line-height: 1.6;
+    }
+
+    .admin-instructions p {
+      margin: 0 0 6px;
+      color: var(--ink-900);
+      font-weight: 600;
+    }
+
+    .admin-instructions ol {
+      margin: 0;
+      padding-left: 22px;
+      color: var(--ink-500);
+    }
+
+    .admin-instructions li {
+      margin-bottom: 2px;
     }
 
     .stats-empty {
@@ -2723,17 +3586,31 @@
     <!-- ORDER TAB -->
     <div id="tab-order" class="tab-content active">
       <!-- Ordering Closed Message (hidden by default) -->
-      <div id="orderingClosedMessage" style="display: none;">
-        <div
-          style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, var(--warning-light) 0%, #fed7aa 100%); border-radius: var(--radius-lg); margin: 20px 0; border: 1px solid #fdba74;">
-          <div style="margin-bottom: 16px;"><span class="icon" style="font-size:64px;color:#c2410c;">lock</span></div>
-          <h2 style="color: #c2410c; margin: 0 0 12px 0; font-size: 1.5rem; font-weight: 700;">Ordering Closed</h2>
-          <p style="color: #9a3412; margin: 0; font-size: 1rem;" id="closedMessage">
-            Please wait for admin to open today's orders.
-          </p>
-          <p style="color: var(--text-muted); margin-top: 16px; font-size: 0.9rem;">
-            The menu will appear once ordering is open.
-          </p>
+      <div id="orderingClosedMessage" class="closed-state" style="display: none;">
+        <div class="closed-icon-wrap">
+          <span class="icon">lock</span>
+        </div>
+        <h2 class="closed-title">Ordering is closed for today</h2>
+        <p class="closed-subtitle" id="closedMessage">
+          Today's orders have already been sent to the kitchen. Come back tomorrow morning to place a new order.
+        </p>
+        <div class="closed-info">
+          <div class="closed-info-row">
+            <span class="closed-info-label"><span class="icon">schedule</span> Next order window</span>
+            <span class="closed-info-value">Tomorrow · before 10:00 AM</span>
+          </div>
+          <div class="closed-info-row">
+            <span class="closed-info-label"><span class="icon">directions_car</span> Today's delivery</span>
+            <span class="closed-info-value">12:00 - 12:15 PM @ P4</span>
+          </div>
+        </div>
+        <div class="closed-actions">
+          <button class="closed-action" onclick="switchTab('myorder')">
+            <span class="icon">person</span> Check my order
+          </button>
+          <button class="closed-action" onclick="switchTab('all')">
+            <span class="icon">content_paste</span> See all orders
+          </button>
         </div>
       </div>
 
@@ -2871,7 +3748,7 @@
         <div class="name-row">
           <label for="checkName"><span class="icon">person</span> Your Name</label>
           <input type="text" id="checkName" placeholder="Enter your name">
-          <button class="btn btn-primary btn-sm" onclick="checkMyOrder()"><span class="icon">search</span> Check My Order</button>
+          <button class="btn btn-primary btn-sm" onclick="checkMyOrder()"><span class="icon">search</span> Check my order</button>
         </div>
       </div>
 
@@ -2881,8 +3758,8 @@
     <!-- ALL ORDERS TAB -->
     <div id="tab-all" class="tab-content">
       <div class="all-orders-toolbar">
-        <button class="btn btn-secondary" onclick="loadAllOrders()" style="flex: 1;">
-          <span class="icon">refresh</span> Refresh Orders
+        <button class="btn btn-ghost btn-refresh-all" onclick="loadAllOrders()">
+          <span class="icon">refresh</span> Refresh orders
         </button>
       </div>
       <div id="allOrdersContainer">
@@ -2897,9 +3774,9 @@
     <div id="tab-stats" class="tab-content">
       <div class="card name-card">
         <div class="name-row">
-          <label for="statsName"><span class="icon">person</span> Your Name</label>
-          <input type="text" id="statsName" placeholder="Enter your name (or leave blank for all)">
-          <button class="btn btn-primary btn-sm" onclick="loadStatistics()"><span class="icon">bar_chart</span> Load Statistics</button>
+          <label for="statsName"><span class="icon">person</span> Your Name <span class="label-hint">— or leave blank for all</span></label>
+          <input type="text" id="statsName" placeholder="Enter your name">
+          <button class="btn btn-primary btn-sm" onclick="loadStatistics()"><span class="icon">bar_chart</span> Load statistics</button>
         </div>
       </div>
 
@@ -2908,49 +3785,49 @@
 
     <!-- ADMIN TAB -->
     <div id="tab-admin" class="tab-content">
-      <div class="card">
+      <div class="card admin-card">
         <div class="card-title"><span class="icon">calendar_today</span> Daily Operations</div>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div id="adminStatus" style="padding: 12px; background: #f5f5f5; border-radius: 8px; text-align: center;">
+        <div class="admin-card-body">
+          <div id="adminStatus" class="admin-status idle">
             Checking status...
           </div>
-          <button class="btn btn-primary" onclick="openTodayOrdering()" id="openOrderingBtn">
-            <span class="icon">lock_open</span> Open Today's Ordering
+          <button class="btn btn-primary admin-cta" onclick="openTodayOrdering()" id="openOrderingBtn">
+            <span class="icon">lock_open</span> Open today's ordering
           </button>
-          <button class="btn btn-danger" onclick="closeOrdering()" id="closeOrderingBtn" style="background: #dc3545;">
-            <span class="icon">lock</span> Close Ordering
+          <button class="btn btn-danger admin-cta" onclick="closeOrdering()" id="closeOrderingBtn">
+            <span class="icon">lock</span> Close ordering
           </button>
         </div>
       </div>
 
-      <div class="card">
+      <div class="card admin-card">
         <div class="card-title"><span class="icon">download</span> Menu Management</div>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <button class="btn btn-secondary" onclick="showImportMenu()">
-            <span class="icon">download</span> Import Menu from WhatsApp
+        <div class="admin-card-body">
+          <button class="btn btn-ghost admin-cta" onclick="showImportMenu()">
+            <span class="icon">download</span> Import menu from WhatsApp
           </button>
         </div>
       </div>
 
-      <div class="card">
+      <div class="card admin-card">
         <div class="card-title"><span class="icon">bar_chart</span> Reports</div>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <button class="btn btn-primary" onclick="showOrderSummary()">
-            <span class="icon">bar_chart</span> Generate Order Summary
+        <div class="admin-card-body">
+          <button class="btn btn-primary admin-cta" onclick="showOrderSummary()">
+            <span class="icon">bar_chart</span> Generate order summary
           </button>
         </div>
       </div>
 
-      <div class="card">
+      <div class="card admin-card">
         <div class="card-title"><span class="icon">description</span> Instructions</div>
-        <div style="font-size: 14px; color: #666; line-height: 1.6;">
+        <div class="admin-instructions">
           <p><strong>Daily workflow:</strong></p>
-          <ol style="margin: 8px 0; padding-left: 20px;">
+          <ol>
             <li>Copy menu from WhatsApp</li>
-            <li>Click "Import Menu" and paste</li>
-            <li>Click "Open Today's Ordering"</li>
+            <li>Click "Import menu" and paste</li>
+            <li>Click "Open today's ordering"</li>
             <li>Share link with team</li>
-            <li>After cutoff time, click "Close Ordering"</li>
+            <li>After cutoff time, click "Close ordering"</li>
             <li>Generate summary and share</li>
           </ol>
         </div>
@@ -3336,28 +4213,26 @@
           const openBtn = document.getElementById('openOrderingBtn');
           const closeBtn = document.getElementById('closeOrderingBtn');
 
+          // Reset inline styles in case they leaked from older versions.
+          statusDiv.style.background = '';
+          statusDiv.style.color = '';
+
           if (status.isOpen) {
             if (status.isClosed) {
-              // Ordering was closed by admin
+              statusDiv.className = 'admin-status closed';
               statusDiv.innerHTML = '<span class="icon">lock</span> <strong>Ordering CLOSED</strong> for ' + status.todayDate + '<br><small>No more orders can be added.</small>';
-              statusDiv.style.background = '#ffebee';
-              statusDiv.style.color = '#c62828';
               openBtn.style.display = 'none';
               closeBtn.style.display = 'none';
             } else {
-              // Ordering is open
+              statusDiv.className = 'admin-status open';
               statusDiv.innerHTML = '<span class="icon">check_circle</span> <strong>Ordering OPEN</strong> for ' + status.todayDate;
-              statusDiv.style.background = '#e8f5e9';
-              statusDiv.style.color = '#2e7d32';
               openBtn.style.display = 'none';
-              closeBtn.style.display = 'block';
+              closeBtn.style.display = 'inline-flex';
             }
           } else {
-            // No sheet for today
-            statusDiv.innerHTML = '<span class="icon">pause_circle</span> <strong>Not Started</strong><br><small>Click "Open Today\'s Ordering" to begin.</small>';
-            statusDiv.style.background = '#fff3e0';
-            statusDiv.style.color = '#e65100';
-            openBtn.style.display = 'block';
+            statusDiv.className = 'admin-status idle';
+            statusDiv.innerHTML = '<span class="icon">pause_circle</span> <strong>Not Started</strong><br><small>Click "Open today\'s ordering" to begin.</small>';
+            openBtn.style.display = 'inline-flex';
             closeBtn.style.display = 'none';
           }
         })
@@ -4412,13 +5287,14 @@
         price: parseFloat(document.getElementById('priceAmount').textContent)
       };
 
+      const wasEditMode = isEditMode;
       google.script.run
         .withSuccessHandler(function (result) {
           btn.disabled = false;
           btn.innerHTML = isEditMode ? '<span class="icon">save</span> Update Order' : '<span class="icon">check_circle</span> Place Order';
 
           if (result.success) {
-            showStatus(result.message, 'success');
+            showOrderPlacedToast(wasEditMode);
             // After successful submit, enter edit mode (order now exists)
             isEditMode = true;
             document.getElementById('editModeBanner').style.display = 'flex';
@@ -4626,6 +5502,7 @@
       // Enter edit mode
       isEditMode = true;
       currentOrderPaid = orderData.paid;
+      applyStickyFooterPaidState(!!orderData.paid);
       document.getElementById('editModeBanner').style.display = 'flex';
       document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
 
@@ -4690,6 +5567,7 @@
       clearOrder();
       updatePaymentStatus(false, false);
       setOrderButtonsEnabled(false);
+      applyStickyFooterPaidState(false);
     }
 
     // Mark order as paid
@@ -4923,11 +5801,11 @@
         // Create status element if it doesn't exist
         statusEl = document.createElement('div');
         statusEl.id = 'allOrdersStatus';
-        statusEl.style.cssText = 'padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; text-align: center; font-weight: 500;';
+        statusEl.style.cssText = 'padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; font-weight: 500;';
         const container = document.getElementById('allOrdersContainer');
         container.insertBefore(statusEl, container.firstChild);
       }
-      statusEl.textContent = message;
+      statusEl.innerHTML = formatServerMessage(message);
       statusEl.style.display = 'block';
       if (type === 'success') {
         statusEl.style.background = '#d4edda';
@@ -4970,16 +5848,101 @@
 
       google.script.run
         .withSuccessHandler(function (result) {
-          showStatus(result.message, result.success ? 'success' : 'error');
           if (result.success) {
             currentOrderPaid = true;
             updatePaymentStatus(true, true);
+            applyStickyFooterPaidState(true);
+            showPaymentConfirmedToast();
+          } else {
+            showStatus(result.message, 'error');
           }
         })
         .withFailureHandler(function (error) {
           showStatus('Error: ' + error.message, 'error');
         })
         .markOrderAsPaid(userName);
+    }
+
+    // Lock down the sticky footer when an order has been paid: drop the sticky
+    // positioning and hide all action controls (Pay/Clear/Cancel/Update/+−).
+    function applyStickyFooterPaidState(isPaid) {
+      const footer = document.getElementById('stickyFooter');
+      if (!footer) return;
+      footer.classList.toggle('paid', !!isPaid);
+    }
+
+    // Auto-dismiss timer handle for the order toast.
+    let _payToastTimer = null;
+
+    // Generalized success toast — used by both "Order placed/updated" and "Payment confirmed".
+    function showOrderToast(opts) {
+      const title = opts && opts.title ? opts.title : 'Order placed!';
+      const subtitle = opts && opts.subtitle ? opts.subtitle : '';
+      const userName = (document.getElementById('userName').value || '').trim() || 'Your order';
+      const priceEl = document.getElementById('priceAmount');
+      const price = priceEl ? (parseFloat(priceEl.textContent) || 0) : 0;
+
+      const dishes = (selectedItems || []).map(function (it) {
+        const base = stripBrackets ? stripBrackets(it.name) : it.name;
+        return it.note ? base + ' (' + it.note + ')' : base;
+      }).join(' + ');
+
+      // Remove any existing toast so re-fires don't stack.
+      const prev = document.getElementById('paymentConfirmedToast');
+      if (prev) prev.remove();
+      if (_payToastTimer) { clearTimeout(_payToastTimer); _payToastTimer = null; }
+
+      const toast = document.createElement('div');
+      toast.id = 'paymentConfirmedToast';
+      toast.className = 'pay-toast';
+      toast.innerHTML =
+        '<button class="pay-toast-close" onclick="dismissPaymentToast()" aria-label="Close">×</button>' +
+        '<div class="pay-toast-header">' +
+        '  <span class="pay-toast-check"><span class="icon">check</span></span>' +
+        '  <div class="pay-toast-text">' +
+        '    <div class="pay-toast-title">' + escapeHtml(title) + '</div>' +
+        (subtitle ? '    <div class="pay-toast-sub">' + escapeHtml(subtitle) + '</div>' : '') +
+        '  </div>' +
+        '</div>' +
+        '<div class="pay-toast-body">' +
+        '  <div class="pay-toast-row">' +
+        '    <span class="pay-toast-name">' + escapeHtml(userName) + '</span>' +
+        '    <span class="pay-toast-price"><span class="pay-toast-currency">RM</span>' + price.toFixed(2) + '</span>' +
+        '  </div>' +
+        (dishes ? '  <div class="pay-toast-dishes">' + escapeHtml(dishes) + '</div>' : '') +
+        '</div>';
+
+      document.body.appendChild(toast);
+      // Trigger pop-in on next frame so the transition fires from the initial state.
+      requestAnimationFrame(function () { toast.classList.add('show'); });
+      // No auto-dismiss — toast stays until the user clicks the × close button.
+    }
+
+    function showOrderPlacedToast(isUpdate) {
+      showOrderToast({
+        title: isUpdate ? 'Order updated!' : 'Order placed!',
+        subtitle: isUpdate
+          ? 'Your changes are saved. We\'ll see you at delivery.'
+          : 'Your lunch order is in. Pay before pickup to confirm.'
+      });
+    }
+
+    function showPaymentConfirmedToast() {
+      showOrderToast({
+        title: 'Payment confirmed',
+        subtitle: 'Your lunch order is locked in. We\'ll see you at delivery.'
+      });
+    }
+
+    function dismissPaymentToast() {
+      const toast = document.getElementById('paymentConfirmedToast');
+      if (!toast) return;
+      if (_payToastTimer) { clearTimeout(_payToastTimer); _payToastTimer = null; }
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+      setTimeout(function () {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 260);
     }
 
     // Check my order
@@ -5001,33 +5964,38 @@
           .withSuccessHandler(function (result) {
             if (result.found) {
               const editButton = orderingOpen
-                ? `<button class="btn btn-primary" style="margin-top: 12px; width: 100%;" onclick="goToEditOrder('${userName.replace(/'/g, "\\'")}')">
-                  <span class="icon">edit</span> Edit My Order
+                ? `<button class="mor-edit-btn" onclick="goToEditOrder('${userName.replace(/'/g, "\\'")}')">
+                  <span class="icon">edit</span> Edit my order
                 </button>`
-                : `<div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 8px; text-align: center; color: var(--text-secondary); font-size: 13px;">
+                : `<div class="mor-closed-note">
                   <span class="icon">lock</span> Ordering is closed. Editing not available.
                 </div>`;
 
               const payButton = !result.paid
-                ? `<button class="btn btn-success" style="margin-top: 12px; width: 100%;" onclick="showPaymentModalForUser('${userName.replace(/'/g, "\\'")}')">
+                ? `<button class="mor-pay-btn" onclick="showPaymentModalForUser('${userName.replace(/'/g, "\\'")}')">
                   <span class="icon">payments</span> Pay Now
                 </button>`
                 : '';
 
+              const orderItemsText = enrichOrderWithEnglish(result.order).replace(/\s*[,，]\s*/g, ' + ');
+
               document.getElementById('myOrderResult').innerHTML = `
-              <div class="card" style="margin-top: 16px;">
-                <div class="card-title"><span class="icon">check_circle</span> Your Order Found</div>
-                <div class="order-card order-card-readonly" style="margin-top: 12px;">
-                  <div class="order-seq">${result.row}</div>
-                  <div class="order-content">
-                    <div class="order-name">${userName}</div>
-                    <div class="order-details">${enrichOrderWithEnglish(result.order)}</div>
+              <div class="my-order-result">
+                <div class="mor-header">
+                  <span class="icon mor-check">check_circle</span>
+                  <span>Your order found</span>
+                </div>
+                <div class="order-row">
+                  <div class="row-seq">${result.row}</div>
+                  <div class="row-content">
+                    <span class="row-name">${userName}</span>
+                    <span class="row-items">${orderItemsText}</span>
                   </div>
-                  <div class="order-meta">
-                    <span class="order-paid ${result.paid ? 'yes' : 'no'}">
-                      <span class="icon">${result.paid ? 'payments' : 'hourglass_top'}</span>
+                  <div class="row-meta">
+                    <span class="row-pay ${result.paid ? 'paid' : 'unpaid'}">
+                      <span class="icon">${result.paid ? 'credit_card' : 'hourglass_top'}</span>
                     </span>
-                    <span class="order-price">RM${result.price}</span>
+                    <span class="row-price"><span class="price-currency">RM</span>${result.price}</span>
                   </div>
                 </div>
                 ${payButton}
@@ -5214,77 +6182,62 @@
             }
 
             let html = `
-            <div class="orders-summary">
-              <div class="summary-item">
-                <div class="summary-value">${result.totalOrders}</div>
-                <div class="summary-label">Orders</div>
+            <div class="orders-summary-card">
+              <div class="summary-stat">
+                <div class="stat-value">${result.totalOrders}</div>
+                <div class="stat-label">Orders</div>
               </div>
-              <div class="summary-item">
-                <div class="summary-value">RM${result.totalAmount}</div>
-                <div class="summary-label">Total</div>
+              <div class="summary-divider"></div>
+              <div class="summary-stat right">
+                <div class="stat-value"><span class="stat-currency">RM</span>${result.totalAmount}</div>
+                <div class="stat-label">Total</div>
               </div>
             </div>
           `;
 
             if (result.orders.length === 0) {
-              html += '<div class="card"><p style="text-align: center; color: var(--text-secondary);">No orders yet today</p></div>';
+              html += '<div class="card"><p style="text-align: center; color: var(--ink-500);">No orders yet today</p></div>';
             } else {
               // Get current user's name to hide copy button on their own order
               const currentUserName = (document.getElementById('userName').value.trim() ||
                 document.getElementById('checkName').value.trim()).toLowerCase();
 
-              html += '<div class="orders-grid">';
+              html += '<div class="orders-list">';
               result.orders.forEach(order => {
-                // Escape for HTML attributes using encodeURIComponent
                 const encodedName = encodeURIComponent(order.name);
                 const encodedOrder = encodeURIComponent(order.order);
                 const escapedNameJs = order.name.replace(/'/g, "\\'");
                 const isOwnOrder = order.name.toLowerCase() === currentUserName;
+                const itemsText = enrichOrderWithEnglish(order.order).replace(/\s*[,，]\s*/g, ' + ');
 
-                if (orderingOpen) {
-                  // Ordering open - card with Copy and Edit actions
-                  html += `
-                  <div class="order-card${isOwnOrder ? ' own-order' : ''}">
-                    <div class="order-seq">${order.row}</div>
-                    <div class="order-content">
-                      <div class="order-name">${order.name}${isOwnOrder ? ' <span style="font-size: 11px; color: var(--primary);">(You)</span>' : ''}</div>
-                      <div class="order-details">${enrichOrderWithEnglish(order.order)}</div>
-                    </div>
-                    <div class="order-meta">
-                      <span class="order-paid ${order.paid ? 'yes' : 'no'}">
-                        <span class="icon">${order.paid ? 'payments' : 'hourglass_top'}</span>
-                      </span>
-                      <span class="order-price">RM${order.price}</span>
-                      <span class="order-actions">
-                        ${!isOwnOrder ? `<button class="order-action-btn"
+                const actions = orderingOpen
+                  ? `<span class="row-actions">
+                       ${!isOwnOrder ? `<button class="row-action-btn"
                                 data-name="${encodedName}"
                                 data-order="${encodedOrder}"
                                 data-price="${order.price}"
                                 onclick="event.stopPropagation(); handleCopyClick(this)"
                                 title="Copy this order"><span class="icon">content_paste</span></button>` : ''}
-                        <button class="order-action-btn" onclick="event.stopPropagation(); goToEditOrder('${escapedNameJs}')" title="Edit this order"><span class="icon">edit</span></button>
+                       <button class="row-action-btn" onclick="event.stopPropagation(); goToEditOrder('${escapedNameJs}')" title="Edit this order"><span class="icon">edit</span></button>
+                     </span>`
+                  : '';
+
+                html += `
+                  <div class="order-row${isOwnOrder ? ' own-order' : ''}">
+                    <div class="row-seq">${order.row}</div>
+                    <div class="row-content">
+                      <span class="row-name">${order.name}${isOwnOrder ? ' <span class="you-marker">(You)</span>' : ''}</span>
+                      <span class="row-items">${itemsText}</span>
+                    </div>
+                    <div class="row-meta">
+                      <span class="row-pay ${order.paid ? 'paid' : 'unpaid'}">
+                        <span class="icon">${order.paid ? 'credit_card' : 'hourglass_top'}</span>
                       </span>
+                      <span class="row-price"><span class="price-currency">RM</span>${order.price}</span>
+                      ${actions}
                     </div>
                   </div>
                 `;
-                } else {
-                  // Ordering closed - non-clickable card, no edit icon
-                  html += `
-                  <div class="order-card order-card-readonly">
-                    <div class="order-seq">${order.row}</div>
-                    <div class="order-content">
-                      <div class="order-name">${order.name}</div>
-                      <div class="order-details">${enrichOrderWithEnglish(order.order)}</div>
-                    </div>
-                    <div class="order-meta">
-                      <span class="order-paid ${order.paid ? 'yes' : 'no'}">
-                        <span class="icon">${order.paid ? 'payments' : 'hourglass_top'}</span>
-                      </span>
-                      <span class="order-price">RM${order.price}</span>
-                    </div>
-                  </div>
-                `;
-                }
               });
               html += '</div>';
             }
@@ -5337,7 +6290,7 @@
       }
 
       let html = `
-        <div class="card">
+        <div class="stats-wrapper">
           <div class="stats-header">
             <div class="stats-header-title"><span class="icon">bar_chart</span> Order Statistics${data.filterByUser ? ' for ' + data.userName : ' (All Users)'}</div>
             <div class="stats-header-meta">
@@ -5352,9 +6305,9 @@
             <thead>
               <tr>
                 <th>Menu Item</th>
-                <th style="text-align: center;">Count</th>
-                <th style="text-align: center;">%</th>
-                <th style="text-align: center;">Action</th>
+                <th>Count</th>
+                <th>%</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -5441,9 +6394,49 @@
     }
 
     // Show status message
+    // Server-side messages arrive with emoji prefixes (✅, ❌, 👤, 🍱, 💰, ⏳).
+    // Rewrite each line so the emoji becomes an inline Material Symbols icon.
+    const SERVER_MSG_ICON_MAP = {
+      '✅': 'check_circle',
+      '❌': 'cancel',
+      '👤': 'person',
+      '🍱': 'restaurant',
+      '🍽': 'restaurant',
+      '🍽️': 'restaurant',
+      '💰': 'payments',
+      '⏳': 'hourglass_top',
+      '🚫': 'block'
+    };
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[c]);
+    }
+
+    function formatServerMessage(message) {
+      if (message == null) return '';
+      const lines = String(message).split('\n');
+      const parts = [];
+      for (const raw of lines) {
+        if (!raw.trim()) {
+          parts.push('<div class="srv-msg-spacer"></div>');
+          continue;
+        }
+        const m = raw.match(/^\s*(\S+)\s*(.*)$/);
+        const iconName = m && SERVER_MSG_ICON_MAP[m[1]];
+        if (iconName) {
+          parts.push(`<div class="srv-msg-line"><span class="icon">${iconName}</span><span class="srv-msg-text">${escapeHtml(m[2])}</span></div>`);
+        } else {
+          parts.push(`<div class="srv-msg-line"><span class="srv-msg-text">${escapeHtml(raw)}</span></div>`);
+        }
+      }
+      return parts.join('');
+    }
+
     function showStatus(message, type) {
       const el = document.getElementById('statusMessage');
-      el.textContent = message;
+      el.innerHTML = formatServerMessage(message);
       // Reset class to retrigger animation
       el.className = 'status';
       // Force reflow
