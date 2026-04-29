@@ -4,7 +4,7 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#8B5E3C">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3517,7 +3517,7 @@
     /* ===================== Mobile sticky footer update ===================== */
     .sticky-footer {
       position: fixed;
-      bottom: 12px;
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
       left: 12px;
       right: 12px;
       background: var(--ink-900);
