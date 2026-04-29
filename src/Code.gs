@@ -742,6 +742,7 @@ function setupNewOrderSheet(sheet) {
   sheet.getRange(specialRow, 5).setValue('💵');
   sheet.getRange(specialRow + 1, 2).setValue('(少饭) less rice');
   sheet.getRange(specialRow + 2, 2).setValue('(不要饭) no rice');
+  sheet.getRange(specialRow + 3, 2).setValue('(多饭) more rice');
   
   const headerRange = sheet.getRange('A1:G1');
   headerRange.setFontWeight('bold');
@@ -882,6 +883,8 @@ function submitOrder(orderData) {
       orderString += ' (少饭)';
     } else if (orderData.riceOption === 'none') {
       orderString += ' (不要饭)';
+    } else if (orderData.riceOption === 'more') {
+      orderString += ' (多饭)';
     }
     
     if (orderData.notes && orderData.notes.trim()) {
@@ -1107,6 +1110,9 @@ function getOrderByName(userName) {
     } else if (orderText.includes('(不要饭)')) {
       riceOption = 'none';
       orderText = orderText.replace('(不要饭)', '').trim();
+    } else if (orderText.includes('(多饭)')) {
+      riceOption = 'more';
+      orderText = orderText.replace('(多饭)', '').trim();
     }
     
     // Extract special notes - only if string ends with ") (...)" pattern
@@ -1557,8 +1563,8 @@ function getOrderStatistics(userName) {
         totalSpent += !isNaN(price) ? price : 0;
         
         // Clean up order text
-        // Remove rice portion info in parentheses: (normal), (less), (none)
-        orderText = orderText.replace(/\s*\((normal|less|none)\)/gi, '');
+        // Remove rice portion info in parentheses: (normal), (less), (none), (more)
+        orderText = orderText.replace(/\s*\((normal|less|none|more)\)/gi, '');
         // Remove notes after 📝
         orderText = orderText.replace(/📝.*$/g, '');
         // Remove English translations (anything after space if it contains English letters)
@@ -1786,6 +1792,9 @@ function getPreviousOrders(userName, count) {
           } else if (orderText.includes('(不要饭)')) {
             riceOption = 'none';
             orderText = orderText.replace('(不要饭)', '').trim();
+          } else if (orderText.includes('(多饭)')) {
+            riceOption = 'more';
+            orderText = orderText.replace('(多饭)', '').trim();
           }
 
           // Split items by " + "
