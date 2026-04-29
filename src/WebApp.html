@@ -3532,8 +3532,9 @@
     }
     .sticky-footer .sf-main {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
     .sticky-footer .sf-left {
       display: flex;
@@ -4126,10 +4127,7 @@
           </div>
 
           <div class="sf-main">
-            <div class="sf-left">
-              <div class="sf-label" id="sfItemCount">0 items</div>
-              <div class="sf-items-preview" id="sfItemsPreview"></div>
-            </div>
+            <div class="sf-label" id="sfItemCount">0 items</div>
             <div class="sf-right">
               <div class="sf-stepper">
                 <button class="sf-step-btn" id="priceMinusBtn" onclick="adjustPrice(-1)" aria-label="Decrease price">−</button>
