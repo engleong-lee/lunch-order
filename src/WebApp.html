@@ -2569,8 +2569,7 @@
 
     @media (max-width: 480px) {
       .pay-toast {
-        top: 12px;
-        bottom: auto;
+        top: auto;
         left: 12px;
         right: 12px;
         max-width: none;
@@ -6336,6 +6335,14 @@
         '</div>' : '');
 
       document.body.appendChild(toast);
+      // Position above sticky footer on mobile
+      if (window.innerWidth <= 480) {
+        const footer = document.getElementById('stickyFooter');
+        if (footer) {
+          const footerRect = footer.getBoundingClientRect();
+          toast.style.bottom = (window.innerHeight - footerRect.top + 8) + 'px';
+        }
+      }
       // Trigger pop-in on next frame so the transition fires from the initial state.
       requestAnimationFrame(function () { toast.classList.add('show'); });
       // No auto-dismiss — toast stays until the user clicks the × close button.
