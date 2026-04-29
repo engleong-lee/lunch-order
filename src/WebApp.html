@@ -4174,12 +4174,12 @@
               <div class="sf-items-preview" id="sfItemsPreview"></div>
             </div>
             <div class="sf-right">
-              <div class="sf-amount"><span class="sf-currency">RM</span><span id="priceAmount">0</span></div>
               <div class="sf-stepper">
                 <button class="sf-step-btn" id="priceMinusBtn" onclick="adjustPrice(-1)" aria-label="Decrease price">−</button>
                 <span class="sf-step-value" id="priceStepValue">0</span>
                 <button class="sf-step-btn" id="pricePlusBtn" onclick="adjustPrice(1)" aria-label="Increase price">+</button>
               </div>
+              <div class="sf-amount"><span class="sf-currency">RM</span><span id="priceAmount">0</span></div>
               <button class="sf-place-order" id="submitBtn" onclick="submitOrder()">
                 Place Order →
               </button>
@@ -5616,6 +5616,7 @@
       const stepEl = document.getElementById('priceStepValue');
       if (stepEl) stepEl.textContent = newPrice;
       updateSubmitButtonState();
+      updateSidebarItems();
     }
 
     // Grey-out unselected menu items based on the current selection state:
