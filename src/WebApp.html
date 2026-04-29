@@ -291,45 +291,7 @@
       background: var(--ink-300);
     }
 
-    .user-avatar {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 12px 4px 4px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      cursor: pointer;
-      transition: var(--transition);
-      font-family: inherit;
-    }
-
-    .user-avatar:hover {
-      background: var(--ink-50);
-    }
-
-    .user-avatar .avatar-circle {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--brand-100);
-      color: var(--brand-600);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 12px;
-    }
-
-    .user-avatar .avatar-name {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--ink-700);
-      max-width: 100px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    /* Header nav responsive */
 
     .date-badge {
       display: inline-flex;
@@ -3977,10 +3939,6 @@
       </nav>
       <div class="header-right">
         <div class="status-badge" id="statusBadge"><span class="status-dot"></span> <span id="statusBadgeText">Open · cuts off 10:00</span></div>
-        <button class="user-avatar" id="userAvatarBtn" onclick="switchTab('myorder')" title="My Order">
-          <span class="avatar-circle" id="avatarInitial">?</span>
-          <span class="avatar-name" id="avatarName">Sign in</span>
-        </button>
       </div>
     </div>
   </header>
@@ -7260,15 +7218,6 @@
       if (el) el.textContent = msg;
     }
 
-    // Update user avatar initial in header
-    function updateUserAvatar() {
-      const nameEl = document.getElementById('userName');
-      const avatarEl = document.getElementById('userAvatarBtn');
-      if (!nameEl || !avatarEl) return;
-      const name = nameEl.value.trim();
-      avatarEl.textContent = name ? name.charAt(0).toUpperCase() : '?';
-    }
-
     // ==================== MONKEY-PATCHES to integrate new UI ====================
 
     // Patch switchTab to sync header nav links
@@ -7303,12 +7252,9 @@
       buildCategoryPills(menu);
     };
 
-    // Patch name input to update avatar
+    // Init greeting on load
     document.addEventListener('DOMContentLoaded', function() {
       updateGreeting();
-      updateUserAvatar();
-      const nameEl = document.getElementById('userName');
-      if (nameEl) nameEl.addEventListener('input', updateUserAvatar);
     });
   </script>
 </body>
