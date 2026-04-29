@@ -1428,9 +1428,9 @@
     }
 
     .status.success {
-      background: var(--success-light);
-      color: #047857;
-      border: 1px solid var(--success);
+      background: var(--brand-50);
+      color: var(--brand-700);
+      border: 1px solid var(--brand-200);
       display: block;
       animation: statusPop 0.3s ease;
     }
@@ -2417,11 +2417,14 @@
       right: 18px;
       max-width: 380px;
       min-width: 300px;
-      background: var(--ink-900);
+      background: rgba(44, 36, 30, 0.72);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(20px) saturate(180%);
       color: white;
-      border-radius: 14px;
+      border-radius: 22px;
       padding: 14px 16px 12px;
-      box-shadow: 0 12px 32px rgba(26,21,18,0.25);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 12px 32px rgba(26,21,18,0.25), inset 0 0.5px 0 rgba(255,255,255,0.06);
       z-index: 1100;
       opacity: 0;
       transform: translateY(-10px) scale(0.94);
@@ -2479,7 +2482,7 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: var(--green-500);
+      background: var(--cta);
       color: white;
       display: inline-flex;
       align-items: center;
@@ -5744,9 +5747,14 @@
             cancelEditMode(); // Reset form
             updatePaymentStatus(false, false); // Hide payment status
             setOrderButtonsEnabled(false); // Disable Pay and Cancel buttons
+            showOrderToast({
+              title: 'Order cancelled',
+              subtitle: result.message || 'Your order has been removed.',
+              icon: 'close'
+            });
+          } else {
+            showStatus(result.message, 'error');
           }
-          // Show status AFTER all resets so it scrolls to visible position
-          showStatus(result.message, result.success ? 'success' : 'error');
         })
         .withFailureHandler(function (error) {
           showStatus('Error: ' + error.message, 'error');
@@ -6284,6 +6292,7 @@
     function showOrderToast(opts) {
       const title = opts && opts.title ? opts.title : 'Order placed!';
       const subtitle = opts && opts.subtitle ? opts.subtitle : '';
+      const iconName = opts && opts.icon ? opts.icon : 'check';
       const userName = (document.getElementById('userName').value || '').trim() || 'Your order';
       const priceEl = document.getElementById('priceAmount');
       const price = priceEl ? (parseFloat(priceEl.textContent) || 0) : 0;
@@ -6304,19 +6313,20 @@
       toast.innerHTML =
         '<button class="pay-toast-close" onclick="dismissPaymentToast()" aria-label="Close">×</button>' +
         '<div class="pay-toast-header">' +
-        '  <span class="pay-toast-check"><span class="icon">check</span></span>' +
+        '  <span class="pay-toast-check"><span class="icon">' + iconName + '</span></span>' +
         '  <div class="pay-toast-text">' +
         '    <div class="pay-toast-title">' + escapeHtml(title) + '</div>' +
         (subtitle ? '    <div class="pay-toast-sub">' + escapeHtml(subtitle) + '</div>' : '') +
         '  </div>' +
         '</div>' +
+        (dishes || price ?
         '<div class="pay-toast-body">' +
         '  <div class="pay-toast-row">' +
         '    <span class="pay-toast-name">' + escapeHtml(userName) + '</span>' +
         '    <span class="pay-toast-price"><span class="pay-toast-currency">RM</span>' + price.toFixed(2) + '</span>' +
         '  </div>' +
         (dishes ? '  <div class="pay-toast-dishes">' + escapeHtml(dishes) + '</div>' : '') +
-        '</div>';
+        '</div>' : '');
 
       document.body.appendChild(toast);
       // Trigger pop-in on next frame so the transition fires from the initial state.
