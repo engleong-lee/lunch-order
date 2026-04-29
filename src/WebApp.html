@@ -2417,14 +2417,11 @@
       right: 18px;
       max-width: 380px;
       min-width: 300px;
-      background: rgba(44, 36, 30, 0.72);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      backdrop-filter: blur(20px) saturate(180%);
+      background: var(--ink-900);
       color: white;
       border-radius: 22px;
       padding: 14px 16px 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 12px 32px rgba(26,21,18,0.25), inset 0 0.5px 0 rgba(255,255,255,0.06);
+      box-shadow: 0 12px 32px rgba(26,21,18,0.35);
       z-index: 1100;
       opacity: 0;
       transform: translateY(-10px) scale(0.94);
@@ -3523,14 +3520,11 @@
       bottom: calc(24px + env(safe-area-inset-bottom, 0px));
       left: 12px;
       right: 12px;
-      background: rgba(44, 36, 30, 0.72);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      backdrop-filter: blur(20px) saturate(180%);
+      background: var(--ink-900);
       color: white;
       padding: 14px 20px;
       border-radius: 30px;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 4px 24px rgba(26,21,18,0.25), inset 0 0.5px 0 rgba(255,255,255,0.06);
+      box-shadow: 0 4px 24px rgba(26,21,18,0.35);
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -5789,11 +5783,19 @@
           if (result.found) {
             // Load order into form
             loadOrderIntoForm(result);
-            showStatus(`Order loaded! You can now edit and save.`, 'success');
+            showOrderToast({
+              title: 'Order loaded!',
+              subtitle: 'You can now edit and save.',
+              icon: 'download'
+            });
             // Enable Pay and Cancel buttons (order exists)
             setOrderButtonsEnabled(true);
           } else {
-            showStatus(result.message, 'error');
+            showOrderToast({
+              title: 'No order found',
+              subtitle: result.message || 'No existing order for this name.',
+              icon: 'search_off'
+            });
             updatePaymentStatus(false, false);
             // Disable Pay and Cancel buttons (no order)
             setOrderButtonsEnabled(false);
