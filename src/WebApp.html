@@ -4055,10 +4055,6 @@
             <div class="card" id="riceCard">
               <div class="card-title"><span class="icon">rice_bowl</span> Rice Portion</div>
               <div class="rice-options">
-                <div class="rice-option" data-value="more" onclick="selectRice(this)">
-                  <div>More</div>
-                  <div class="label">多饭</div>
-                </div>
                 <div class="rice-option selected" data-value="normal" onclick="selectRice(this)">
                   <div>Normal</div>
                   <div class="label">正常</div>
@@ -4070,6 +4066,10 @@
                 <div class="rice-option" data-value="none" onclick="selectRice(this)">
                   <div>No Rice</div>
                   <div class="label">不要</div>
+                </div>
+                <div class="rice-option" data-value="more" onclick="selectRice(this)">
+                  <div>More</div>
+                  <div class="label">多饭</div>
                 </div>
               </div>
             </div>
@@ -4095,10 +4095,10 @@
               <div class="sidebar-section">
                 <div class="sidebar-section-label">RICE 饭</div>
                 <div class="sidebar-rice-options">
-                  <button class="sidebar-rice" data-value="more" onclick="selectRice(this); syncSidebarRice(this);">More<br><span>多饭</span></button>
                   <button class="sidebar-rice selected" data-value="normal" onclick="selectRice(this); syncSidebarRice(this);">Normal<br><span>正常</span></button>
                   <button class="sidebar-rice" data-value="less" onclick="selectRice(this); syncSidebarRice(this);">Less<br><span>少饭</span></button>
                   <button class="sidebar-rice" data-value="none" onclick="selectRice(this); syncSidebarRice(this);">None<br><span>不要</span></button>
+                  <button class="sidebar-rice" data-value="more" onclick="selectRice(this); syncSidebarRice(this);">More<br><span>多饭</span></button>
                 </div>
               </div>
 
