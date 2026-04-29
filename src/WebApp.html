@@ -3226,37 +3226,6 @@
 
     /* ===================== NEW DESIGN: Greeting ===================== */
 
-    /* ===================== NEW DESIGN: Search bar ===================== */
-    .search-bar-wrap {
-      position: relative;
-      margin-bottom: 14px;
-    }
-    .search-bar-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--ink-400);
-      font-size: 1.3em !important;
-      pointer-events: none;
-    }
-    .search-bar {
-      width: 100%;
-      padding: 12px 16px 12px 44px;
-      border: 1px solid var(--border);
-      border-radius: var(--r-lg);
-      font-size: 14px;
-      font-family: inherit;
-      background: var(--surface);
-      color: var(--ink-900);
-      transition: var(--transition);
-    }
-    .search-bar:focus {
-      outline: none;
-      border-color: var(--brand-400);
-      box-shadow: 0 0 0 3px rgba(196,149,106,0.15);
-    }
-
     /* ===================== NEW DESIGN: Category pills ===================== */
     .category-pills {
       display: flex;
@@ -4041,12 +4010,6 @@
                 <span class="osc-total-label">Estimated total</span>
                 <span class="osc-total"><span class="osc-currency">RM</span> <span id="oscTotal">0.00</span></span>
               </div>
-            </div>
-
-            <!-- Search bar -->
-            <div class="search-bar-wrap">
-              <span class="icon search-bar-icon">search</span>
-              <input type="text" class="search-bar" id="searchDishes" placeholder="Search dishes..." oninput="filterMenu()">
             </div>
 
             <!-- Category filter pills -->
