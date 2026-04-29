@@ -3513,6 +3513,40 @@
       margin-top: 8px;
     }
 
+    /* Sidebar action buttons (desktop Pay/Clear/Cancel) */
+    .sidebar-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .sidebar-action {
+      flex: 1;
+      padding: 8px 4px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      background: var(--surface);
+      font-size: 12px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: var(--transition);
+    }
+    .sidebar-action .icon { font-size: 1.1em; }
+    .sidebar-action-pay {
+      color: var(--brand-700);
+      border-color: var(--brand-200);
+      background: var(--brand-50);
+    }
+    .sidebar-action-pay:hover { background: var(--brand-100); }
+    .sidebar-action-clear { color: var(--ink-600); }
+    .sidebar-action-clear:hover { background: var(--ink-50); }
+    .sidebar-action-cancel { color: var(--danger); }
+    .sidebar-action-cancel:hover { background: var(--danger-light); }
+
     /* ===================== Mobile sticky footer update ===================== */
     .sticky-footer {
       position: fixed;
@@ -4115,6 +4149,11 @@
               </div>
 
               <button class="sidebar-place-order" id="sidebarPlaceOrder" onclick="submitOrder()">Place order →</button>
+              <div class="sidebar-actions" id="sidebarActionsGroup" style="display: none;">
+                <button class="sidebar-action sidebar-action-pay" onclick="showPaymentModal()"><span class="icon">payments</span> Pay</button>
+                <button class="sidebar-action sidebar-action-clear" onclick="clearOrder()"><span class="icon">delete</span> Clear</button>
+                <button class="sidebar-action sidebar-action-cancel" onclick="cancelExistingOrder()"><span class="icon">close</span> Cancel</button>
+              </div>
               <p class="sidebar-hint">Edit anytime before 10:00</p>
             </div>
           </div><!-- end order-layout-sidebar -->
@@ -5624,6 +5663,8 @@
     // Show or hide Pay, Clear, Cancel buttons based on order state
     function setOrderButtonsEnabled(enabled) {
       document.getElementById('orderActionsGroup').style.display = enabled ? 'flex' : 'none';
+      const sidebarActions = document.getElementById('sidebarActionsGroup');
+      if (sidebarActions) sidebarActions.style.display = enabled ? 'flex' : 'none';
     }
 
     function clearOrder() {
@@ -5676,8 +5717,13 @@
       }
 
       const btn = document.getElementById('submitBtn');
+      const sidebarBtn = document.getElementById('sidebarPlaceOrder');
       btn.disabled = true;
       btn.textContent = isEditMode ? '⏳ Updating...' : '⏳ Submitting...';
+      if (sidebarBtn) {
+        sidebarBtn.disabled = true;
+        sidebarBtn.textContent = isEditMode ? '⏳ Updating...' : '⏳ Submitting...';
+      }
 
       const orderData = {
         name: userName,
@@ -5699,6 +5745,10 @@
         .withSuccessHandler(function (result) {
           btn.disabled = false;
           btn.innerHTML = isEditMode ? '<span class="icon">save</span> Update Order' : '<span class="icon">check_circle</span> Place Order';
+          if (sidebarBtn) {
+            sidebarBtn.disabled = false;
+            sidebarBtn.textContent = isEditMode ? 'Update order →' : 'Place order →';
+          }
 
           if (result.success) {
             showOrderPlacedToast(wasEditMode);
@@ -5706,6 +5756,7 @@
             isEditMode = true;
             document.getElementById('editModeBanner').style.display = 'flex';
             document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
+            if (sidebarBtn) sidebarBtn.textContent = 'Update order →';
             updatePaymentStatus(true, currentOrderPaid);
             // Enable Pay and Cancel buttons (order exists now)
             setOrderButtonsEnabled(true);
@@ -5718,6 +5769,10 @@
         .withFailureHandler(function (error) {
           btn.disabled = false;
           btn.innerHTML = isEditMode ? '<span class="icon">save</span> Update Order' : '<span class="icon">check_circle</span> Place Order';
+          if (sidebarBtn) {
+            sidebarBtn.disabled = false;
+            sidebarBtn.textContent = isEditMode ? 'Update order →' : 'Place order →';
+          }
           showStatus('Error: ' + error.message, 'error');
         })
         .submitOrder(orderData);
@@ -5925,6 +5980,8 @@
       applyStickyFooterPaidState(!!orderData.paid);
       document.getElementById('editModeBanner').style.display = 'flex';
       document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
+      var _sb1 = document.getElementById('sidebarPlaceOrder');
+      if (_sb1) _sb1.textContent = 'Update order →';
 
       // Update payment status
       updatePaymentStatus(true, orderData.paid);
@@ -5984,6 +6041,8 @@
       customPrice = null;
       document.getElementById('editModeBanner').style.display = 'none';
       document.getElementById('submitBtn').innerHTML = '<span class="icon">check_circle</span> Place Order';
+      var _sb2 = document.getElementById('sidebarPlaceOrder');
+      if (_sb2) _sb2.textContent = 'Place order →';
       clearOrder();
       updatePaymentStatus(false, false);
       setOrderButtonsEnabled(false);
@@ -6195,6 +6254,8 @@
             isEditMode = true;
             document.getElementById('editModeBanner').style.display = 'flex';
             document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
+            var _sb3 = document.getElementById('sidebarPlaceOrder');
+            if (_sb3) _sb3.textContent = 'Update order →';
             setOrderButtonsEnabled(true);
             // Sync name to Order tab
             document.getElementById('userName').value = userName;
