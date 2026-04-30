@@ -1420,18 +1420,6 @@
       margin-bottom: 10px;
     }
 
-    .order-saved-card .osc-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--ink-900);
-      margin-bottom: 4px;
-      line-height: 1.4;
-    }
-
-    .order-saved-card .osc-name:empty {
-      display: none;
-    }
-
     .order-saved-card .osc-items {
       font-family: 'Noto Sans SC', 'Inter', sans-serif;
       font-size: 13.5px;
@@ -4161,11 +4149,10 @@
                 <span class="osc-badge unpaid" id="paymentText">Unpaid</span>
               </div>
               <div class="osc-body">
-                <div class="osc-name" id="oscName"></div>
                 <div class="osc-items" id="oscItems"></div>
               </div>
               <div class="osc-footer">
-                <span class="osc-total-label">Estimated total</span>
+                <span class="osc-total-label">Total</span>
                 <span class="osc-total"><span class="osc-currency">RM</span> <span id="oscTotal">0.00</span></span>
               </div>
             </div>
@@ -5839,7 +5826,7 @@
       });
     }
 
-    // Visually mark the Place Order button as invalid when Estimated Price is RM 0.
+    // Visually mark the Place Order button as invalid when Price is RM 0.
     // Note: we do NOT set `disabled=true` because we still want the click to fire so
     // submitOrder() can show the alert/toast — disabled buttons swallow clicks silently.
     // Use aria-disabled instead so screen readers announce the invalid state correctly.
@@ -5851,7 +5838,7 @@
       const invalid = price <= 0;
       btn.style.opacity = invalid ? '0.5' : '';
       btn.style.cursor = invalid ? 'not-allowed' : '';
-      btn.title = invalid ? 'Estimated Price must be greater than RM 0' : '';
+      btn.title = invalid ? 'Price must be greater than RM 0' : '';
       if (invalid) {
         btn.setAttribute('aria-disabled', 'true');
       } else {
@@ -5910,8 +5897,8 @@
 
       const estimatedPrice = parseFloat(document.getElementById('priceAmount').textContent) || 0;
       if (estimatedPrice <= 0) {
-        alert('Estimated Price cannot be RM 0!\n\nPlease use the +/− buttons to set a valid price before placing your order.');
-        showStatus('Estimated Price cannot be RM 0! Use the +/− buttons to set a valid price.', 'error');
+        alert('Price cannot be RM 0!\n\nPlease use the +/− buttons to set a valid price before placing your order.');
+        showStatus('Price cannot be RM 0! Use the +/− buttons to set a valid price.', 'error');
         return;
       }
 
@@ -6197,14 +6184,9 @@
         textEl.textContent = 'Unpaid';
       }
 
-      // Populate name + items + total from current state.
-      const nameEl = document.getElementById('oscName');
+      // Populate items + total from current state.
       const itemsEl = document.getElementById('oscItems');
       const totalEl = document.getElementById('oscTotal');
-
-      if (nameEl) {
-        nameEl.textContent = getGlobalName() || '';
-      }
 
       if (itemsEl) {
         const names = (selectedItems || []).map(function (it) {
