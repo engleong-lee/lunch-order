@@ -4108,6 +4108,12 @@
         </div>
         <!-- MY ORDER card (visible when closed + user has order) -->
         <div id="closedOrderCard" class="order-saved-card no-order" style="max-width: 380px; margin: 20px auto 0; text-align: left;">
+          <div id="closedNoOrder" class="closed-no-order" style="display:none; text-align:center; padding: 18px 14px;">
+            <div style="font-size: 28px; margin-bottom: 6px;">:(</div>
+            <div style="font-size: 13px; color: var(--ink-400); line-height: 1.5;" id="closedNoOrderMsg">You missed today's order. Your stomach will remember this.</div>
+            <div style="font-size: 12px; color: var(--ink-300); margin-top: 6px;">See you tomorrow, set an alarm next time!</div>
+          </div>
+          <div id="closedHasOrder">
           <div class="osc-header">
             <span class="osc-label"><span class="osc-dot"></span> MY ORDER</span>
             <span class="osc-badge unpaid" id="closedPaymentText">Unpaid</span>
@@ -4123,6 +4129,7 @@
           <div class="osc-pay-row" id="closedPayRow">
             <button class="btn btn-primary btn-sm" onclick="showPaymentModal()"><span class="icon">payment</span> Pay now</button>
           </div>
+          </div><!-- /closedHasOrder -->
         </div>
         <div class="closed-actions">
           <button class="closed-action" onclick="switchTab('all')">
@@ -6042,6 +6049,17 @@
         .getOrderByName(userName);
     }
 
+    var closedNoOrderMessages = [
+      'You missed today\'s order. Your stomach will remember this.',
+      'No order today? Bold strategy. Let\'s see if it pays off.',
+      'Plot twist: everyone else is eating and you\'re not.',
+      'Today\'s lunch: regret, served cold.',
+      'Your colleagues are eating something delicious right now. Just saying.',
+      'No order found. Did you forget, or are you on a diet nobody asked about?',
+      'Error 404: Your lunch was not found.',
+      'Roses are red, violets are blue, ordering closed, no food for you.'
+    ];
+
     // Load order for closed-state display
     function loadClosedOrder() {
       var userName = getGlobalName();
@@ -6050,9 +6068,11 @@
       // Show card in loading state
       var card = document.getElementById('closedOrderCard');
       card.className = 'order-saved-card';
+      document.getElementById('closedNoOrder').style.display = 'none';
+      document.getElementById('closedHasOrder').style.display = '';
       document.getElementById('closedOscSeq').textContent = '';
       document.getElementById('closedOscItems').textContent = 'Loading your order...';
-      document.getElementById('closedOscTotal').textContent = '—';
+      document.getElementById('closedOscTotal').textContent = '\u2014';
       document.getElementById('closedPaymentText').className = 'osc-badge';
       document.getElementById('closedPaymentText').textContent = '';
       document.getElementById('closedPayRow').classList.add('hidden');
@@ -6061,11 +6081,15 @@
         google.script.run
           .withSuccessHandler(function (result) {
             if (!result.found) {
-              card.className = 'order-saved-card no-order';
+              // Show funny no-order message
+              document.getElementById('closedHasOrder').style.display = 'none';
+              document.getElementById('closedNoOrderMsg').textContent =
+                closedNoOrderMessages[Math.floor(Math.random() * closedNoOrderMessages.length)];
+              document.getElementById('closedNoOrder').style.display = '';
               return;
             }
             document.getElementById('closedOscSeq').textContent = result.row || '';
-            var itemsText = enrichOrderWithEnglish(result.order).replace(/\s*[,，]\s*/g, ' · ');
+            var itemsText = enrichOrderWithEnglish(result.order).replace(/\s*[,，]\s*/g, ' \u00b7 ');
             document.getElementById('closedOscItems').textContent = itemsText;
             document.getElementById('closedOscTotal').textContent = result.price || '0.00';
             var badge = document.getElementById('closedPaymentText');
@@ -6081,7 +6105,10 @@
             }
           })
           .withFailureHandler(function () {
-            card.className = 'order-saved-card no-order';
+            document.getElementById('closedHasOrder').style.display = 'none';
+            document.getElementById('closedNoOrderMsg').textContent =
+              closedNoOrderMessages[Math.floor(Math.random() * closedNoOrderMessages.length)];
+            document.getElementById('closedNoOrder').style.display = '';
           })
           .getOrderByName(userName);
       });
