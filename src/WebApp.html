@@ -1355,8 +1355,8 @@
       font-weight: 600;
       font-size: 13px;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 0;
-      text-transform: none;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
     .osc-seq:empty { display: none; }
 
@@ -1388,6 +1388,9 @@
     }
 
     .order-saved-card .osc-body {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
       margin-bottom: 10px;
     }
 
@@ -4113,10 +4116,11 @@
             <!-- Order Saved Card (shows when order exists) -->
             <div id="paymentStatus" class="order-saved-card no-order">
               <div class="osc-header">
-                <span class="osc-label"><span class="osc-dot"></span> MY ORDER <span class="osc-seq" id="oscSeq"></span></span>
+                <span class="osc-label"><span class="osc-dot"></span> MY ORDER</span>
                 <span class="osc-badge unpaid" id="paymentText">Unpaid</span>
               </div>
               <div class="osc-body">
+                <div class="osc-seq" id="oscSeq"></div>
                 <div class="osc-items" id="oscItems"></div>
               </div>
               <div class="osc-footer">
