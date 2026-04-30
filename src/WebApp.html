@@ -6010,8 +6010,11 @@
         return;
       }
 
+      showLoadingBar('Cancelling order...');
+
       google.script.run
         .withSuccessHandler(function (result) {
+          hideLoadingBar();
           // Refresh menu counts after cancellation
           if (result.success) {
             refreshMenuCounts();
@@ -6028,6 +6031,7 @@
           }
         })
         .withFailureHandler(function (error) {
+          hideLoadingBar();
           showStatus('Error: ' + error.message, 'error');
         })
         .cancelOrderByName(userName);
