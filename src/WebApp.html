@@ -520,6 +520,10 @@
     .card-menu #menuContainer {
       background: white;
     }
+    #menuContainer.loading-disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
 
     .section-actions {
       display: flex;
@@ -4097,7 +4101,7 @@
             <span class="closed-info-value">12:00 - 12:15 PM @ P4</span>
           </div>
         </div>
-        <!-- MY ORDER card (visible when closed + user has order) -->
+        <!-- My Order card (visible when closed + user has order) -->
         <div id="closedOrderCard" class="order-saved-card no-order" style="max-width: 380px; margin: 20px auto 0; text-align: left;">
           <div id="closedNoOrder" class="closed-no-order" style="display:none; text-align:center; padding: 18px 14px;">
             <div style="font-size: 28px; margin-bottom: 6px;">:(</div>
@@ -4106,7 +4110,7 @@
           </div>
           <div id="closedHasOrder">
           <div class="osc-header">
-            <span class="osc-label"><span class="osc-dot"></span> MY ORDER</span>
+            <span class="osc-label"><span class="osc-dot"></span> My Order</span>
             <span class="osc-badge unpaid" id="closedPaymentText">Unpaid</span>
           </div>
           <div class="osc-body">
@@ -4151,7 +4155,7 @@
             <!-- Order Saved Card (shows when order exists) -->
             <div id="paymentStatus" class="order-saved-card no-order">
               <div class="osc-header">
-                <span class="osc-label"><span class="osc-dot"></span> MY ORDER</span>
+                <span class="osc-label"><span class="osc-dot"></span> My Order</span>
                 <span class="osc-badge unpaid" id="paymentText">Unpaid</span>
               </div>
               <div class="osc-body">
@@ -4694,9 +4698,13 @@
       var bar = document.getElementById('loadingBar');
       document.getElementById('loadingBarText').textContent = text || 'Loading...';
       bar.style.display = 'flex';
+      var mc = document.getElementById('menuContainer');
+      if (mc) mc.classList.add('loading-disabled');
     }
     function hideLoadingBar() {
       document.getElementById('loadingBar').style.display = 'none';
+      var mc = document.getElementById('menuContainer');
+      if (mc) mc.classList.remove('loading-disabled');
     }
 
     // Strip bracket content from item name for order storage
