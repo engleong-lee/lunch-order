@@ -1342,6 +1342,22 @@
       text-transform: uppercase;
       color: var(--brand-700);
     }
+    .osc-seq {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 5px;
+      border-radius: 10px;
+      background: var(--brand-600);
+      color: white;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .osc-seq:empty { display: none; }
 
     .order-saved-card .osc-dot {
       width: 6px;
@@ -4014,7 +4030,6 @@
       </div>
       <nav class="header-nav">
         <button class="header-nav-link active" onclick="switchTab('order')">Order</button>
-        <button class="header-nav-link" id="headerNavMyOrder" onclick="switchTab('myorder')">My Order</button>
         <button class="header-nav-link" id="headerNavAll" onclick="switchTab('all')">All orders <span id="headerOrderCount"></span></button>
         <button class="header-nav-link" id="headerNavStats" onclick="switchTab('stats')">Stats</button>
         <button class="header-nav-link" id="headerNavAdmin" onclick="switchTab('admin')">Admin</button>
@@ -4041,7 +4056,6 @@
     <!-- Tabs -->
     <nav class="tabs">
       <button class="tab active" onclick="switchTab('order')"><span class="icon">edit_note</span> Order</button>
-      <button class="tab" id="tabMyOrder" onclick="switchTab('myorder')"><span class="icon">person</span> My Order</button>
       <button class="tab" id="tabAllOrders" onclick="switchTab('all')"><span class="icon">content_paste</span> All</button>
       <button class="tab" id="tabStats" onclick="switchTab('stats')"><span class="icon">bar_chart</span> Stats</button>
       <button class="tab" onclick="switchTab('admin')"><span class="icon">settings</span> Admin</button>
@@ -4069,9 +4083,6 @@
           </div>
         </div>
         <div class="closed-actions">
-          <button class="closed-action" onclick="switchTab('myorder')">
-            <span class="icon">person</span> Check my order
-          </button>
           <button class="closed-action" onclick="switchTab('all')">
             <span class="icon">content_paste</span> See all orders
           </button>
@@ -4100,7 +4111,7 @@
             <!-- Order Saved Card (shows when order exists) -->
             <div id="paymentStatus" class="order-saved-card no-order">
               <div class="osc-header">
-                <span class="osc-label"><span class="osc-dot"></span> MY ORDER</span>
+                <span class="osc-label"><span class="osc-dot"></span> MY ORDER <span class="osc-seq" id="oscSeq"></span></span>
                 <span class="osc-badge unpaid" id="paymentText">Unpaid</span>
               </div>
               <div class="osc-body">
@@ -4257,15 +4268,6 @@
           <div class="sf-hint" id="priceHint"></div>
         </div>
       </div><!-- End orderContent -->
-    </div>
-
-    <!-- MY ORDER TAB -->
-    <div id="tab-myorder" class="tab-content">
-      <div style="padding: 4px 0 8px;">
-        <button class="btn btn-primary btn-sm" onclick="checkMyOrder()"><span class="icon">search</span> Check my order</button>
-      </div>
-
-      <div id="myOrderResult"></div>
     </div>
 
     <!-- ALL ORDERS TAB -->
@@ -4880,7 +4882,6 @@
       // Activate the clicked tab button
       const tabButtons = {
         'order': document.querySelector('.tab[onclick*="order"]'),
-        'myorder': document.getElementById('tabMyOrder'),
         'all': document.getElementById('tabAllOrders'),
         'stats': document.getElementById('tabStats'),
         'admin': document.querySelector('.tab[onclick*="admin"]')
@@ -4897,12 +4898,6 @@
       }
       if (tabId === 'admin') {
         refreshAdminStatus();
-      }
-      if (tabId === 'myorder') {
-        // Auto-load order if name exists
-        if (getGlobalName()) {
-          checkMyOrder();
-        }
       }
       // Note: Name is managed via header pill and name modal
     }
@@ -5229,9 +5224,9 @@
         position: 'top'
       },
       {
-        target: '#tabMyOrder',
+        target: '#tabAllOrders',
         title: '7. Navigation Tabs',
-        description: '"My Order" shows your order. "All Orders" shows everyone\'s orders. Ready to order? Let\'s go!',
+        description: '"All Orders" shows everyone\'s orders. "Stats" shows order statistics. Ready to order? Let\'s go!',
         position: 'bottom'
       }
     ];
@@ -5309,7 +5304,7 @@
       highlight.style.display = 'block';
 
       // Use INSTANT scroll to avoid timing issues with smooth scroll
-      if (step.target === '#tabMyOrder') {
+      if (step.target === '#tabAllOrders') {
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else {
         targetEl.scrollIntoView({ behavior: 'instant', block: 'center' });
@@ -6111,7 +6106,9 @@
       var _sb1 = document.getElementById('sidebarPlaceOrder');
       if (_sb1) _sb1.textContent = 'Update order →';
 
-      // Update payment status
+      // Update payment status + sequence number
+      var seqEl = document.getElementById('oscSeq');
+      if (seqEl) seqEl.textContent = orderData.row ? '#' + orderData.row : '';
       updatePaymentStatus(true, orderData.paid);
     }
 
@@ -6122,6 +6119,8 @@
 
       if (!hasOrder) {
         statusEl.className = 'order-saved-card no-order';
+        var seqEl = document.getElementById('oscSeq');
+        if (seqEl) seqEl.textContent = '';
         return;
       }
 
@@ -6233,8 +6232,7 @@
         .withSuccessHandler(function (result) {
           if (result.success) {
             alert(result.message);
-            // Refresh the My Order view
-            checkMyOrder();
+            loadMyOrder(); // Refresh order state
           } else {
             alert(result.message);
           }
@@ -7400,7 +7398,7 @@
       _origSwitchTab(tabId);
       // Sync header nav
       document.querySelectorAll('.header-nav-link').forEach(l => l.classList.remove('active'));
-      const map = { 'order': 0, 'myorder': 1, 'all': 2, 'stats': 3, 'admin': 4 };
+      const map = { 'order': 0, 'all': 1, 'stats': 2, 'admin': 3 };
       const links = document.querySelectorAll('.header-nav-link');
       if (links[map[tabId]] !== undefined) links[map[tabId]].classList.add('active');
     };
