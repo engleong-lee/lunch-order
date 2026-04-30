@@ -6408,7 +6408,8 @@
       }
       // Trigger pop-in on next frame so the transition fires from the initial state.
       requestAnimationFrame(function () { toast.classList.add('show'); });
-      // No auto-dismiss — toast stays until the user clicks the × close button.
+      // Auto-dismiss after 10 seconds
+      _payToastTimer = setTimeout(function () { dismissPaymentToast(); }, 10000);
     }
 
     function showOrderPlacedToast(isUpdate) {
