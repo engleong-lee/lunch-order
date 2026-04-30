@@ -4734,6 +4734,10 @@
         if (savedName) {
           setGlobalName(savedName);
           updateNamePill();
+          // If menu already loaded, auto-load order now
+          if (menuData && Object.keys(menuData).length > 0) {
+            loadMyOrder();
+          }
         } else {
           // First visit: auto-open name modal after short delay
           updateNamePill();
@@ -4927,6 +4931,10 @@
           menuData = menu;
           renderMenu(menu);
           updateRefreshTime();
+          // Auto-load order after menu is ready
+          if (getGlobalName()) {
+            loadMyOrder();
+          }
         })
         .withFailureHandler(showError)
         .getMenuForSidebar();
@@ -5967,19 +5975,9 @@
           if (result.found) {
             // Load order into form
             loadOrderIntoForm(result);
-            showOrderToast({
-              title: 'Order loaded!',
-              subtitle: 'You can now edit and save.',
-              icon: 'download'
-            });
             // Enable Pay and Cancel buttons (order exists)
             setOrderButtonsEnabled(true);
           } else {
-            showOrderToast({
-              title: 'No order found',
-              subtitle: result.message || 'No existing order for this name.',
-              icon: 'search_off'
-            });
             updatePaymentStatus(false, false);
             // Disable Pay and Cancel buttons (no order)
             setOrderButtonsEnabled(false);
