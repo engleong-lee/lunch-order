@@ -4681,8 +4681,14 @@
       saveUserName(name);
       updateNamePill();
       closeNameModal();
-      // Auto-load order after setting name
-      loadMyOrder();
+      // Reload order (and menu counts) for the new name
+      if (orderingOpen) {
+        showLoadingBar('Loading your order...');
+        loadMenu();
+        loadMyOrder();
+      } else {
+        loadClosedOrder();
+      }
     }
 
     // Loading bar helpers
@@ -6041,15 +6047,23 @@
       var userName = getGlobalName();
       if (!userName) return;
 
+      // Show card in loading state
+      var card = document.getElementById('closedOrderCard');
+      card.className = 'order-saved-card';
+      document.getElementById('closedOscSeq').textContent = '';
+      document.getElementById('closedOscItems').textContent = 'Loading your order...';
+      document.getElementById('closedOscTotal').textContent = '—';
+      document.getElementById('closedPaymentText').className = 'osc-badge';
+      document.getElementById('closedPaymentText').textContent = '';
+      document.getElementById('closedPayRow').classList.add('hidden');
+
       ensureMenuDataLoaded().then(function() {
         google.script.run
           .withSuccessHandler(function (result) {
-            var card = document.getElementById('closedOrderCard');
             if (!result.found) {
               card.className = 'order-saved-card no-order';
               return;
             }
-            card.className = 'order-saved-card';
             document.getElementById('closedOscSeq').textContent = result.row || '';
             var itemsText = enrichOrderWithEnglish(result.order).replace(/\s*[,，]\s*/g, ' · ');
             document.getElementById('closedOscItems').textContent = itemsText;
@@ -6067,7 +6081,7 @@
             }
           })
           .withFailureHandler(function () {
-            // Silently fail — card stays hidden
+            card.className = 'order-saved-card no-order';
           })
           .getOrderByName(userName);
       });
