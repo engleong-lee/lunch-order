@@ -1343,17 +1343,17 @@
       color: var(--brand-700);
     }
     .osc-seq {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--brand-500);
+      color: white;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 20px;
-      height: 20px;
-      padding: 0 5px;
-      border-radius: 10px;
-      background: var(--brand-600);
-      color: white;
-      font-size: 10.5px;
-      font-weight: 700;
+      font-weight: 600;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
       letter-spacing: 0;
       text-transform: none;
     }
@@ -6108,7 +6108,7 @@
 
       // Update payment status + sequence number
       var seqEl = document.getElementById('oscSeq');
-      if (seqEl) seqEl.textContent = orderData.row ? '#' + orderData.row : '';
+      if (seqEl) seqEl.textContent = orderData.row || '';
       updatePaymentStatus(true, orderData.paid);
     }
 
