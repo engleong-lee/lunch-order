@@ -1306,9 +1306,11 @@
       border: 0.5px solid var(--brand-100);
       border-radius: var(--r-lg);
       padding: 14px 18px;
-      margin-top: 20px;
       margin-bottom: 14px;
       overflow: hidden;
+    }
+    @media (min-width: 1024px) {
+      .order-saved-card { margin-top: 20px; }
     }
 
     .order-saved-card::before {
@@ -3309,9 +3311,12 @@
       gap: 8px;
       overflow-x: auto;
       padding-bottom: 14px;
-      padding-top: 20px;
+      padding-top: 6px;
       scrollbar-width: none;
       -ms-overflow-style: none;
+    }
+    @media (min-width: 1024px) {
+      .category-pills { padding-top: 20px; }
     }
     .category-pills::-webkit-scrollbar { display: none; }
     .cat-pill {
