@@ -5871,6 +5871,7 @@
       selectedItems = [];
       document.querySelectorAll('.menu-item.selected').forEach(el => el.classList.remove('selected'));
       document.getElementById('notes').value = '';
+      var sbn = document.getElementById('sidebarNotes'); if (sbn) sbn.value = '';
 
       document.querySelectorAll('.rice-option').forEach(el => el.classList.remove('selected'));
       document.querySelector('.rice-option[data-value="normal"]').classList.add('selected');
@@ -6207,8 +6208,11 @@
       const riceEl = document.querySelector(`.rice-option[data-value="${riceOption}"]`);
       if (riceEl) riceEl.classList.add('selected');
 
-      // Set notes
-      document.getElementById('notes').value = orderData.notes || '';
+      // Set notes (sync both mobile + desktop sidebar inputs)
+      var notesVal = orderData.notes || '';
+      document.getElementById('notes').value = notesVal;
+      var sidebarNotes = document.getElementById('sidebarNotes');
+      if (sidebarNotes) sidebarNotes.value = notesVal;
 
       // Update displays
       updateSelectedDisplay();
