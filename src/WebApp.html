@@ -1299,52 +1299,6 @@
       font-size: 0.85rem;
     }
 
-    /* Edit mode indicator */
-    .edit-mode-banner {
-      background: var(--amber-50);
-      color: var(--amber-700);
-      padding: 11px 14px;
-      border: 0.5px solid var(--amber-100);
-      border-left: 2.5px solid var(--amber-500);
-      border-radius: var(--r-md);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      box-shadow: none;
-    }
-
-    .edit-mode-banner .text {
-      font-weight: 500;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .edit-mode-banner .text .icon {
-      font-size: 1.1em;
-    }
-
-    .edit-mode-banner .cancel-edit {
-      background: rgba(255, 255, 255, 0.7);
-      border: 0.5px solid var(--amber-100);
-      color: var(--amber-700);
-      padding: 5px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 500;
-      transition: var(--transition);
-      font-family: inherit;
-    }
-
-    .edit-mode-banner .cancel-edit:hover {
-      background: white;
-      border-color: var(--amber-500);
-    }
-
     /* Order Saved card */
     .order-saved-card {
       position: relative;
@@ -4131,12 +4085,6 @@
         <div class="order-layout">
           <div class="order-layout-main">
 
-            <!-- Edit Mode Banner (hidden by default) -->
-            <div id="editModeBanner" class="edit-mode-banner" style="display: none;">
-              <span class="text"><span class="icon">edit</span> Editing your order</span>
-              <button class="cancel-edit" onclick="cancelEditMode()">Start Fresh</button>
-            </div>
-
             <!-- Hidden name field (populated from header pill) -->
             <input type="hidden" id="userName">
 
@@ -4152,7 +4100,7 @@
             <!-- Order Saved Card (shows when order exists) -->
             <div id="paymentStatus" class="order-saved-card no-order">
               <div class="osc-header">
-                <span class="osc-label"><span class="osc-dot"></span> ORDER SAVED</span>
+                <span class="osc-label"><span class="osc-dot"></span> MY ORDER</span>
                 <span class="osc-badge unpaid" id="paymentText">Unpaid</span>
               </div>
               <div class="osc-body">
@@ -5946,7 +5894,6 @@
           if (result.success) {
             // After successful submit, enter edit mode (order now exists)
             isEditMode = true;
-            document.getElementById('editModeBanner').style.display = 'flex';
             document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
             if (sidebarBtn) sidebarBtn.textContent = 'Update order →';
             updatePaymentStatus(true, currentOrderPaid);
@@ -6160,7 +6107,6 @@
       isEditMode = true;
       currentOrderPaid = orderData.paid;
       applyStickyFooterPaidState(!!orderData.paid);
-      document.getElementById('editModeBanner').style.display = 'flex';
       document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
       var _sb1 = document.getElementById('sidebarPlaceOrder');
       if (_sb1) _sb1.textContent = 'Update order →';
@@ -6215,7 +6161,6 @@
       isEditMode = false;
       currentOrderPaid = false;
       customPrice = null;
-      document.getElementById('editModeBanner').style.display = 'none';
       document.getElementById('submitBtn').innerHTML = '<span class="icon">check_circle</span> Place Order';
       var _sb2 = document.getElementById('sidebarPlaceOrder');
       if (_sb2) _sb2.textContent = 'Place order →';
@@ -6423,7 +6368,6 @@
             showAllOrdersStatus(`Order copied from ${fromName}!`, 'success');
             // Update state for Order tab (in background)
             isEditMode = true;
-            document.getElementById('editModeBanner').style.display = 'flex';
             document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
             var _sb3 = document.getElementById('sidebarPlaceOrder');
             if (_sb3) _sb3.textContent = 'Update order →';
