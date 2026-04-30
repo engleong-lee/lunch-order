@@ -1415,6 +1415,13 @@
       display: none;
     }
 
+    .osc-pay-row {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 0.5px solid var(--brand-100);
+    }
+    .osc-pay-row.hidden { display: none; }
+
     .order-saved-card .osc-footer {
       display: flex;
       align-items: baseline;
@@ -4104,6 +4111,25 @@
             <span class="icon">content_paste</span> See all orders
           </button>
         </div>
+
+        <!-- MY ORDER card (visible when closed + user has order) -->
+        <div id="closedOrderCard" class="order-saved-card no-order" style="max-width: 560px; margin: 20px auto 0;">
+          <div class="osc-header">
+            <span class="osc-label"><span class="osc-dot"></span> MY ORDER</span>
+            <span class="osc-badge unpaid" id="closedPaymentText">Unpaid</span>
+          </div>
+          <div class="osc-body">
+            <div class="osc-seq" id="closedOscSeq"></div>
+            <div class="osc-items" id="closedOscItems"></div>
+          </div>
+          <div class="osc-footer">
+            <span class="osc-total-label">Total</span>
+            <span class="osc-total"><span class="osc-currency">RM</span> <span id="closedOscTotal">0.00</span></span>
+          </div>
+          <div class="osc-pay-row" id="closedPayRow">
+            <button class="btn btn-primary btn-sm" onclick="showPaymentModal()"><span class="icon">payment</span> Pay now</button>
+          </div>
+        </div>
       </div>
 
       <!-- Order Content (hidden by default, shown only when ordering is open) -->
@@ -4741,6 +4767,10 @@
             showLoadingBar('Loading your order...');
             loadMyOrder();
           }
+          // If ordering is closed, load closed-state order card
+          if (!orderingOpen) {
+            loadClosedOrder();
+          }
         } else {
           // First visit: auto-open name modal after short delay
           updateNamePill();
@@ -4785,6 +4815,8 @@
             document.getElementById('orderingClosedMessage').style.display = 'block';
             document.getElementById('closedMessage').textContent = status.message;
             document.getElementById('orderContent').style.display = 'none';
+            // Load user's order for closed-state card
+            loadClosedOrder();
           }
         })
         .withFailureHandler(function (error) {
@@ -6003,6 +6035,45 @@
           showStatus('Error: ' + error.message, 'error');
         })
         .getOrderByName(userName);
+    }
+
+    // Load order for closed-state display
+    function loadClosedOrder() {
+      var userName = getGlobalName();
+      if (!userName) return;
+
+      ensureMenuDataLoaded().then(function() {
+        google.script.run
+          .withSuccessHandler(function (result) {
+            var card = document.getElementById('closedOrderCard');
+            if (!result.found) {
+              card.className = 'order-saved-card no-order';
+              return;
+            }
+            card.className = 'order-saved-card';
+            card.style.maxWidth = '560px';
+            card.style.margin = '20px auto 0';
+            document.getElementById('closedOscSeq').textContent = result.row || '';
+            var itemsText = enrichOrderWithEnglish(result.order).replace(/\s*[,，]\s*/g, ' · ');
+            document.getElementById('closedOscItems').textContent = itemsText;
+            document.getElementById('closedOscTotal').textContent = result.price || '0.00';
+            var badge = document.getElementById('closedPaymentText');
+            var payRow = document.getElementById('closedPayRow');
+            if (result.paid) {
+              badge.className = 'osc-badge paid';
+              badge.textContent = 'Paid';
+              payRow.classList.add('hidden');
+            } else {
+              badge.className = 'osc-badge unpaid';
+              badge.textContent = 'Unpaid';
+              payRow.classList.remove('hidden');
+            }
+          })
+          .withFailureHandler(function () {
+            // Silently fail — card stays hidden
+          })
+          .getOrderByName(userName);
+      });
     }
 
     // Go to Order tab with name filled and order loaded for editing
