@@ -4464,27 +4464,36 @@
     let currentOrderPaid = false;
     let customPrice = null; // Track if user has manually adjusted price
 
-    // LocalStorage key for user name (fallback)
-    const STORAGE_KEY_NAME = 'lunchOrderUserName';
+    // === Persistent storage via Cache API ===
+    // Cache API persists across sessions in Apps Script iframes (iOS, Android, desktop)
+    // where localStorage gets wiped due to rotating sandbox origins.
+    var CACHE_NAME = 'lunch-order-prefs';
+    var CACHE_PREFIX = 'https://lunch-order-prefs/';
 
-    // Save user name to server (and localStorage as fallback)
-    function saveUserName(name) {
-      // Save to localStorage only (per-device, not shared across users)
-      try {
-        localStorage.setItem(STORAGE_KEY_NAME, name);
-      } catch (e) {
-        console.log('Could not save name to localStorage:', e);
-      }
+    function cachePut(key, value) {
+      if (!window.caches) return;
+      caches.open(CACHE_NAME).then(function (c) {
+        c.put(CACHE_PREFIX + key, new Response(value));
+      }).catch(function () {});
     }
 
-    // Load user name from localStorage
-    function loadUserNameLocal() {
-      try {
-        return localStorage.getItem(STORAGE_KEY_NAME) || '';
-      } catch (e) {
-        console.log('Could not load name from localStorage:', e);
+    function cacheGet(key, cb) {
+      if (!window.caches) { cb(''); return; }
+      caches.open(CACHE_NAME).then(function (c) {
+        return c.match(CACHE_PREFIX + key);
+      }).then(function (resp) {
+        if (resp) return resp.text();
         return '';
-      }
+      }).then(function (val) { cb(val || ''); })
+        .catch(function () { cb(''); });
+    }
+
+    function saveUserName(name) {
+      cachePut('userName', name);
+    }
+
+    function loadSavedName(cb) {
+      cacheGet('userName', cb);
     }
 
     // Strip bracket content from item name for order storage
@@ -4548,15 +4557,16 @@
       // Initialize Place Order button state (disabled when price is RM 0)
       updateSubmitButtonState();
 
-      // Load saved name from localStorage
-      const savedNameLocal = loadUserNameLocal();
-      if (savedNameLocal) {
-        document.getElementById('userName').value = savedNameLocal;
-        document.getElementById('checkName').value = savedNameLocal;
-        document.getElementById('statsName').value = savedNameLocal;
-      }
+      // Load saved name from Cache API (async)
+      loadSavedName(function (savedName) {
+        if (savedName) {
+          document.getElementById('userName').value = savedName;
+          document.getElementById('checkName').value = savedName;
+          document.getElementById('statsName').value = savedName;
+        }
+      });
 
-      // Sync name fields and save to localStorage
+      // Sync name fields and save via Cache API
       document.getElementById('userName').addEventListener('input', function () {
         document.getElementById('checkName').value = this.value;
         document.getElementById('statsName').value = this.value;
@@ -4997,10 +5007,7 @@
     function closeWelcomeModal() {
       const dontShow = document.getElementById('dontShowAgain').checked;
       if (dontShow) {
-        // Save preference to localStorage
-        try {
-          localStorage.setItem('lunchOrder_hideWelcome', 'true');
-        } catch (e) { }
+        cachePut('hideWelcome', 'true');
       }
       document.getElementById('welcomeModal').style.display = 'none';
       document.removeEventListener('keydown', handleWelcomeKeydown);
@@ -5023,9 +5030,7 @@
     function closeWelcomeAndStartTour() {
       const dontShow = document.getElementById('dontShowAgain').checked;
       if (dontShow) {
-        try {
-          localStorage.setItem('lunchOrder_hideWelcome', 'true');
-        } catch (e) { }
+        cachePut('hideWelcome', 'true');
       }
       document.getElementById('welcomeModal').style.display = 'none';
       document.removeEventListener('keydown', handleWelcomeKeydown);
