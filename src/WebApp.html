@@ -267,6 +267,119 @@
       margin-left: auto;
     }
 
+    /* Name pill in header */
+    .name-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px 5px 8px;
+      border-radius: 20px;
+      background: var(--brand-50);
+      border: 1px solid var(--brand-200);
+      color: var(--brand-700);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      max-width: 160px;
+      font-family: inherit;
+      position: relative;
+    }
+    .name-pill:hover { background: var(--brand-100); }
+    .name-pill .icon { font-size: 1.1em; }
+    .name-pill .name-pill-arrow { font-size: 1em; color: var(--ink-400); }
+    .name-pill #namePillText {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .name-pill.empty { color: var(--ink-400); border-color: var(--border); background: var(--ink-50); }
+
+    /* Name modal */
+    .name-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      z-index: 199;
+    }
+    .name-modal-overlay.show { display: block; }
+
+    .name-modal {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 24px;
+      margin-top: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(26,21,18,0.12);
+      z-index: 200;
+      width: 260px;
+    }
+    .name-modal.show { display: block; }
+    .name-modal-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-400);
+      margin-bottom: 8px;
+    }
+    .name-modal input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--ink-900);
+      background: var(--ink-50);
+      box-sizing: border-box;
+    }
+    .name-modal input:focus {
+      outline: none;
+      border-color: var(--brand-500);
+      background: white;
+      box-shadow: 0 0 0 3px var(--brand-100);
+    }
+    .name-modal-save {
+      width: 100%;
+      margin-top: 8px;
+      padding: 9px 14px;
+      border: none;
+      border-radius: var(--r-sm);
+      background: var(--cta);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: var(--transition);
+    }
+    .name-modal-save:hover { background: var(--cta-hover); }
+    .name-modal-save .icon { font-size: 1.1em; }
+
+    /* Mobile: centered modal */
+    @media (max-width: 768px) {
+      .name-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -50%);
+        margin-top: 0;
+        width: calc(100% - 48px);
+        max-width: 320px;
+      }
+    }
+
     .status-badge {
       display: inline-flex;
       align-items: center;
@@ -3935,8 +4048,21 @@
         <button class="header-nav-link" id="headerNavAdmin" onclick="switchTab('admin')">Admin</button>
       </nav>
       <div class="header-right">
+        <div class="name-pill" id="namePill" onclick="toggleNameModal()">
+          <span class="icon">person</span>
+          <span id="namePillText">Set name</span>
+          <span class="icon name-pill-arrow">expand_more</span>
+        </div>
         <div class="status-badge" id="statusBadge"><span class="status-dot"></span> <span id="statusBadgeText">Open · cuts off 10:00</span></div>
       </div>
+    </div>
+
+    <!-- Name modal (slide-down on desktop, centered on mobile) -->
+    <div class="name-modal-overlay" id="nameModalOverlay" onclick="closeNameModal()"></div>
+    <div class="name-modal" id="nameModal">
+      <div class="name-modal-title">Your name</div>
+      <input type="text" id="nameModalInput" placeholder="Enter your name" autocomplete="name" onkeydown="if(event.key==='Enter')saveNameFromModal()">
+      <button class="name-modal-save" onclick="saveNameFromModal()"><span class="icon">check</span> Save</button>
     </div>
   </header>
 
@@ -3994,16 +4120,8 @@
               <button class="cancel-edit" onclick="cancelEditMode()">Start Fresh</button>
             </div>
 
-            <!-- Name Input - Compact inline -->
-            <div class="card name-card">
-              <div class="name-row">
-                <label for="userName"><span class="icon">person</span> Your Name</label>
-                <input type="text" id="userName" placeholder="Enter your name" autocomplete="name">
-                <button class="btn btn-ghost btn-sm" onclick="loadMyOrder()" id="loadOrderBtn">
-                  <span class="icon">download</span> Load
-                </button>
-              </div>
-            </div>
+            <!-- Hidden name field (populated from header pill) -->
+            <input type="hidden" id="userName">
 
             <!-- Status Message (moved to top for visibility) -->
             <div id="statusMessage" class="status"></div>
@@ -4173,12 +4291,8 @@
 
     <!-- MY ORDER TAB -->
     <div id="tab-myorder" class="tab-content">
-      <div class="card name-card">
-        <div class="name-row">
-          <label for="checkName"><span class="icon">person</span> Your Name</label>
-          <input type="text" id="checkName" placeholder="Enter your name">
-          <button class="btn btn-primary btn-sm" onclick="checkMyOrder()"><span class="icon">search</span> Check my order</button>
-        </div>
+      <div style="padding: 4px 0 8px;">
+        <button class="btn btn-primary btn-sm" onclick="checkMyOrder()"><span class="icon">search</span> Check my order</button>
       </div>
 
       <div id="myOrderResult"></div>
@@ -4201,12 +4315,11 @@
 
     <!-- STATS TAB -->
     <div id="tab-stats" class="tab-content">
-      <div class="card name-card">
-        <div class="name-row">
-          <label for="statsName"><span class="icon">person</span> Your Name <span class="label-hint">— or leave blank for all</span></label>
-          <input type="text" id="statsName" placeholder="Enter your name">
-          <button class="btn btn-primary btn-sm" onclick="loadStatistics()"><span class="icon">bar_chart</span> Load statistics</button>
-        </div>
+      <div style="padding: 4px 0 8px; display: flex; align-items: center; gap: 8px;">
+        <button class="btn btn-primary btn-sm" onclick="loadStatistics()"><span class="icon">bar_chart</span> Load statistics</button>
+        <label style="font-size: 13px; color: var(--ink-500); display: flex; align-items: center; gap: 4px;">
+          <input type="checkbox" id="statsAllUsers"> All users
+        </label>
       </div>
 
       <div id="statsResult"></div>
@@ -4497,6 +4610,66 @@
       cacheGet('userName', cb);
     }
 
+    // Global name getter — single source of truth
+    function getGlobalName() {
+      return (document.getElementById('userName').value || '').trim();
+    }
+
+    function setGlobalName(name) {
+      document.getElementById('userName').value = name;
+    }
+
+    // Name pill
+    function updateNamePill() {
+      var name = getGlobalName();
+      var pill = document.getElementById('namePill');
+      var text = document.getElementById('namePillText');
+      if (name) {
+        text.textContent = name;
+        pill.classList.remove('empty');
+      } else {
+        text.textContent = 'Set name';
+        pill.classList.add('empty');
+      }
+    }
+
+    // Name modal
+    function toggleNameModal() {
+      var modal = document.getElementById('nameModal');
+      if (modal.classList.contains('show')) {
+        closeNameModal();
+      } else {
+        openNameModal();
+      }
+    }
+
+    function openNameModal() {
+      var input = document.getElementById('nameModalInput');
+      input.value = getGlobalName();
+      document.getElementById('nameModal').classList.add('show');
+      document.getElementById('nameModalOverlay').classList.add('show');
+      setTimeout(function() { input.focus(); input.select(); }, 50);
+    }
+
+    function closeNameModal() {
+      document.getElementById('nameModal').classList.remove('show');
+      document.getElementById('nameModalOverlay').classList.remove('show');
+    }
+
+    function saveNameFromModal() {
+      var name = document.getElementById('nameModalInput').value.trim();
+      if (!name) {
+        document.getElementById('nameModalInput').focus();
+        return;
+      }
+      setGlobalName(name);
+      saveUserName(name);
+      updateNamePill();
+      closeNameModal();
+      // Auto-load order after setting name
+      loadMyOrder();
+    }
+
     // Strip bracket content from item name for order storage
     // e.g., "酿豆腐（茄子，苦瓜，豆腐）" → "酿豆腐"
     // e.g., "麻辣香锅菜 （白菜，莲藕，午餐肉" → "麻辣香锅菜"
@@ -4558,41 +4731,16 @@
       // Initialize Place Order button state (disabled when price is RM 0)
       updateSubmitButtonState();
 
-      // Load saved name from Cache API (async)
+      // Load saved name from Cache API (async) → populate pill
       loadSavedName(function (savedName) {
         if (savedName) {
-          document.getElementById('userName').value = savedName;
-          document.getElementById('checkName').value = savedName;
-          document.getElementById('statsName').value = savedName;
+          setGlobalName(savedName);
+          updateNamePill();
+        } else {
+          // First visit: auto-open name modal after short delay
+          updateNamePill();
+          setTimeout(openNameModal, 600);
         }
-      });
-
-      // Sync name fields and save via Cache API
-      document.getElementById('userName').addEventListener('input', function () {
-        document.getElementById('checkName').value = this.value;
-        document.getElementById('statsName').value = this.value;
-        saveUserName(this.value);
-      });
-      document.getElementById('checkName').addEventListener('input', function () {
-        document.getElementById('userName').value = this.value;
-        document.getElementById('statsName').value = this.value;
-        saveUserName(this.value);
-      });
-      document.getElementById('statsName').addEventListener('input', function () {
-        document.getElementById('userName').value = this.value;
-        document.getElementById('checkName').value = this.value;
-        saveUserName(this.value);
-      });
-
-      // Also save on blur (in case input event doesn't fire)
-      document.getElementById('userName').addEventListener('blur', function () {
-        saveUserName(this.value);
-      });
-      document.getElementById('checkName').addEventListener('blur', function () {
-        saveUserName(this.value);
-      });
-      document.getElementById('statsName').addEventListener('blur', function () {
-        saveUserName(this.value);
       });
 
       // Auto-refresh menu counts every 30 seconds (only if ordering is open)
@@ -4767,12 +4915,11 @@
       }
       if (tabId === 'myorder') {
         // Auto-load order if name exists
-        const savedName = document.getElementById('checkName').value.trim();
-        if (savedName) {
+        if (getGlobalName()) {
           checkMyOrder();
         }
       }
-      // Note: Name fields are now synced via event listeners in DOMContentLoaded
+      // Note: Name is managed via header pill and name modal
     }
 
     // Load menu from server (reads from Menu sheet)
@@ -5050,9 +5197,9 @@
     let currentTourStep = 0;
     const tourSteps = [
       {
-        target: '#tab-order .name-card',
-        title: '1. Enter Your Name',
-        description: 'Start by typing your name here. Your name will be remembered for next time!',
+        target: '#namePill',
+        title: '1. Set Your Name',
+        description: 'Tap here to enter your name. It will be remembered for next time!',
         position: 'bottom'
       },
       {
@@ -5684,12 +5831,11 @@
         return;
       }
 
-      const userName = document.getElementById('userName').value.trim();
+      const userName = getGlobalName();
       const notes = document.getElementById('notes').value.trim();
 
       if (!userName) {
-        showStatus('Please enter your name!', 'error');
-        document.getElementById('userName').focus();
+        openNameModal();
         return;
       }
 
@@ -5770,11 +5916,10 @@
 
     // Cancel existing order
     function cancelExistingOrder() {
-      const userName = document.getElementById('userName').value.trim();
+      const userName = getGlobalName();
 
       if (!userName) {
-        showStatus('Please enter your name to cancel your order!', 'error');
-        document.getElementById('userName').focus();
+        openNameModal();
         return;
       }
 
@@ -5807,22 +5952,19 @@
 
     // Load existing order for editing
     function loadMyOrder() {
-      const userName = document.getElementById('userName').value.trim();
+      const userName = getGlobalName();
 
       if (!userName) {
-        showStatus('Please enter your name first!', 'error');
-        document.getElementById('userName').focus();
+        openNameModal();
         return;
       }
 
       const btn = document.getElementById('loadOrderBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="icon">hourglass_top</span> Loading...';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span class="icon">hourglass_top</span> Loading...'; }
 
       google.script.run
         .withSuccessHandler(function (result) {
-          btn.disabled = false;
-          btn.innerHTML = '<span class="icon">download</span> Load My Order';
+          if (btn) { btn.disabled = false; btn.innerHTML = '<span class="icon">download</span> Load My Order'; }
 
           if (result.found) {
             // Load order into form
@@ -5846,8 +5988,7 @@
           }
         })
         .withFailureHandler(function (error) {
-          btn.disabled = false;
-          btn.innerHTML = '<span class="icon">download</span> Load My Order';
+          if (btn) { btn.disabled = false; btn.innerHTML = '<span class="icon">download</span> Load My Order'; }
           showStatus('Error: ' + error.message, 'error');
         })
         .getOrderByName(userName);
@@ -5861,10 +6002,10 @@
         return;
       }
 
-      // Set the name in the Order tab
-      document.getElementById('userName').value = name;
-      document.getElementById('checkName').value = name;
+      // Set the name globally
+      setGlobalName(name);
       saveUserName(name);
+      updateNamePill();
 
       // Switch to Order tab
       switchTab('order');
@@ -6005,8 +6146,7 @@
       const totalEl = document.getElementById('oscTotal');
 
       if (nameEl) {
-        const nameInput = document.getElementById('userName');
-        nameEl.textContent = (nameInput && nameInput.value) ? nameInput.value.trim() : '';
+        nameEl.textContent = getGlobalName() || '';
       }
 
       if (itemsEl) {
@@ -6042,11 +6182,10 @@
     // Mark order as paid
     // Show payment QR modal
     function showPaymentModal() {
-      const userName = document.getElementById('userName').value.trim();
+      const userName = getGlobalName();
 
       if (!userName) {
-        showStatus('Please enter your name first!', 'error');
-        document.getElementById('userName').focus();
+        openNameModal();
         return;
       }
 
@@ -6130,14 +6269,11 @@
     // Show copy confirmation modal
     function showCopyConfirmation(fromName, orderDetails, price) {
       // Check if user has entered their name
-      const userName = document.getElementById('userName').value.trim() ||
-        document.getElementById('checkName').value.trim();
+      const userName = getGlobalName();
 
       if (!userName) {
         // Prompt user to fill in their name first
-        alert('Please enter your name in the "Order" tab first before copying an order.');
-        switchTab('order');
-        document.getElementById('userName').focus();
+        openNameModal();
         return;
       }
 
@@ -6194,12 +6330,11 @@
         return;
       }
 
-      const userName = document.getElementById('userName').value.trim() ||
-        document.getElementById('checkName').value.trim();
+      const userName = getGlobalName();
 
       if (!userName) {
         hideCopyModal();
-        alert('Please enter your name first.');
+        openNameModal();
         return;
       }
 
@@ -6247,10 +6382,10 @@
             var _sb3 = document.getElementById('sidebarPlaceOrder');
             if (_sb3) _sb3.textContent = 'Update order →';
             setOrderButtonsEnabled(true);
-            // Sync name to Order tab
-            document.getElementById('userName').value = userName;
-            document.getElementById('checkName').value = userName;
+            // Sync name globally
+            setGlobalName(userName);
             saveUserName(userName);
+            updateNamePill();
             // Refresh All Orders view - stay on this tab
             loadAllOrders();
             // Auto-hide status after 3 seconds
@@ -6309,11 +6444,10 @@
     }
 
     function markAsPaid() {
-      const userName = document.getElementById('userName').value.trim();
+      const userName = getGlobalName();
 
       if (!userName) {
-        showStatus('Please enter your name first!', 'error');
-        document.getElementById('userName').focus();
+        openNameModal();
         return;
       }
 
@@ -6350,7 +6484,7 @@
       const title = opts && opts.title ? opts.title : 'Order placed!';
       const subtitle = opts && opts.subtitle ? opts.subtitle : '';
       const iconName = opts && opts.icon ? opts.icon : 'check';
-      const userName = (document.getElementById('userName').value || '').trim() || 'Your order';
+      const userName = getGlobalName() || 'Your order';
       const priceEl = document.getElementById('priceAmount');
       const price = priceEl ? (parseFloat(priceEl.textContent) || 0) : 0;
 
@@ -6429,11 +6563,10 @@
 
     // Check my order
     function checkMyOrder() {
-      const userName = document.getElementById('checkName').value.trim();
+      const userName = getGlobalName();
 
       if (!userName) {
-        document.getElementById('myOrderResult').innerHTML =
-          '<div class="card" style="margin-top: 16px;"><div class="status error" style="display: block; margin: 0;">Please enter your name!</div></div>';
+        openNameModal();
         return;
       }
 
@@ -6562,11 +6695,7 @@
       }
 
       const items = JSON.parse(decodeURIComponent(itemsJsonEncoded));
-      const userName = document.getElementById('checkName').value.trim();
-
-      // Ensure name is synced
-      document.getElementById('userName').value = userName;
-      saveUserName(userName);
+      const userName = getGlobalName();
 
       // Switch to Order tab
       switchTab('order');
@@ -6683,8 +6812,7 @@
               html += '<div class="card"><p style="text-align: center; color: var(--ink-500);">No orders yet today</p></div>';
             } else {
               // Get current user's name to hide copy button on their own order
-              const currentUserName = (document.getElementById('userName').value.trim() ||
-                document.getElementById('checkName').value.trim()).toLowerCase();
+              const currentUserName = getGlobalName().toLowerCase();
 
               html += '<div class="orders-list">';
               result.orders.forEach(order => {
@@ -6740,7 +6868,13 @@
 
     // Load statistics
     function loadStatistics() {
-      const userName = document.getElementById('statsName').value.trim();
+      const allUsers = document.getElementById('statsAllUsers') && document.getElementById('statsAllUsers').checked;
+      const userName = allUsers ? '' : getGlobalName();
+
+      if (!allUsers && !userName) {
+        openNameModal();
+        return;
+      }
 
       document.getElementById('statsResult').innerHTML =
         '<div class="loading"><div class="spinner"></div><p style="margin-top: 12px;">Computing statistics...be patient...</p></div>';
