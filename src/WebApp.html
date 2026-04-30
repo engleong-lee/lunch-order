@@ -456,9 +456,8 @@
 
     .name-row {
       display: flex;
-      align-items: stretch;
+      align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
     }
 
     .name-row label {
@@ -472,8 +471,6 @@
       text-transform: uppercase;
       white-space: nowrap;
       flex-shrink: 0;
-      width: 100%;
-      margin-bottom: 4px;
     }
 
     .name-row label .icon {
@@ -525,23 +522,9 @@
     }
 
     @media (max-width: 420px) {
-      .name-row {
-        flex-wrap: wrap;
-      }
-
-      .name-row label {
-        width: 100%;
-        margin-bottom: 0;
-      }
-
       .name-row input {
         flex: 1;
         min-width: 0;
-      }
-
-      .name-row .btn {
-        width: 100%;
-        padding: 10px 14px;
       }
     }
 
