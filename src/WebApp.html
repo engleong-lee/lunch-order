@@ -4106,14 +4106,8 @@
             <span class="closed-info-value">12:00 - 12:15 PM @ P4</span>
           </div>
         </div>
-        <div class="closed-actions">
-          <button class="closed-action" onclick="switchTab('all')">
-            <span class="icon">content_paste</span> See all orders
-          </button>
-        </div>
-
         <!-- MY ORDER card (visible when closed + user has order) -->
-        <div id="closedOrderCard" class="order-saved-card no-order" style="max-width: 560px; margin: 20px auto 0;">
+        <div id="closedOrderCard" class="order-saved-card no-order" style="margin: 20px 0 0; text-align: left;">
           <div class="osc-header">
             <span class="osc-label"><span class="osc-dot"></span> MY ORDER</span>
             <span class="osc-badge unpaid" id="closedPaymentText">Unpaid</span>
@@ -4129,6 +4123,11 @@
           <div class="osc-pay-row" id="closedPayRow">
             <button class="btn btn-primary btn-sm" onclick="showPaymentModal()"><span class="icon">payment</span> Pay now</button>
           </div>
+        </div>
+        <div class="closed-actions">
+          <button class="closed-action" onclick="switchTab('all')">
+            <span class="icon">content_paste</span> See all orders
+          </button>
         </div>
       </div>
 
@@ -6051,8 +6050,6 @@
               return;
             }
             card.className = 'order-saved-card';
-            card.style.maxWidth = '560px';
-            card.style.margin = '20px auto 0';
             document.getElementById('closedOscSeq').textContent = result.row || '';
             var itemsText = enrichOrderWithEnglish(result.order).replace(/\s*[,，]\s*/g, ' · ');
             document.getElementById('closedOscItems').textContent = itemsText;
