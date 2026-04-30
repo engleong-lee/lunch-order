@@ -379,9 +379,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 8px;
       margin-bottom: 0;
-      flex-wrap: wrap;
     }
 
     .menu-header .card-title {
@@ -4032,10 +4031,10 @@
             <!-- Menu Section -->
             <div class="card card-menu">
               <div class="menu-header">
-                <div class="card-title"><span class="icon">restaurant</span> Select your items</div>
+                <div class="card-title"><span class="icon">restaurant</span> Menu</div>
                 <div class="menu-toolbar">
                   <button class="toolbar-btn" onclick="toggleAllCategories()" id="collapseAllBtn">
-                    <span class="icon">folder</span> Collapse all
+                    <span class="icon">folder</span> Collapse
                   </button>
                   <span id="lastRefresh">Updated</span>
                   <button class="refresh-btn" onclick="manualRefresh()" id="refreshBtn">
@@ -6964,7 +6963,7 @@
         }
       });
 
-      btn.innerHTML = allCollapsed ? '<span class="icon">folder_open</span> Expand All' : '<span class="icon">folder</span> Collapse All';
+      btn.innerHTML = allCollapsed ? '<span class="icon">folder_open</span> Expand' : '<span class="icon">folder</span> Collapse';
     }
 
     // ==================== IMPORT MENU ====================
