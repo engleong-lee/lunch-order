@@ -3436,7 +3436,6 @@
     .sidebar-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       padding: 10px 0;
       border-bottom: 1px solid var(--border);
       font-size: 14px;
@@ -3447,6 +3446,8 @@
     .sidebar-item-name {
       font-family: 'Noto Sans SC', 'Inter', sans-serif;
       font-weight: 500;
+      flex: 1;
+      min-width: 0;
     }
     .sidebar-item-remove {
       width: 24px;
@@ -3466,6 +3467,12 @@
     .sidebar-item-remove:hover {
       background: var(--danger-light);
       color: var(--danger);
+    }
+    .sidebar-item .edit-hint {
+      color: var(--ink-300);
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
     }
     .sidebar-empty {
       color: var(--ink-400);
@@ -7398,7 +7405,7 @@
           const name = stripBrackets(item.name);
           const note = item.note ? ` <span style="opacity:0.6;font-size:0.8em">(${item.note})</span>` : '';
           return `<div class="sidebar-item" onclick="openItemNoteModal(${i})" title="Click to edit note">
-            <span>${name}${note}</span>
+            <span class="sidebar-item-name">${name}${note}</span>
             <span class="edit-hint"><span class="icon sm">edit</span></span>
             <button class="sidebar-item-remove" onclick="event.stopPropagation(); removeItem(${i})">×</button>
           </div>`;
