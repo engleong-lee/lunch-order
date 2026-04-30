@@ -6273,7 +6273,12 @@
           var base = stripBrackets ? stripBrackets(it.name) : it.name;
           return (it.note && it.note.trim()) ? base + ' (' + it.note.trim() + ')' : base;
         });
-        itemsEl.textContent = names.join(' \u00b7 ');
+        var text = names.join(' \u00b7 ');
+        var orderNotes = (document.getElementById('notes') || {}).value;
+        if (orderNotes && orderNotes.trim()) {
+          text += ' \u00b7 (' + orderNotes.trim() + ')';
+        }
+        itemsEl.textContent = text;
       }
 
       if (totalEl) {
