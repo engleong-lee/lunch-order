@@ -888,7 +888,7 @@ function submitOrder(orderData) {
     }
     
     if (orderData.notes && orderData.notes.trim()) {
-      orderString += ` (${orderData.notes.trim()})`;
+      orderString += ` 【${orderData.notes.trim()}】`;
     }
     
     let price = orderData.price || calculatePrice(orderData.items);
@@ -1115,19 +1115,19 @@ function getOrderByName(userName) {
       orderText = orderText.replace('(多饭)', '').trim();
     }
     
-    // Extract special notes - only if string ends with ") (...)" pattern
-    // This means there's an item note followed by special notes
-    // e.g., "酿豆腐 (more doufu) (extra spicy)" → special notes = "extra spicy"
-    const doubleParenMatch = orderText.match(/\)\s*\(([^)]+)\)$/);
-    if (doubleParenMatch) {
-      notes = doubleParenMatch[1];
-      orderText = orderText.replace(/\s*\([^)]+\)$/, '').trim();
+    // Extract special notes — stored in 【...】 brackets (new format)
+    // Also handle legacy (...) format for older orders
+    const squareBracketMatch = orderText.match(/\s*【([^】]+)】\s*$/);
+    if (squareBracketMatch) {
+      notes = squareBracketMatch[1];
+      orderText = orderText.replace(/\s*【[^】]+】\s*$/, '').trim();
     } else {
-      // Check if the last item (after final +) has NO item note but ends with (...)
-      // This would be special notes on an item without its own note
-      // e.g., "蒸水蛋 + 麻辣香锅菜 (extra spicy)" where 麻辣香锅菜 has no bracket in menu
-      // We'll handle this by checking if last part's parentheses content looks like special notes
-      // For now, assume if it ends with ) and there's no double pattern, it's an item note
+      // Legacy: try double-paren pattern ") (...)" at end
+      const doubleParenMatch = orderText.match(/\)\s*\(([^)]+)\)$/);
+      if (doubleParenMatch) {
+        notes = doubleParenMatch[1];
+        orderText = orderText.replace(/\s*\([^)]+\)$/, '').trim();
+      }
     }
     
     // Split items by " + "
