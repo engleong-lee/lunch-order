@@ -5752,7 +5752,6 @@
           }
 
           if (result.success) {
-            showOrderPlacedToast(wasEditMode);
             // After successful submit, enter edit mode (order now exists)
             isEditMode = true;
             document.getElementById('editModeBanner').style.display = 'flex';
@@ -5763,6 +5762,8 @@
             setOrderButtonsEnabled(true);
             // Refresh menu counts to show updated order counts
             refreshMenuCounts();
+            // Show toast AFTER buttons are visible so footer height is final
+            requestAnimationFrame(function () { showOrderPlacedToast(wasEditMode); });
           } else {
             showStatus(result.message, 'error');
           }
