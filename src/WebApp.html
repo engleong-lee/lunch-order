@@ -6270,9 +6270,10 @@
 
       if (itemsEl) {
         const names = (selectedItems || []).map(function (it) {
-          return stripBrackets ? stripBrackets(it.name) : it.name;
+          var base = stripBrackets ? stripBrackets(it.name) : it.name;
+          return (it.note && it.note.trim()) ? base + ' (' + it.note.trim() + ')' : base;
         });
-        itemsEl.textContent = names.join(' · ');
+        itemsEl.textContent = names.join(' \u00b7 ');
       }
 
       if (totalEl) {
