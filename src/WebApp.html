@@ -1487,6 +1487,30 @@
       border: 0.5px solid transparent;
     }
 
+    /* Loading bar */
+    .loading-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: var(--r-lg);
+      background: var(--brand-50);
+      border: 1px solid var(--brand-100);
+      color: var(--brand-700);
+      font-size: 13px;
+      font-weight: 500;
+      margin: 10px 0;
+    }
+    .loading-bar-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--brand-200);
+      border-top-color: var(--brand-600);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
     .status .srv-msg-line {
       display: flex;
       align-items: flex-start;
@@ -4124,6 +4148,12 @@
             <!-- Status Message (moved to top for visibility) -->
             <div id="statusMessage" class="status"></div>
 
+            <!-- Loading indicator for menu/order -->
+            <div id="loadingBar" class="loading-bar" style="display: none;">
+              <div class="loading-bar-spinner"></div>
+              <span id="loadingBarText">Loading menu...</span>
+            </div>
+
             <!-- Order Saved Card (shows when order exists) -->
             <div id="paymentStatus" class="order-saved-card no-order">
               <div class="osc-header">
@@ -4668,6 +4698,16 @@
       loadMyOrder();
     }
 
+    // Loading bar helpers
+    function showLoadingBar(text) {
+      var bar = document.getElementById('loadingBar');
+      document.getElementById('loadingBarText').textContent = text || 'Loading...';
+      bar.style.display = 'flex';
+    }
+    function hideLoadingBar() {
+      document.getElementById('loadingBar').style.display = 'none';
+    }
+
     // Strip bracket content from item name for order storage
     // e.g., "酿豆腐（茄子，苦瓜，豆腐）" → "酿豆腐"
     // e.g., "麻辣香锅菜 （白菜，莲藕，午餐肉" → "麻辣香锅菜"
@@ -4736,6 +4776,7 @@
           updateNamePill();
           // If menu already loaded, auto-load order now
           if (menuData && Object.keys(menuData).length > 0) {
+            showLoadingBar('Loading your order...');
             loadMyOrder();
           }
         } else {
@@ -4926,6 +4967,7 @@
 
     // Load menu from server (reads from Menu sheet)
     function loadMenu() {
+      showLoadingBar('Loading menu...');
       google.script.run
         .withSuccessHandler(function (menu) {
           menuData = menu;
@@ -4933,10 +4975,16 @@
           updateRefreshTime();
           // Auto-load order after menu is ready
           if (getGlobalName()) {
+            showLoadingBar('Loading your order...');
             loadMyOrder();
+          } else {
+            hideLoadingBar();
           }
         })
-        .withFailureHandler(showError)
+        .withFailureHandler(function (err) {
+          hideLoadingBar();
+          showError(err);
+        })
         .getMenuForSidebar();
     }
 
@@ -5503,19 +5551,29 @@
         .getMenuForSidebar();
     }
 
-    // Manual refresh with button animation
+    // Manual refresh with button animation — reloads menu + user order
     function manualRefresh() {
       const btn = document.getElementById('refreshBtn');
       btn.classList.add('spinning');
+      showLoadingBar('Refreshing menu...');
 
       google.script.run
         .withSuccessHandler(function (menu) {
+          menuData = menu;
           updateMenuCounts(menu);
           updateRefreshTime();
           btn.classList.remove('spinning');
+          // Also reload user order
+          if (getGlobalName()) {
+            showLoadingBar('Loading your order...');
+            loadMyOrder();
+          } else {
+            hideLoadingBar();
+          }
         })
         .withFailureHandler(function () {
           btn.classList.remove('spinning');
+          hideLoadingBar();
         })
         .getMenuForSidebar();
     }
@@ -5962,6 +6020,7 @@
 
       if (!userName) {
         openNameModal();
+        hideLoadingBar();
         return;
       }
 
@@ -5970,6 +6029,7 @@
 
       google.script.run
         .withSuccessHandler(function (result) {
+          hideLoadingBar();
           if (btn) { btn.disabled = false; btn.innerHTML = '<span class="icon">download</span> Load My Order'; }
 
           if (result.found) {
@@ -5984,6 +6044,7 @@
           }
         })
         .withFailureHandler(function (error) {
+          hideLoadingBar();
           if (btn) { btn.disabled = false; btn.innerHTML = '<span class="icon">download</span> Load My Order'; }
           showStatus('Error: ' + error.message, 'error');
         })
