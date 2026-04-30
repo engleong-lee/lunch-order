@@ -1321,40 +1321,42 @@
       overflow: hidden;
       box-shadow: var(--shadow-xs);
     }
+    /* Receipt strip layout for open-state order card (both mobile + desktop) */
+    #paymentStatus.order-saved-card {
+      padding: 8px 14px;
+    }
+    #paymentStatus.order-saved-card:not(.no-order) {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+    }
+    #paymentStatus .osc-header {
+      display: contents;
+    }
+    #paymentStatus .osc-label { display: none; }
+    #paymentStatus .osc-body {
+      display: contents;
+    }
+    #paymentStatus .osc-seq { order: 0; margin: 0; }
+    #paymentStatus .osc-items {
+      order: 4;
+      flex-basis: 100%;
+      font-size: 12.5px;
+      margin: 0;
+    }
+    #paymentStatus .osc-badge { order: 2; }
+    #paymentStatus .osc-footer {
+      order: 3;
+      margin-left: auto;
+      padding: 0;
+      border: none;
+      gap: 6px;
+    }
+    #paymentStatus .osc-total-label { display: none; }
+
     @media (min-width: 1024px) {
-      /* Desktop: collapse open-state order card into compact receipt strip */
-      #paymentStatus.order-saved-card {
-        margin-top: 20px;
-        padding: 8px 14px;
-      }
-      #paymentStatus.order-saved-card:not(.no-order) {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px 12px;
-      }
-      #paymentStatus .osc-header {
-        display: contents;
-      }
-      #paymentStatus .osc-label { display: none; }
-      #paymentStatus .osc-body {
-        display: contents;
-      }
-      #paymentStatus .osc-seq { order: 0; margin: 0; }
-      #paymentStatus .osc-items {
-        order: 4;
-        flex-basis: 100%;
-        font-size: 12.5px;
-        margin: 0;
-      }
-      #paymentStatus .osc-badge { order: 2; }
-      #paymentStatus .osc-footer {
-        order: 3;
-        margin-left: auto;
-        padding: 0;
-        border: none;
-        gap: 6px;
-      }
+      #paymentStatus.order-saved-card { margin-top: 20px; }
       /* Closed-state card keeps full layout on desktop */
       #closedOrderCard.order-saved-card { margin-top: 20px; }
     }
