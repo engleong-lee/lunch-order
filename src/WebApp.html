@@ -6087,6 +6087,8 @@
 
     // Load order for closed-state display
     function loadClosedOrder() {
+      var day = new Date().getDay();
+      if (day === 0 || day === 6) return; // No ordering on weekends
       var userName = getGlobalName();
       if (!userName) return;
 
