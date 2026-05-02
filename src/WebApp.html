@@ -4964,22 +4964,24 @@
     function loadUserPrefsFromServer() {
       var name = getGlobalName();
       if (!name) return;
-      google.script.run
-        .withSuccessHandler(function (result) {
-          if (result && result.success) {
-            _favouritesCache = result.favourites || [];
-            _qoPrefsCache = result.quickOrderPrefs || {};
-            _prefsLoaded = true;
-            // Also cache locally for fast access before server responds next time
-            cachePut('favourites', JSON.stringify(_favouritesCache));
-            cachePut('quickOrderPrefs', JSON.stringify(_qoPrefsCache));
-            // Refresh UI
-            addStarsToMenu();
-            updateQuickOrderBarVisibility();
-          }
-        })
-        .withFailureHandler(function () {})
-        .getUserPrefs(name);
+      try {
+        google.script.run
+          .withSuccessHandler(function (result) {
+            if (result && result.success) {
+              _favouritesCache = result.favourites || [];
+              _qoPrefsCache = result.quickOrderPrefs || {};
+              _prefsLoaded = true;
+              cachePut('favourites', JSON.stringify(_favouritesCache));
+              cachePut('quickOrderPrefs', JSON.stringify(_qoPrefsCache));
+              addStarsToMenu();
+              updateQuickOrderBarVisibility();
+            }
+          })
+          .withFailureHandler(function () {})
+          .getUserPrefs(name);
+      } catch (e) {
+        // getUserPrefs not deployed yet — fall back to local cache
+      }
     }
 
     function getFavourites() {
@@ -4995,7 +4997,7 @@
       cachePut('favourites', JSON.stringify(arr));
       var name = getGlobalName();
       if (name) {
-        google.script.run.withFailureHandler(function () {}).saveUserPrefs(name, { favourites: arr });
+        try { google.script.run.withFailureHandler(function () {}).saveUserPrefs(name, { favourites: arr }); } catch (e) {}
       }
     }
 
@@ -5011,7 +5013,7 @@
       cachePut('quickOrderPrefs', JSON.stringify(prefs));
       var name = getGlobalName();
       if (name) {
-        google.script.run.withFailureHandler(function () {}).saveUserPrefs(name, { quickOrderPrefs: prefs });
+        try { google.script.run.withFailureHandler(function () {}).saveUserPrefs(name, { quickOrderPrefs: prefs }); } catch (e) {}
       }
     }
 
