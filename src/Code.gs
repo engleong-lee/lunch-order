@@ -1918,19 +1918,25 @@ function getUserPrefs(userName) {
 function saveUserPrefs(userName, prefs) {
   try {
     if (!userName || !userName.trim()) return { success: false, message: 'No name provided.' };
-    const sheet = getPrefsSheet();
-    let row = findPrefsRow(sheet, userName);
-    if (row < 0) {
-      row = sheet.getLastRow() + 1;
-      sheet.getRange(row, PREFS_COLUMNS.NAME).setValue(userName.trim());
+    const lock = LockService.getScriptLock();
+    lock.waitLock(10000); // wait up to 10s for concurrent writes
+    try {
+      const sheet = getPrefsSheet();
+      let row = findPrefsRow(sheet, userName);
+      if (row < 0) {
+        row = sheet.getLastRow() + 1;
+        sheet.getRange(row, PREFS_COLUMNS.NAME).setValue(userName.trim());
+      }
+      if (prefs.favourites !== undefined) {
+        sheet.getRange(row, PREFS_COLUMNS.FAVOURITES).setValue(JSON.stringify(prefs.favourites));
+      }
+      if (prefs.quickOrderPrefs !== undefined) {
+        sheet.getRange(row, PREFS_COLUMNS.QUICK_ORDER).setValue(JSON.stringify(prefs.quickOrderPrefs));
+      }
+      return { success: true };
+    } finally {
+      lock.releaseLock();
     }
-    if (prefs.favourites !== undefined) {
-      sheet.getRange(row, PREFS_COLUMNS.FAVOURITES).setValue(JSON.stringify(prefs.favourites));
-    }
-    if (prefs.quickOrderPrefs !== undefined) {
-      sheet.getRange(row, PREFS_COLUMNS.QUICK_ORDER).setValue(JSON.stringify(prefs.quickOrderPrefs));
-    }
-    return { success: true };
   } catch (error) {
     return { success: false, message: 'Error: ' + error.message };
   }
