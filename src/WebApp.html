@@ -4611,6 +4611,8 @@
     // State
     let selectedItems = [];
     let riceOption = 'normal';
+    var riceLabels = { less: '少饭', none: '不要饭', more: '多饭' };
+    function getRiceLabel() { return riceLabels[riceOption] || ''; }
     let menuData = {};
     let isEditMode = false;
     let currentOrderPaid = false;
@@ -6309,6 +6311,8 @@
           return (it.note && it.note.trim()) ? base + ' (' + it.note.trim() + ')' : base;
         });
         var text = names.join(' \u00b7 ');
+        var rl = getRiceLabel();
+        if (rl) text += ' \u00b7 (' + rl + ')';
         var orderNotes = (document.getElementById('notes') || {}).value;
         if (orderNotes && orderNotes.trim()) {
           text += ' \u00b7 (' + orderNotes.trim() + ')';
@@ -6649,6 +6653,8 @@
         const base = stripBrackets ? stripBrackets(it.name) : it.name;
         return it.note ? base + ' (' + it.note + ')' : base;
       }).join(' + ');
+      var rl = getRiceLabel();
+      var dishesWithRice = dishes + (rl ? ' + (' + rl + ')' : '');
 
       // Remove any existing toast so re-fires don't stack.
       const prev = document.getElementById('paymentConfirmedToast');
@@ -6667,13 +6673,13 @@
         (subtitle ? '    <div class="pay-toast-sub">' + escapeHtml(subtitle) + '</div>' : '') +
         '  </div>' +
         '</div>' +
-        (dishes || price ?
+        (dishesWithRice || price ?
         '<div class="pay-toast-body">' +
         '  <div class="pay-toast-row">' +
         '    <span class="pay-toast-name">' + escapeHtml(userName) + '</span>' +
         '    <span class="pay-toast-price"><span class="pay-toast-currency">RM</span>' + price.toFixed(2) + '</span>' +
         '  </div>' +
-        (dishes ? '  <div class="pay-toast-dishes">' + escapeHtml(dishes) + '</div>' : '') +
+        (dishesWithRice ? '  <div class="pay-toast-dishes">' + escapeHtml(dishesWithRice) + '</div>' : '') +
         '</div>' : '');
 
       document.body.appendChild(toast);
