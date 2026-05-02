@@ -6263,6 +6263,7 @@
 
       document.querySelectorAll('.rice-option').forEach(el => el.classList.remove('selected'));
       document.querySelector('.rice-option[data-value="normal"]').classList.add('selected');
+      document.querySelectorAll('.sidebar-rice').forEach(el => el.classList.toggle('selected', el.dataset.value === 'normal'));
       riceOption = 'normal';
 
       // Reset custom price
@@ -7292,11 +7293,12 @@
           }
         });
 
-        // Set rice option
+        // Set rice option (sync both mobile + desktop sidebar)
         riceOption = riceOpt || 'normal';
         document.querySelectorAll('.rice-option').forEach(el => el.classList.remove('selected'));
         const riceEl = document.querySelector(`.rice-option[data-value="${riceOption}"]`);
         if (riceEl) riceEl.classList.add('selected');
+        document.querySelectorAll('.sidebar-rice').forEach(el => el.classList.toggle('selected', el.dataset.value === riceOption));
 
         // Update displays
         updateSelectedDisplay();
@@ -8155,11 +8157,12 @@
         });
       });
 
-      // Set rice
+      // Set rice (sync both mobile + desktop sidebar)
       riceOption = riceOpt || 'normal';
       document.querySelectorAll('.rice-option').forEach(function (el) { el.classList.remove('selected'); });
       var riceEl = document.querySelector('.rice-option[data-value="' + riceOption + '"]');
       if (riceEl) riceEl.classList.add('selected');
+      document.querySelectorAll('.sidebar-rice').forEach(function (el) { el.classList.toggle('selected', el.dataset.value === riceOption); });
 
       // Update displays (triggers sidebar sync via monkey-patches)
       updateSelectedDisplay();
