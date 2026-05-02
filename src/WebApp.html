@@ -3846,6 +3846,278 @@
       background: var(--orange-100);
     }
     .menu-item .order-count.zero { display: none; }
+
+    /* Favourite star — bottom-left of menu item */
+    .menu-item .fav-star {
+      position: absolute;
+      bottom: 6px;
+      left: 8px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 28px;
+      text-align: center;
+      padding: 0;
+      color: var(--ink-300);
+      border-radius: 50%;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .menu-item .fav-star:hover { color: var(--orange-400); background: var(--orange-50); }
+    .menu-item .fav-star.active { color: var(--orange-500); }
+
+    /* Quick Order bar — above category pills */
+    .quick-order-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0 2px;
+    }
+    .qo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--orange-300);
+      background: var(--orange-50);
+      color: var(--orange-700);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .qo-btn:hover { background: var(--orange-100); border-color: var(--orange-400); }
+    .qo-btn:active { transform: scale(0.97); }
+    .qo-btn .icon { font-size: 16px; }
+    .qo-edit-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink-500);
+      font-size: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .qo-edit-btn:hover { background: var(--ink-50); color: var(--ink-700); }
+    .qo-edit-btn .icon { font-size: 16px; }
+
+    /* Quick Order bottom sheet */
+    .qo-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 200;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .qo-overlay.show { display: block; }
+    .qo-sheet {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
+      z-index: 201;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .qo-sheet.show { transform: translateY(0); }
+    .qo-sheet-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink-900);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .qo-sheet-title .icon { font-size: 20px; color: var(--orange-500); }
+    .qo-section-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--ink-400);
+      margin-bottom: 8px;
+    }
+    .qo-count-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .qo-count-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: white;
+      color: var(--ink-700);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition);
+    }
+    .qo-count-btn.active {
+      border-color: var(--orange-500);
+      background: var(--orange-50);
+      color: var(--orange-700);
+    }
+    .qo-strategy-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .qo-strategy-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: white;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+      font-family: inherit;
+    }
+    .qo-strategy-btn:hover { border-color: var(--ink-300); }
+    .qo-strategy-btn.active {
+      border-color: var(--orange-500);
+      background: var(--orange-50);
+    }
+    .qo-strategy-icon { font-size: 20px; flex-shrink: 0; }
+    .qo-strategy-label { font-size: 14px; font-weight: 600; color: var(--ink-800); }
+    .qo-strategy-desc { font-size: 12px; color: var(--ink-400); margin-top: 1px; }
+    .qo-submit-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      background: var(--ink-900);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .qo-submit-btn:hover { background: var(--ink-800); }
+    .qo-submit-btn:active { transform: scale(0.98); }
+
+    /* Manage Favourites modal */
+    .fav-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 200;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .fav-modal-overlay.show { display: flex; align-items: center; justify-content: center; }
+    .fav-modal {
+      background: white;
+      border-radius: 16px;
+      padding: 24px 20px;
+      width: 90%;
+      max-width: 380px;
+      max-height: 80vh;
+      overflow-y: auto;
+      z-index: 201;
+    }
+    .fav-modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink-900);
+      margin-bottom: 4px;
+    }
+    .fav-modal-hint {
+      font-size: 12px;
+      color: var(--ink-400);
+      margin-bottom: 16px;
+    }
+    .fav-list { list-style: none; margin: 0; padding: 0; }
+    .fav-list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--ink-800);
+    }
+    .fav-list-item:last-child { border-bottom: none; }
+    .fav-list-rank {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-400);
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .fav-list-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fav-list-cat {
+      font-size: 11px;
+      color: var(--ink-400);
+      background: var(--ink-50);
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .fav-list-actions {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .fav-list-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--ink-400);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    .fav-list-btn:hover { background: var(--ink-100); color: var(--ink-700); }
+    .fav-list-btn.fav-delete:hover { background: var(--red-50, #fef2f2); color: var(--red-500, #ef4444); }
+    .fav-modal-done {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: var(--ink-900);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: var(--transition);
+    }
+    .fav-modal-done:hover { background: var(--ink-800); }
+    .fav-empty-msg {
+      text-align: center;
+      color: var(--ink-400);
+      font-size: 13px;
+      padding: 24px 0;
+    }
     .menu-item.selected .order-count {
       color: var(--orange-600);
     }
@@ -4187,6 +4459,16 @@
                 <span class="osc-total-label">Total</span>
                 <span class="osc-total"><span class="osc-currency">RM</span> <span id="oscTotal">0.00</span></span>
               </div>
+            </div>
+
+            <!-- Quick Order bar -->
+            <div class="quick-order-bar" id="quickOrderBar" style="display: none;">
+              <button class="qo-btn" onclick="openQuickOrderSheet()">
+                <span class="icon">bolt</span> Quick Order
+              </button>
+              <button class="qo-edit-btn" onclick="openManageFavourites()" title="Manage favourites">
+                <span class="icon">edit</span>
+              </button>
             </div>
 
             <!-- Category filter pills -->
@@ -6000,6 +6282,8 @@
             setOrderButtonsEnabled(true);
             // Refresh menu counts to show updated order counts
             refreshMenuCounts();
+            // Remember rice option for Quick Order
+            cachePut('lastRice', riceOption);
             // Show toast AFTER buttons are visible so footer height is final
             requestAnimationFrame(function () { showOrderPlacedToast(wasEditMode); });
           } else {
@@ -7584,6 +7868,439 @@
       riceOption = val;
     }
 
+    // ==================== QUICK ORDER ====================
+
+    // Category group mapping — maps dynamic category names to 3 groups
+    var QO_GROUPS = { meat: [], vege: [], others: [] };
+    var QO_GROUP_KEYWORDS = {
+      meat: ['chicken', 'pork', 'seafood', '鸡', '猪', '海鲜'],
+      vege: ['vegetable', 'vegetables', '菜'],
+      others: ['egg', 'others', '蛋', '配料']
+    };
+
+    function getCategoryGroup(categoryName) {
+      var lower = categoryName.toLowerCase();
+      for (var g in QO_GROUP_KEYWORDS) {
+        for (var i = 0; i < QO_GROUP_KEYWORDS[g].length; i++) {
+          if (lower.includes(QO_GROUP_KEYWORDS[g][i])) return g;
+        }
+      }
+      return null; // food, set meals, unknown → excluded
+    }
+
+    function buildCategoryGroupMap() {
+      QO_GROUPS = { meat: [], vege: [], others: [] };
+      if (!menuData) return;
+      for (var cat in menuData) {
+        var group = getCategoryGroup(cat);
+        if (!group) continue;
+        menuData[cat].forEach(function (item) {
+          if (item.fixedPrice) return; // skip set meals
+          QO_GROUPS[group].push(item.name);
+        });
+      }
+    }
+
+    // Star / favourite toggle
+    var _favouritesCache = []; // in-memory mirror
+
+    function toggleFavourite(itemName, starEl, e) {
+      e.stopPropagation(); // don't toggle menu item selection
+      var idx = _favouritesCache.indexOf(itemName);
+      if (idx >= 0) {
+        _favouritesCache.splice(idx, 1);
+        starEl.classList.remove('active');
+        starEl.textContent = '☆';
+      } else {
+        _favouritesCache.push(itemName);
+        starEl.classList.add('active');
+        starEl.textContent = '★';
+      }
+      saveFavourites(_favouritesCache);
+      updateQuickOrderBarVisibility();
+    }
+
+    function updateQuickOrderBarVisibility() {
+      var bar = document.getElementById('quickOrderBar');
+      if (bar) bar.style.display = (_favouritesCache.length > 0 && orderingOpen) ? 'flex' : 'none';
+    }
+
+    // Inject star icons into rendered menu items
+    function addStarsToMenu() {
+      document.querySelectorAll('.menu-item').forEach(function (el) {
+        if (el.dataset.fixedPrice) return; // no stars on set meals
+        if (el.querySelector('.fav-star')) return; // already has star
+        var name = el.dataset.name;
+        var isFav = _favouritesCache.indexOf(name) >= 0;
+        var star = document.createElement('button');
+        star.className = 'fav-star' + (isFav ? ' active' : '');
+        star.textContent = isFav ? '★' : '☆';
+        star.onclick = function (e) { toggleFavourite(name, star, e); };
+        el.appendChild(star);
+      });
+    }
+
+    // Quick Order sheet open/close
+    function openQuickOrderSheet() {
+      if (!orderingOpen) { showStatus('Ordering is closed.', 'error'); return; }
+      getQuickOrderPrefs().then(function (prefs) {
+        // Restore last choices
+        var count = prefs.count || 3;
+        var strategy = prefs.strategy || 'repeat';
+        document.querySelectorAll('.qo-count-btn').forEach(function (b) {
+          b.classList.toggle('active', b.dataset.count === String(count));
+        });
+        document.querySelectorAll('.qo-strategy-btn').forEach(function (b) {
+          b.classList.toggle('active', b.dataset.strategy === strategy);
+        });
+        document.getElementById('qoOverlay').classList.add('show');
+        requestAnimationFrame(function () {
+          document.getElementById('qoSheet').classList.add('show');
+        });
+      });
+    }
+
+    function closeQuickOrderSheet() {
+      document.getElementById('qoSheet').classList.remove('show');
+      setTimeout(function () {
+        document.getElementById('qoOverlay').classList.remove('show');
+      }, 300);
+    }
+
+    function selectQoCount(el) {
+      document.querySelectorAll('.qo-count-btn').forEach(function (b) { b.classList.remove('active'); });
+      el.classList.add('active');
+    }
+
+    function selectQoStrategy(el) {
+      document.querySelectorAll('.qo-strategy-btn').forEach(function (b) { b.classList.remove('active'); });
+      el.classList.add('active');
+    }
+
+    // Find a menu item by name (fuzzy match against today's menu)
+    function findMenuItemByName(itemName) {
+      if (!menuData) return null;
+      var noteMatch = itemName.match(/^(.+?)\s*\(([^)]+)\)$/);
+      var baseName = noteMatch ? noteMatch[1].trim() : itemName.trim();
+      var itemNote = noteMatch ? noteMatch[2].trim() : '';
+      for (var cat in menuData) {
+        for (var i = 0; i < menuData[cat].length; i++) {
+          var mi = menuData[cat][i];
+          var miChinese = extractChineseChars(mi.name);
+          var miNoBrackets = stripBrackets(mi.name);
+          var miNoBracketsChinese = extractChineseChars(miNoBrackets);
+          if (baseName === miChinese || baseName === mi.name ||
+              baseName === miNoBrackets || baseName === miNoBracketsChinese ||
+              miChinese.includes(baseName) || baseName.includes(miChinese)) {
+            return { name: mi.name, fixedPrice: mi.fixedPrice || null, note: itemNote, category: cat };
+          }
+        }
+      }
+      return null;
+    }
+
+    // Pick items from favourites for a given group, skipping excluded names
+    function pickFromGroup(group, favourites, excludeNames, count) {
+      var available = [];
+      var groupItems = QO_GROUPS[group] || [];
+      // Walk favourites in priority order, only pick if in this group + on today's menu
+      for (var i = 0; i < favourites.length; i++) {
+        var fav = favourites[i];
+        if (groupItems.indexOf(fav) < 0) continue; // not in this group
+        if (excludeNames.indexOf(fav) >= 0) continue; // excluded (e.g. yesterday's)
+        var found = findMenuItemByName(fav);
+        if (found && !found.fixedPrice) available.push(found);
+        if (available.length >= count) break;
+      }
+      // If not enough after excluding, try without exclude filter
+      if (available.length < count) {
+        for (var i = 0; i < favourites.length; i++) {
+          var fav = favourites[i];
+          if (groupItems.indexOf(fav) < 0) continue;
+          if (available.some(function (a) { return a.name === fav; })) continue; // already picked
+          var found = findMenuItemByName(fav);
+          if (found && !found.fixedPrice) available.push(found);
+          if (available.length >= count) break;
+        }
+      }
+      return available;
+    }
+
+    // Pick a random item from any group, not already picked
+    function pickRandom4th(favourites, alreadyPicked, excludeNames) {
+      var pickedNames = alreadyPicked.map(function (it) { return it.name; });
+      var groups = ['meat', 'vege', 'others'];
+      var candidates = [];
+      for (var gi = 0; gi < groups.length; gi++) {
+        var groupItems = QO_GROUPS[groups[gi]] || [];
+        for (var fi = 0; fi < favourites.length; fi++) {
+          var fav = favourites[fi];
+          if (groupItems.indexOf(fav) < 0) continue;
+          if (pickedNames.indexOf(fav) >= 0) continue;
+          if (excludeNames.indexOf(fav) >= 0) continue;
+          var found = findMenuItemByName(fav);
+          if (found && !found.fixedPrice) candidates.push(found);
+        }
+      }
+      if (candidates.length === 0) {
+        // fallback: ignore exclude
+        for (var gi = 0; gi < groups.length; gi++) {
+          var groupItems = QO_GROUPS[groups[gi]] || [];
+          for (var fi = 0; fi < favourites.length; fi++) {
+            var fav = favourites[fi];
+            if (groupItems.indexOf(fav) < 0) continue;
+            if (pickedNames.indexOf(fav) >= 0) continue;
+            var found = findMenuItemByName(fav);
+            if (found && !found.fixedPrice) candidates.push(found);
+          }
+        }
+      }
+      if (candidates.length === 0) return null;
+      return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+    // Shuffle array (Fisher-Yates)
+    function shuffleArray(arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+      }
+      return a;
+    }
+
+    // Fill form with items, rice, price then submit
+    function quickOrderFillAndSubmit(items, riceOpt) {
+      // Clear current selection
+      selectedItems = [];
+      customPrice = null;
+      document.querySelectorAll('.menu-item.selected').forEach(function (el) { el.classList.remove('selected'); });
+
+      // Select items
+      items.forEach(function (it) {
+        selectedItems.push({ name: it.name, fixedPrice: it.fixedPrice || null, note: it.note || '' });
+        document.querySelectorAll('.menu-item').forEach(function (btn) {
+          if (btn.dataset.name === it.name) btn.classList.add('selected');
+        });
+      });
+
+      // Set rice
+      riceOption = riceOpt || 'normal';
+      document.querySelectorAll('.rice-option').forEach(function (el) { el.classList.remove('selected'); });
+      var riceEl = document.querySelector('.rice-option[data-value="' + riceOption + '"]');
+      if (riceEl) riceEl.classList.add('selected');
+
+      // Update displays (triggers sidebar sync via monkey-patches)
+      updateSelectedDisplay();
+      updatePrice();
+      updateMenuItemDisabledState();
+
+      // If user has existing order today, enter edit mode
+      // (isEditMode may already be true from loadMyOrder)
+      // Submit
+      submitOrder();
+    }
+
+    // === executeQuickOrder — the main entry point ===
+    function executeQuickOrder() {
+      var countBtn = document.querySelector('.qo-count-btn.active');
+      var stratBtn = document.querySelector('.qo-strategy-btn.active');
+      var count = parseInt(countBtn ? countBtn.dataset.count : '3');
+      var strategy = stratBtn ? stratBtn.dataset.strategy : 'repeat';
+
+      // Save prefs
+      saveQuickOrderPrefs({ count: count, strategy: strategy });
+
+      // Close sheet immediately
+      closeQuickOrderSheet();
+
+      var userName = getGlobalName();
+      if (!userName) { openNameModal(); return; }
+      if (!orderingOpen) { showStatus('Ordering is closed.', 'error'); return; }
+
+      buildCategoryGroupMap();
+      showLoadingBar('Preparing quick order...');
+
+      if (strategy === 'repeat') {
+        // Fetch last order from server
+        google.script.run
+          .withSuccessHandler(function (result) {
+            hideLoadingBar();
+            if (!result.success || !result.orders || result.orders.length === 0) {
+              showStatus('No previous order found. Cannot repeat.', 'error');
+              return;
+            }
+            var lastOrder = result.orders[0];
+            var items = [];
+            lastOrder.items.forEach(function (itemStr) {
+              var found = findMenuItemByName(itemStr);
+              if (found) items.push(found);
+            });
+            if (items.length === 0) {
+              showStatus('None of your previous items are on today\'s menu.', 'error');
+              return;
+            }
+            // If user wanted more items than last order had, add from favourites
+            while (items.length < count) {
+              var extra = pickRandom4th(_favouritesCache, items, []);
+              if (!extra) break;
+              items.push(extra);
+            }
+            // Restore rice from last order, save it
+            var riceOpt = lastOrder.riceOption || 'normal';
+            cachePut('lastRice', riceOpt);
+            quickOrderFillAndSubmit(items, riceOpt);
+          })
+          .withFailureHandler(function (err) {
+            hideLoadingBar();
+            showStatus('Failed to load previous order: ' + err.message, 'error');
+          })
+          .getPreviousOrders(userName, 1);
+
+      } else {
+        // mix or surprise — need favourites + last order (for mix exclude)
+        getFavourites().then(function (favs) {
+          if (favs.length === 0) {
+            hideLoadingBar();
+            showStatus('No favourites yet! Star some dishes first.', 'error');
+            return;
+          }
+
+          // For "mix" we need last order to exclude; for "surprise" we don't
+          if (strategy === 'mix') {
+            google.script.run
+              .withSuccessHandler(function (result) {
+                var excludeNames = [];
+                if (result.success && result.orders && result.orders.length > 0) {
+                  excludeNames = result.orders[0].items.map(function (itemStr) {
+                    var nm = itemStr.match(/^(.+?)\s*\(([^)]+)\)$/);
+                    return nm ? nm[1].trim() : itemStr.trim();
+                  });
+                }
+                doFavouritesPick(favs, count, excludeNames);
+              })
+              .withFailureHandler(function () {
+                // Can't get last order — just pick without exclude
+                doFavouritesPick(favs, count, []);
+              })
+              .getPreviousOrders(userName, 1);
+          } else {
+            // surprise — shuffle favourites then pick
+            doFavouritesPick(shuffleArray(favs), count, []);
+          }
+        });
+      }
+    }
+
+    function doFavouritesPick(favs, count, excludeNames) {
+      hideLoadingBar();
+      var picked = [];
+      var groups = ['meat', 'vege', 'others'];
+      var missingGroups = [];
+
+      for (var gi = 0; gi < groups.length; gi++) {
+        var g = groups[gi];
+        var items = pickFromGroup(g, favs, excludeNames, 1);
+        if (items.length === 0) {
+          missingGroups.push(g);
+        } else {
+          picked = picked.concat(items);
+        }
+      }
+
+      if (missingGroups.length > 0) {
+        showStatus('No available favourites in: ' + missingGroups.join(', ') + '. Star more dishes!', 'error');
+        return;
+      }
+
+      // 4th item if requested
+      if (count >= 4) {
+        var extra = pickRandom4th(favs, picked, excludeNames);
+        if (extra) picked.push(extra);
+      }
+
+      // Use saved rice preference
+      cacheGetAsync('lastRice').then(function (rice) {
+        var riceOpt = rice || 'normal';
+        quickOrderFillAndSubmit(picked, riceOpt);
+      });
+    }
+
+    // === Manage Favourites modal ===
+    function openManageFavourites() {
+      getFavourites().then(function (favs) {
+        _favouritesCache = favs;
+        renderFavouritesList();
+        document.getElementById('favModalOverlay').classList.add('show');
+      });
+    }
+
+    function closeManageFavourites() {
+      document.getElementById('favModalOverlay').classList.remove('show');
+    }
+
+    function renderFavouritesList() {
+      var list = document.getElementById('favList');
+      if (_favouritesCache.length === 0) {
+        list.innerHTML = '<div class="fav-empty-msg">No favourites yet.<br>Tap the ☆ on menu items to add.</div>';
+        return;
+      }
+      var html = '';
+      _favouritesCache.forEach(function (name, i) {
+        var catLabel = getFavCategoryLabel(name);
+        html += '<li class="fav-list-item" data-index="' + i + '">'
+          + '<span class="fav-list-rank">' + (i + 1) + '</span>'
+          + '<span class="fav-list-name">' + escapeHtml(stripBrackets(name)) + '</span>'
+          + (catLabel ? '<span class="fav-list-cat">' + catLabel + '</span>' : '')
+          + '<span class="fav-list-actions">'
+          + '<button class="fav-list-btn" onclick="moveFav(' + i + ',-1)" title="Move up">▲</button>'
+          + '<button class="fav-list-btn" onclick="moveFav(' + i + ',1)" title="Move down">▼</button>'
+          + '<button class="fav-list-btn fav-delete" onclick="removeFav(' + i + ')" title="Remove">✕</button>'
+          + '</span></li>';
+      });
+      list.innerHTML = html;
+    }
+
+    function getFavCategoryLabel(itemName) {
+      if (!menuData) return '';
+      for (var cat in menuData) {
+        for (var i = 0; i < menuData[cat].length; i++) {
+          if (menuData[cat][i].name === itemName) {
+            var group = getCategoryGroup(cat);
+            if (group === 'meat') return 'Meat';
+            if (group === 'vege') return 'Vege';
+            if (group === 'others') return 'Others';
+            return '';
+          }
+        }
+      }
+      return '';
+    }
+
+    function moveFav(index, direction) {
+      var newIdx = index + direction;
+      if (newIdx < 0 || newIdx >= _favouritesCache.length) return;
+      var tmp = _favouritesCache[index];
+      _favouritesCache[index] = _favouritesCache[newIdx];
+      _favouritesCache[newIdx] = tmp;
+      saveFavourites(_favouritesCache);
+      renderFavouritesList();
+    }
+
+    function removeFav(index) {
+      var removed = _favouritesCache.splice(index, 1)[0];
+      saveFavourites(_favouritesCache);
+      renderFavouritesList();
+      updateQuickOrderBarVisibility();
+      // Update star in menu if visible
+      document.querySelectorAll('.menu-item').forEach(function (el) {
+        if (el.dataset.name === removed) {
+          var star = el.querySelector('.fav-star');
+          if (star) { star.classList.remove('active'); star.textContent = '☆'; }
+        }
+      });
+    }
+
     // ==================== MONKEY-PATCHES to integrate new UI ====================
 
     // Patch switchTab to sync header nav links
@@ -7611,13 +8328,66 @@
       updateSidebarItems();
     };
 
-    // Patch renderMenu to build category pills
+    // Patch renderMenu to build category pills + add stars
     const _origRenderMenu = renderMenu;
     renderMenu = function(menu) {
       _origRenderMenu(menu);
       buildCategoryPills(menu);
+      // Load favourites from cache, then add stars + show quick order bar
+      getFavourites().then(function (favs) {
+        _favouritesCache = favs;
+        addStarsToMenu();
+        buildCategoryGroupMap();
+        updateQuickOrderBarVisibility();
+      });
     };
   </script>
+
+  <!-- Quick Order bottom sheet -->
+  <div class="qo-overlay" id="qoOverlay" onclick="closeQuickOrderSheet()"></div>
+  <div class="qo-sheet" id="qoSheet">
+    <div class="qo-sheet-title"><span class="icon">bolt</span> Quick Order</div>
+    <div class="qo-section-label">How many items?</div>
+    <div class="qo-count-row">
+      <button class="qo-count-btn active" data-count="3" onclick="selectQoCount(this)">3 items</button>
+      <button class="qo-count-btn" data-count="4" onclick="selectQoCount(this)">4 items</button>
+    </div>
+    <div class="qo-section-label">Strategy</div>
+    <div class="qo-strategy-list">
+      <button class="qo-strategy-btn active" data-strategy="repeat" onclick="selectQoStrategy(this)">
+        <span class="qo-strategy-icon">🔁</span>
+        <div>
+          <div class="qo-strategy-label">Same as last time</div>
+          <div class="qo-strategy-desc">Repeat your most recent order</div>
+        </div>
+      </button>
+      <button class="qo-strategy-btn" data-strategy="mix" onclick="selectQoStrategy(this)">
+        <span class="qo-strategy-icon">🔀</span>
+        <div>
+          <div class="qo-strategy-label">Mix it up</div>
+          <div class="qo-strategy-desc">Pick from favourites, skip what you had last</div>
+        </div>
+      </button>
+      <button class="qo-strategy-btn" data-strategy="surprise" onclick="selectQoStrategy(this)">
+        <span class="qo-strategy-icon">🎲</span>
+        <div>
+          <div class="qo-strategy-label">Surprise me</div>
+          <div class="qo-strategy-desc">Random picks from your favourites</div>
+        </div>
+      </button>
+    </div>
+    <button class="qo-submit-btn" onclick="executeQuickOrder()">Order now →</button>
+  </div>
+
+  <!-- Manage Favourites modal -->
+  <div class="fav-modal-overlay" id="favModalOverlay" onclick="closeManageFavourites()">
+    <div class="fav-modal" onclick="event.stopPropagation()">
+      <div class="fav-modal-title">Manage Favourites</div>
+      <div class="fav-modal-hint">Higher = picked first by Quick Order</div>
+      <ul class="fav-list" id="favList"></ul>
+      <button class="fav-modal-done" onclick="closeManageFavourites()">Done</button>
+    </div>
+  </div>
 </body>
 
 </html>
