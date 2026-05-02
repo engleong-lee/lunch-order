@@ -8119,9 +8119,8 @@
       updatePrice();
       updateMenuItemDisabledState();
 
-      // If user has existing order today, enter edit mode
-      // (isEditMode may already be true from loadMyOrder)
-      // Submit
+      // Submit (hide loading bar — submit button shows its own indicator)
+      hideLoadingBar();
       submitOrder();
     }
 
@@ -8150,8 +8149,8 @@
         // Fetch last order from server
         google.script.run
           .withSuccessHandler(function (result) {
-            hideLoadingBar();
             if (!result.success || !result.orders || result.orders.length === 0) {
+              hideLoadingBar();
               showStatus('No previous order found. Cannot repeat.', 'error');
               return;
             }
@@ -8162,6 +8161,7 @@
               if (found) items.push(found);
             });
             if (items.length === 0) {
+              hideLoadingBar();
               showStatus('None of your previous items are on today\'s menu.', 'error');
               return;
             }
@@ -8218,7 +8218,6 @@
     }
 
     function doFavouritesPick(favs, count, excludeNames) {
-      hideLoadingBar();
       var picked = [];
       var groups = ['meat', 'vege', 'others'];
       var missingGroups = [];
@@ -8236,6 +8235,7 @@
       var QO_GROUP_LABELS = { meat: 'Meat (chicken/pork/seafood)', vege: 'Vegetables', others: 'Egg or Others' };
 
       if (missingGroups.length > 0) {
+        hideLoadingBar();
         var labels = missingGroups.map(function (g) { return QO_GROUP_LABELS[g] || g; });
         showStatus('No available favourites in: ' + labels.join(', ') + '. Star more dishes!', 'error');
         return;
