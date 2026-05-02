@@ -8233,8 +8233,11 @@
         }
       }
 
+      var QO_GROUP_LABELS = { meat: 'Meat (chicken/pork/seafood)', vege: 'Vegetables', others: 'Egg or Others' };
+
       if (missingGroups.length > 0) {
-        showStatus('No available favourites in: ' + missingGroups.join(', ') + '. Star more dishes!', 'error');
+        var labels = missingGroups.map(function (g) { return QO_GROUP_LABELS[g] || g; });
+        showStatus('No available favourites in: ' + labels.join(', ') + '. Star more dishes!', 'error');
         return;
       }
 
