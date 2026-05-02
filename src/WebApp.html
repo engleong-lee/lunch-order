@@ -4956,20 +4956,64 @@
       cacheGet('userName', cb);
     }
 
-    // === Quick Order: Favourites & Preferences ===
+    // === Quick Order: Favourites & Preferences (server-backed) ===
+    // In-memory cache, loaded from server on init, written through on changes
+    var _prefsLoaded = false;
+    var _qoPrefsCache = {};
+
+    function loadUserPrefsFromServer() {
+      var name = getGlobalName();
+      if (!name) return;
+      google.script.run
+        .withSuccessHandler(function (result) {
+          if (result && result.success) {
+            _favouritesCache = result.favourites || [];
+            _qoPrefsCache = result.quickOrderPrefs || {};
+            _prefsLoaded = true;
+            // Also cache locally for fast access before server responds next time
+            cachePut('favourites', JSON.stringify(_favouritesCache));
+            cachePut('quickOrderPrefs', JSON.stringify(_qoPrefsCache));
+            // Refresh UI
+            addStarsToMenu();
+            updateQuickOrderBarVisibility();
+          }
+        })
+        .withFailureHandler(function () {})
+        .getUserPrefs(name);
+    }
+
     function getFavourites() {
+      if (_prefsLoaded) return Promise.resolve(_favouritesCache);
+      // Fallback to local cache until server responds
       return cacheGetAsync('favourites').then(function (v) {
         try { return v ? JSON.parse(v) : []; } catch (e) { return []; }
       });
     }
-    function saveFavourites(arr) { cachePut('favourites', JSON.stringify(arr)); }
+
+    function saveFavourites(arr) {
+      _favouritesCache = arr;
+      cachePut('favourites', JSON.stringify(arr));
+      var name = getGlobalName();
+      if (name) {
+        google.script.run.withFailureHandler(function () {}).saveUserPrefs(name, { favourites: arr });
+      }
+    }
 
     function getQuickOrderPrefs() {
+      if (_prefsLoaded) return Promise.resolve(_qoPrefsCache);
       return cacheGetAsync('quickOrderPrefs').then(function (v) {
         try { return v ? JSON.parse(v) : {}; } catch (e) { return {}; }
       });
     }
-    function saveQuickOrderPrefs(prefs) { cachePut('quickOrderPrefs', JSON.stringify(prefs)); }
+
+    function saveQuickOrderPrefs(prefs) {
+      _qoPrefsCache = prefs;
+      cachePut('quickOrderPrefs', JSON.stringify(prefs));
+      var name = getGlobalName();
+      if (name) {
+        google.script.run.withFailureHandler(function () {}).saveUserPrefs(name, { quickOrderPrefs: prefs });
+      }
+    }
 
     // Global name getter — single source of truth
     function getGlobalName() {
@@ -8361,13 +8405,15 @@
     renderMenu = function(menu) {
       _origRenderMenu(menu);
       buildCategoryPills(menu);
-      // Load favourites from cache, then add stars + show quick order bar
+      // Load favourites from local cache first (fast), then sync from server
       getFavourites().then(function (favs) {
         _favouritesCache = favs;
         addStarsToMenu();
         buildCategoryGroupMap();
         updateQuickOrderBarVisibility();
       });
+      // Async server sync — overwrites local cache when it arrives
+      loadUserPrefsFromServer();
     };
   </script>
 

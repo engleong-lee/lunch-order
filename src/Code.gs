@@ -1850,3 +1850,88 @@ function getPaymentQRImage() {
   // Use lh3.googleusercontent.com format which works better for embedding
   return 'https://lh3.googleusercontent.com/d/' + fileId;
 }
+
+// ==================== USER PREFERENCES ====================
+const PREFS_SHEET_NAME = 'Preferences';
+const PREFS_COLUMNS = { NAME: 1, FAVOURITES: 2, QUICK_ORDER: 3 };
+
+/**
+ * Get or create the Preferences sheet.
+ */
+function getPrefsSheet() {
+  const ss = getSpreadsheet();
+  let sheet = ss.getSheetByName(PREFS_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(PREFS_SHEET_NAME);
+    sheet.getRange(1, PREFS_COLUMNS.NAME).setValue('Name');
+    sheet.getRange(1, PREFS_COLUMNS.FAVOURITES).setValue('Favourites');
+    sheet.getRange(1, PREFS_COLUMNS.QUICK_ORDER).setValue('QuickOrderPrefs');
+    sheet.setColumnWidth(PREFS_COLUMNS.NAME, 120);
+    sheet.setColumnWidth(PREFS_COLUMNS.FAVOURITES, 400);
+    sheet.setColumnWidth(PREFS_COLUMNS.QUICK_ORDER, 200);
+    sheet.getRange(1, 1, 1, 3).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+/**
+ * Find user row in Preferences sheet (case-insensitive). Returns row number or -1.
+ */
+function findPrefsRow(sheet, userName) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return -1;
+  const names = sheet.getRange(2, PREFS_COLUMNS.NAME, lastRow - 1, 1).getValues();
+  const target = userName.trim().toLowerCase();
+  for (let i = 0; i < names.length; i++) {
+    if (names[i][0] && names[i][0].toString().trim().toLowerCase() === target) return i + 2;
+  }
+  return -1;
+}
+
+/**
+ * Get user preferences (favourites + quick order prefs).
+ * @param {string} userName
+ * @returns {{ success: boolean, favourites: string[], quickOrderPrefs: object }}
+ */
+function getUserPrefs(userName) {
+  try {
+    if (!userName || !userName.trim()) return { success: false, message: 'No name provided.' };
+    const sheet = getPrefsSheet();
+    const row = findPrefsRow(sheet, userName);
+    if (row < 0) return { success: true, favourites: [], quickOrderPrefs: {} };
+    const data = sheet.getRange(row, PREFS_COLUMNS.FAVOURITES, 1, 2).getValues()[0];
+    let favourites = [];
+    let quickOrderPrefs = {};
+    try { favourites = JSON.parse(data[0] || '[]'); } catch (e) {}
+    try { quickOrderPrefs = JSON.parse(data[1] || '{}'); } catch (e) {}
+    return { success: true, favourites: favourites, quickOrderPrefs: quickOrderPrefs };
+  } catch (error) {
+    return { success: false, message: 'Error: ' + error.message };
+  }
+}
+
+/**
+ * Save user preferences.
+ * @param {string} userName
+ * @param {{ favourites?: string[], quickOrderPrefs?: object }} prefs
+ */
+function saveUserPrefs(userName, prefs) {
+  try {
+    if (!userName || !userName.trim()) return { success: false, message: 'No name provided.' };
+    const sheet = getPrefsSheet();
+    let row = findPrefsRow(sheet, userName);
+    if (row < 0) {
+      row = sheet.getLastRow() + 1;
+      sheet.getRange(row, PREFS_COLUMNS.NAME).setValue(userName.trim());
+    }
+    if (prefs.favourites !== undefined) {
+      sheet.getRange(row, PREFS_COLUMNS.FAVOURITES).setValue(JSON.stringify(prefs.favourites));
+    }
+    if (prefs.quickOrderPrefs !== undefined) {
+      sheet.getRange(row, PREFS_COLUMNS.QUICK_ORDER).setValue(JSON.stringify(prefs.quickOrderPrefs));
+    }
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: 'Error: ' + error.message };
+  }
+}
