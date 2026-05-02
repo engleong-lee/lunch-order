@@ -4466,7 +4466,7 @@
               <button class="qo-btn" onclick="openQuickOrderSheet()">
                 <span class="icon">bolt</span> Quick Order
               </button>
-              <button class="qo-edit-btn" onclick="openManageFavourites()" title="Manage favourites">
+              <button class="qo-edit-btn" id="qoEditBtn" onclick="openManageFavourites()" title="Manage favourites" style="display: none;">
                 <span class="icon">edit</span>
               </button>
             </div>
@@ -7922,7 +7922,9 @@
 
     function updateQuickOrderBarVisibility() {
       var bar = document.getElementById('quickOrderBar');
-      if (bar) bar.style.display = (_favouritesCache.length > 0 && orderingOpen) ? 'flex' : 'none';
+      if (bar) bar.style.display = orderingOpen ? 'flex' : 'none';
+      var editBtn = document.getElementById('qoEditBtn');
+      if (editBtn) editBtn.style.display = _favouritesCache.length > 0 ? '' : 'none';
     }
 
     // Inject star icons into rendered menu items
