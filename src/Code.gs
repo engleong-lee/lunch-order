@@ -1760,12 +1760,14 @@ function getPreviousOrders(userName, count) {
       }
     }
 
-    // Sort descending (most recent first)
+    // Sort descending (most recent first), cap search to 30 sheets
     orderSheets.sort((a, b) => b.name.localeCompare(a.name));
+    const MAX_SHEETS_TO_SEARCH = 30;
 
     const previousOrders = [];
 
-    for (const sheetInfo of orderSheets) {
+    for (let si = 0; si < Math.min(orderSheets.length, MAX_SHEETS_TO_SEARCH); si++) {
+      const sheetInfo = orderSheets[si];
       if (previousOrders.length >= count) break;
 
       const sheet = sheetInfo.sheet;
