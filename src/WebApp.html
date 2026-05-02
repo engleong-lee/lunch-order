@@ -4642,6 +4642,10 @@
         .catch(function () { cb(''); });
     }
 
+    function cacheGetAsync(key) {
+      return new Promise(function (resolve) { cacheGet(key, resolve); });
+    }
+
     function saveUserName(name) {
       cachePut('userName', name);
     }
@@ -4649,6 +4653,21 @@
     function loadSavedName(cb) {
       cacheGet('userName', cb);
     }
+
+    // === Quick Order: Favourites & Preferences ===
+    function getFavourites() {
+      return cacheGetAsync('favourites').then(function (v) {
+        try { return v ? JSON.parse(v) : []; } catch (e) { return []; }
+      });
+    }
+    function saveFavourites(arr) { cachePut('favourites', JSON.stringify(arr)); }
+
+    function getQuickOrderPrefs() {
+      return cacheGetAsync('quickOrderPrefs').then(function (v) {
+        try { return v ? JSON.parse(v) : {}; } catch (e) { return {}; }
+      });
+    }
+    function saveQuickOrderPrefs(prefs) { cachePut('quickOrderPrefs', JSON.stringify(prefs)); }
 
     // Global name getter — single source of truth
     function getGlobalName() {
