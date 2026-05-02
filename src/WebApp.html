@@ -1486,6 +1486,7 @@
     /* Status messages */
     .status {
       padding: 14px 16px;
+      padding-right: 36px;
       border-radius: var(--r-lg);
       margin: 14px 0;
       display: none;
@@ -1493,7 +1494,26 @@
       line-height: 1.55;
       font-weight: 500;
       border: 0.5px solid transparent;
+      position: relative;
     }
+    .status-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 24px;
+      text-align: center;
+      color: inherit;
+      opacity: 0.5;
+      border-radius: 4px;
+      padding: 0;
+    }
+    .status-close:hover { opacity: 0.8; background: rgba(0,0,0,0.05); }
 
     /* Loading bar */
     .loading-bar {
@@ -7522,7 +7542,7 @@
 
     function showStatus(message, type) {
       const el = document.getElementById('statusMessage');
-      el.innerHTML = formatServerMessage(message);
+      el.innerHTML = '<button class="status-close" onclick="hideStatus()">✕</button>' + formatServerMessage(message);
       // Reset class to retrigger animation
       el.className = 'status';
       // Force reflow
@@ -8115,8 +8135,9 @@
       // Save prefs
       saveQuickOrderPrefs({ count: count, strategy: strategy });
 
-      // Close sheet immediately
+      // Close sheet + clear previous status
       closeQuickOrderSheet();
+      hideStatus();
 
       var userName = getGlobalName();
       if (!userName) { openNameModal(); return; }
