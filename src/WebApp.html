@@ -6106,7 +6106,13 @@
         google.script.run
           .withSuccessHandler(function (result) {
             if (!result.found) {
-              // Show funny no-order message
+              // On weekends (Sat=6, Sun=0), just hide — no ordering on weekends
+              var day = new Date().getDay();
+              if (day === 0 || day === 6) {
+                card.className = 'order-saved-card no-order';
+                return;
+              }
+              // Show funny no-order message on weekdays
               document.getElementById('closedHasOrder').style.display = 'none';
               document.getElementById('closedNoOrderMsg').textContent =
                 closedNoOrderMessages[Math.floor(Math.random() * closedNoOrderMessages.length)];
