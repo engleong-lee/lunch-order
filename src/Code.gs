@@ -1797,6 +1797,20 @@ function getPreviousOrders(userName, count) {
             orderText = orderText.replace('(多饭)', '').trim();
           }
 
+          // Extract order-level notes — 【...】 (new) or legacy double-paren
+          let notes = '';
+          const sqMatch = orderText.match(/\s*【([^】]+)】\s*$/);
+          if (sqMatch) {
+            notes = sqMatch[1];
+            orderText = orderText.replace(/\s*【[^】]+】\s*$/, '').trim();
+          } else {
+            const dpMatch = orderText.match(/\)\s*\(([^)]+)\)$/);
+            if (dpMatch) {
+              notes = dpMatch[1];
+              orderText = orderText.replace(/\s*\([^)]+\)$/, '').trim();
+            }
+          }
+
           // Split items by " + "
           const items = orderText.split(/\s*\+\s*/).filter(i => i.trim() !== '');
 
@@ -1806,6 +1820,7 @@ function getPreviousOrders(userName, count) {
             orderText: what,
             items: items,
             riceOption: riceOption,
+            notes: notes,
             price: price
           });
           break; // Only one order per day per user, move to next sheet
