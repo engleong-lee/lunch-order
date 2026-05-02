@@ -8007,7 +8007,7 @@
       for (var i = 0; i < favourites.length; i++) {
         var fav = favourites[i];
         if (groupItems.indexOf(fav) < 0) continue; // not in this group
-        if (excludeNames.indexOf(fav) >= 0) continue; // excluded (e.g. yesterday's)
+        if (excludeNames.indexOf(stripBrackets(fav)) >= 0) continue; // excluded (e.g. yesterday's)
         var found = findMenuItemByName(fav);
         if (found && !found.fixedPrice) available.push(found);
         if (available.length >= count) break;
@@ -8037,7 +8037,7 @@
           var fav = favourites[fi];
           if (groupItems.indexOf(fav) < 0) continue;
           if (pickedNames.indexOf(fav) >= 0) continue;
-          if (excludeNames.indexOf(fav) >= 0) continue;
+          if (excludeNames.indexOf(stripBrackets(fav)) >= 0) continue;
           var found = findMenuItemByName(fav);
           if (found && !found.fixedPrice) candidates.push(found);
         }
@@ -8071,10 +8071,12 @@
 
     // Fill form with items, rice, price then submit
     function quickOrderFillAndSubmit(items, riceOpt) {
-      // Clear current selection
+      // Clear current selection + stale notes
       selectedItems = [];
       customPrice = null;
       document.querySelectorAll('.menu-item.selected').forEach(function (el) { el.classList.remove('selected'); });
+      document.getElementById('notes').value = '';
+      var sbn = document.getElementById('sidebarNotes'); if (sbn) sbn.value = '';
 
       // Select items
       items.forEach(function (it) {
