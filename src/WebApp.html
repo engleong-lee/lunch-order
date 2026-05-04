@@ -8137,12 +8137,18 @@
     function addStarsToMenu() {
       document.querySelectorAll('.menu-item').forEach(function (el) {
         if (el.dataset.fixedPrice) return; // no stars on set meals
-        if (el.querySelector('.fav-star')) return; // already has star
         var name = el.dataset.name;
         var isFav = _favouritesCache.indexOf(name) >= 0;
+        var existing = el.querySelector('.fav-star');
+        if (existing) {
+          // Update existing star
+          existing.className = 'fav-star' + (isFav ? ' active' : '');
+          existing.textContent = isFav ? '\u2605' : '\u2606';
+          return;
+        }
         var star = document.createElement('button');
         star.className = 'fav-star' + (isFav ? ' active' : '');
-        star.textContent = isFav ? '★' : '☆';
+        star.textContent = isFav ? '\u2605' : '\u2606';
         star.onclick = function (e) { toggleFavourite(name, star, e); };
         el.appendChild(star);
       });
