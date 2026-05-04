@@ -6546,9 +6546,17 @@
             // Enable Pay and Cancel buttons (order exists)
             setOrderButtonsEnabled(true);
           } else {
+            // No order for this user — clear form
+            isEditMode = false;
+            currentOrderPaid = false;
+            clearOrder();
             updatePaymentStatus(false, false);
             // Disable Pay and Cancel buttons (no order)
             setOrderButtonsEnabled(false);
+            document.getElementById('submitBtn').innerHTML = '<span class="icon">check_circle</span> Place Order';
+            var _sb0 = document.getElementById('sidebarPlaceOrder');
+            if (_sb0) _sb0.textContent = 'Place order →';
+            applyStickyFooterPaidState(false);
           }
         })
         .withFailureHandler(function (error) {
