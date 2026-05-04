@@ -5185,6 +5185,8 @@
       _favouritesCache = [];
       _qoPrefsCache = {};
       _prefsLoaded = false;
+      cachePut('favourites', '[]');
+      cachePut('quickOrderPrefs', '{}');
       addStarsToMenu();
       updateQuickOrderBarVisibility();
       // Reload order (and menu counts) for the new name
