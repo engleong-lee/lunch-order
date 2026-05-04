@@ -8669,14 +8669,11 @@
     renderMenu = function(menu) {
       _origRenderMenu(menu);
       buildCategoryPills(menu);
-      // Load favourites from local cache first (fast), then sync from server
-      getFavourites().then(function (favs) {
-        _favouritesCache = favs;
-        addStarsToMenu();
-        buildCategoryGroupMap();
-        updateQuickOrderBarVisibility();
-      });
-      // Async server sync — overwrites local cache when it arrives
+      // Use in-memory cache directly (avoids stale local cache race on user switch)
+      addStarsToMenu();
+      buildCategoryGroupMap();
+      updateQuickOrderBarVisibility();
+      // Async server sync — overwrites in-memory cache when it arrives
       loadUserPrefsFromServer();
     };
   </script>
