@@ -5059,6 +5059,7 @@
     // In-memory cache, loaded from server on init, written through on changes
     var _prefsLoaded = false;
     var _qoPrefsCache = {};
+    var _qoLoadingActive = false;
 
     function loadUserPrefsFromServer() {
       var name = getGlobalName();
@@ -6380,6 +6381,7 @@
     function submitOrder() {
       // Check if ordering is still open
       if (!orderingOpen) {
+        if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
         showStatus('Ordering is closed. No more orders can be added.', 'error');
         return;
       }
@@ -6388,17 +6390,20 @@
       const notes = document.getElementById('notes').value.trim();
 
       if (!userName) {
+        if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
         openNameModal();
         return;
       }
 
       if (selectedItems.length === 0) {
+        if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
         showStatus('Please select at least one item!', 'error');
         return;
       }
 
       const estimatedPrice = parseFloat(document.getElementById('priceAmount').textContent) || 0;
       if (estimatedPrice <= 0) {
+        if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
         alert('Price cannot be RM 0!\n\nPlease use the +/− buttons to set a valid price before placing your order.');
         showStatus('Price cannot be RM 0! Use the +/− buttons to set a valid price.', 'error');
         return;
@@ -6431,6 +6436,7 @@
       const wasEditMode = isEditMode;
       google.script.run
         .withSuccessHandler(function (result) {
+          if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
           btn.disabled = false;
           btn.innerHTML = isEditMode ? '<span class="icon">save</span> Update Order' : '<span class="icon">check_circle</span> Place Order';
           if (sidebarBtn) {
@@ -6457,6 +6463,7 @@
           }
         })
         .withFailureHandler(function (error) {
+          if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
           btn.disabled = false;
           btn.innerHTML = isEditMode ? '<span class="icon">save</span> Update Order' : '<span class="icon">check_circle</span> Place Order';
           if (sidebarBtn) {
@@ -8394,8 +8401,8 @@
       // Immediately update receipt strip so it reflects new order before server round-trip
       updatePaymentStatus(true, currentOrderPaid);
 
-      // Submit (hide loading bar — submit button shows its own indicator)
-      hideLoadingBar();
+      // Keep loading bar visible until submit completes (flag checked in submitOrder handlers)
+      _qoLoadingActive = true;
       submitOrder();
     }
 
