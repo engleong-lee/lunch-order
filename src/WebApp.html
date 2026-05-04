@@ -5173,11 +5173,18 @@
       saveUserName(name);
       updateNamePill();
       closeNameModal();
+      // Reset favourites/prefs for new user
+      _favouritesCache = [];
+      _qoPrefsCache = {};
+      _prefsLoaded = false;
+      addStarsToMenu();
+      updateQuickOrderBarVisibility();
       // Reload order (and menu counts) for the new name
       if (orderingOpen) {
         showLoadingBar('Loading your order...');
         loadMenu();
         loadMyOrder();
+        loadUserPrefsFromServer();
       } else {
         loadClosedOrder();
       }
