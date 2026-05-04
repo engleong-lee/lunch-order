@@ -5060,13 +5060,16 @@
     var _prefsLoaded = false;
     var _qoPrefsCache = {};
     var _qoLoadingActive = false;
+    var _prefsGeneration = 0;
 
     function loadUserPrefsFromServer() {
       var name = getGlobalName();
       if (!name) return;
+      var gen = _prefsGeneration;
       try {
         google.script.run
           .withSuccessHandler(function (result) {
+            if (gen !== _prefsGeneration) return; // stale response, discard
             if (result && result.success) {
               _favouritesCache = result.favourites || [];
               _qoPrefsCache = result.quickOrderPrefs || {};
@@ -5185,6 +5188,7 @@
       _favouritesCache = [];
       _qoPrefsCache = {};
       _prefsLoaded = false;
+      _prefsGeneration++;
       cachePut('favourites', '[]');
       cachePut('quickOrderPrefs', '{}');
       addStarsToMenu();
@@ -5194,7 +5198,6 @@
         showLoadingBar('Loading your order...');
         loadMenu();
         loadMyOrder();
-        loadUserPrefsFromServer();
       } else {
         loadClosedOrder();
       }
