@@ -8341,7 +8341,7 @@
     }
 
     // Fill form with items, rice, price then submit
-    function quickOrderFillAndSubmit(items, riceOpt) {
+    function quickOrderFillAndSubmit(items, riceOpt, orderNotes, orderPrice) {
       // Clear current selection + stale notes
       selectedItems = [];
       customPrice = null;
@@ -8364,10 +8364,27 @@
       if (riceEl) riceEl.classList.add('selected');
       document.querySelectorAll('.sidebar-rice').forEach(function (el) { el.classList.toggle('selected', el.dataset.value === riceOption); });
 
+      // Set order-level notes
+      if (orderNotes) {
+        document.getElementById('notes').value = orderNotes;
+        if (sbn) sbn.value = orderNotes;
+      }
+
       // Update displays (triggers sidebar sync via monkey-patches)
       updateSelectedDisplay();
-      updatePrice();
       updateMenuItemDisabledState();
+
+      // Set price: use last order's price if provided, otherwise recalculate
+      if (orderPrice && orderPrice > 0) {
+        customPrice = orderPrice;
+        document.getElementById('priceAmount').textContent = orderPrice;
+        var stepEl = document.getElementById('priceStepValue');
+        if (stepEl) stepEl.textContent = orderPrice;
+        updateSubmitButtonState();
+      } else {
+        updatePrice();
+      }
+      updateSidebarItems();
 
       // Submit (hide loading bar — submit button shows its own indicator)
       hideLoadingBar();
@@ -8427,7 +8444,9 @@
             // Restore rice from last order, save it
             var riceOpt = lastOrder.riceOption || 'normal';
             cachePut('lastRice', riceOpt);
-            quickOrderFillAndSubmit(items, riceOpt);
+            // Pass notes + price so repeat is an exact copy
+            var allMatched = items.length === lastOrder.items.length;
+            quickOrderFillAndSubmit(items, riceOpt, lastOrder.notes || '', allMatched ? lastOrder.price : 0);
           })
           .withFailureHandler(function (err) {
             hideLoadingBar();
