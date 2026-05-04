@@ -12,7 +12,7 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600&display=swap"
     rel="stylesheet">
   <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-25..200&icon_names=add,bar_chart,bolt,calendar_today,check,check_circle,close,content_paste,credit_card,delete,description,directions_car,download,edit,edit_note,error,folder,folder_open,hourglass_top,inventory_2,lightbulb,lock,lock_open,lunch_dining,mail,pause_circle,payments,person,refresh,restaurant,rice_bowl,rocket_launch,save,savings,schedule,search,settings,shopping_cart,tips_and_updates,trending_down,waving_hand"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-25..200&icon_names=add,bar_chart,bolt,calendar_today,check,check_circle,close,content_paste,credit_card,delete,description,directions_car,download,edit,edit_note,error,folder,folder_open,hourglass_top,inventory_2,lightbulb,lock,lock_open,lunch_dining,mail,pause_circle,payments,person,refresh,restaurant,rice_bowl,rocket_launch,save,savings,schedule,search,settings,shopping_cart,tips_and_updates,trending_down,tune,waving_hand"
     rel="stylesheet">
   <style>
     :root {
@@ -4037,6 +4037,102 @@
     .qo-submit-btn:hover { background: var(--ink-800); }
     .qo-submit-btn:active { transform: scale(0.98); }
 
+    /* Category config panel */
+    .qo-section-label-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qo-config-toggle {
+      width: 26px;
+      height: 26px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 16px;
+      color: var(--ink-400);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      -webkit-tap-highlight-color: transparent;
+      padding: 0;
+    }
+    .qo-config-toggle:hover { background: var(--ink-100); color: var(--ink-700); }
+    .qo-config-toggle.disabled { opacity: 0.3; pointer-events: none; }
+    .qo-cat-config {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease, margin 0.25s ease, opacity 0.2s ease;
+      opacity: 0;
+      margin-bottom: 0;
+    }
+    .qo-cat-config.open {
+      max-height: 200px;
+      opacity: 1;
+      margin-bottom: 14px;
+    }
+    .qo-cat-grid {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 4px 12px;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--ink-50);
+      border-radius: 10px;
+      margin-top: 8px;
+    }
+    .qo-cat-grid-header {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-400);
+      text-align: center;
+    }
+    .qo-cat-label {
+      font-size: 13px;
+      color: var(--ink-700);
+      font-weight: 500;
+    }
+    .qo-stepper {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+    .qo-stepper-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: white;
+      color: var(--ink-600);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      padding: 0;
+      font-family: inherit;
+    }
+    .qo-stepper-btn:hover:not(:disabled) { background: var(--ink-50); }
+    .qo-stepper-btn:disabled { opacity: 0.25; cursor: default; }
+    .qo-stepper-val {
+      width: 24px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-800);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      line-height: 28px;
+      font-variant-numeric: tabular-nums;
+    }
+
     /* Manage Favourites modal */
     .fav-modal-overlay {
       display: none;
@@ -8024,6 +8120,10 @@
         document.querySelectorAll('.qo-strategy-btn').forEach(function (b) {
           b.classList.toggle('active', b.dataset.strategy === strategy);
         });
+        // Restore category config state
+        renderCategoryConfig();
+        document.getElementById('qoCatConfig').classList.remove('open');
+        updateCatConfigToggle();
         document.getElementById('qoOverlay').classList.add('show');
         requestAnimationFrame(function () {
           document.getElementById('qoSheet').classList.add('show');
@@ -8038,14 +8138,113 @@
       }, 300);
     }
 
+    // Category count defaults: per-group counts for 3-item and 4-item columns
+    var QO_CAT_DEFAULTS = {
+      '3': { meat: 1, vege: 1, others: 1 },
+      '4': { meat: 1, vege: 2, others: 1 }
+    };
+    var QO_CAT_LABELS = { meat: 'Meat', vege: 'Vege', others: 'Others' };
+
+    function getActiveCategoryCounts() {
+      var prefs = _qoPrefsCache || {};
+      var cc = prefs.categoryCounts || {};
+      return {
+        '3': Object.assign({}, QO_CAT_DEFAULTS['3'], cc['3'] || {}),
+        '4': Object.assign({}, QO_CAT_DEFAULTS['4'], cc['4'] || {})
+      };
+    }
+
     function selectQoCount(el) {
       document.querySelectorAll('.qo-count-btn').forEach(function (b) { b.classList.remove('active'); });
       el.classList.add('active');
+      renderCategoryConfig();
     }
 
     function selectQoStrategy(el) {
       document.querySelectorAll('.qo-strategy-btn').forEach(function (b) { b.classList.remove('active'); });
       el.classList.add('active');
+      updateCatConfigToggle();
+    }
+
+    function updateCatConfigToggle() {
+      var stratBtn = document.querySelector('.qo-strategy-btn.active');
+      var strategy = stratBtn ? stratBtn.dataset.strategy : 'repeat';
+      var toggle = document.getElementById('qoCatConfigBtn');
+      var panel = document.getElementById('qoCatConfig');
+      if (strategy === 'repeat') {
+        toggle.classList.add('disabled');
+        panel.classList.remove('open');
+      } else {
+        toggle.classList.remove('disabled');
+      }
+    }
+
+    function toggleCategoryConfig() {
+      var panel = document.getElementById('qoCatConfig');
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+      } else {
+        renderCategoryConfig();
+        panel.classList.add('open');
+      }
+    }
+
+    function renderCategoryConfig() {
+      var panel = document.getElementById('qoCatConfig');
+      var cc = getActiveCategoryCounts();
+      var groups = ['meat', 'vege', 'others'];
+      var cols = ['3', '4'];
+      var html = '<div class="qo-cat-grid">';
+      // Header row
+      html += '<div></div>';
+      for (var ci = 0; ci < cols.length; ci++) {
+        html += '<div class="qo-cat-grid-header">' + cols[ci] + ' items</div>';
+      }
+      // Data rows
+      for (var gi = 0; gi < groups.length; gi++) {
+        var g = groups[gi];
+        html += '<div class="qo-cat-label">' + QO_CAT_LABELS[g] + '</div>';
+        for (var ci = 0; ci < cols.length; ci++) {
+          var col = cols[ci];
+          var val = cc[col][g];
+          var otherGroups = groups.filter(function (og) { return og !== g; });
+          var plusDisabled = !otherGroups.some(function (og) { return cc[col][og] > 0; });
+          var minusDisabled = val <= 0;
+          html += '<div class="qo-stepper">'
+            + '<button class="qo-stepper-btn" onclick="adjustCategoryCount(\'' + g + '\',\'' + col + '\',-1)"' + (minusDisabled ? ' disabled' : '') + '>&minus;</button>'
+            + '<span class="qo-stepper-val" id="qoCat_' + g + '_' + col + '">' + val + '</span>'
+            + '<button class="qo-stepper-btn" onclick="adjustCategoryCount(\'' + g + '\',\'' + col + '\',1)"' + (plusDisabled ? ' disabled' : '') + '>+</button>'
+            + '</div>';
+        }
+      }
+      html += '</div>';
+      panel.innerHTML = html;
+    }
+
+    function adjustCategoryCount(group, col, delta) {
+      var cc = getActiveCategoryCounts();
+      var newVal = cc[col][group] + delta;
+      if (newVal < 0) return;
+      var colTarget = parseInt(col);
+      // Redistribute: steal from / give to another group to keep total = colTarget
+      var groups = ['meat', 'vege', 'others'];
+      var others = groups.filter(function (g) { return g !== group; });
+      if (delta > 0) {
+        // Steal 1 from another group that has > 0
+        var donor = others.find(function (g) { return cc[col][g] > 0; });
+        if (!donor) return;
+        cc[col][donor]--;
+      } else {
+        // Give 1 to the first group that can accept
+        var recipient = others.find(function (g) { return cc[col][g] < colTarget; });
+        if (!recipient) return;
+        cc[col][recipient]++;
+      }
+      cc[col][group] = newVal;
+      // Save to prefs cache (will be persisted on executeQuickOrder)
+      if (!_qoPrefsCache) _qoPrefsCache = {};
+      _qoPrefsCache.categoryCounts = { '3': cc['3'], '4': cc['4'] };
+      renderCategoryConfig();
     }
 
     // Find a menu item by name (fuzzy match against today's menu)
@@ -8180,9 +8379,10 @@
       var stratBtn = document.querySelector('.qo-strategy-btn.active');
       var count = parseInt(countBtn ? countBtn.dataset.count : '3');
       var strategy = stratBtn ? stratBtn.dataset.strategy : 'repeat';
+      var cc = getActiveCategoryCounts();
 
-      // Save prefs
-      saveQuickOrderPrefs({ count: count, strategy: strategy });
+      // Save prefs (including categoryCounts)
+      saveQuickOrderPrefs({ count: count, strategy: strategy, categoryCounts: cc });
 
       // Close sheet + clear previous status
       closeQuickOrderSheet();
@@ -8194,6 +8394,8 @@
 
       buildCategoryGroupMap();
       showLoadingBar('Preparing quick order...');
+
+      var groupCounts = cc[String(count)];
 
       if (strategy === 'repeat') {
         // Fetch last order from server
@@ -8252,29 +8454,31 @@
                     return nm ? nm[1].trim() : itemStr.trim();
                   });
                 }
-                doFavouritesPick(favs, count, excludeNames);
+                doFavouritesPick(favs, count, excludeNames, groupCounts);
               })
               .withFailureHandler(function () {
                 // Can't get last order — just pick without exclude
-                doFavouritesPick(favs, count, []);
+                doFavouritesPick(favs, count, [], groupCounts);
               })
               .getPreviousOrders(userName, 1);
           } else {
             // surprise — shuffle favourites then pick
-            doFavouritesPick(shuffleArray(favs), count, []);
+            doFavouritesPick(shuffleArray(favs), count, [], groupCounts);
           }
         });
       }
     }
 
-    function doFavouritesPick(favs, count, excludeNames) {
+    function doFavouritesPick(favs, count, excludeNames, groupCounts) {
       var picked = [];
       var groups = ['meat', 'vege', 'others'];
       var missingGroups = [];
 
       for (var gi = 0; gi < groups.length; gi++) {
         var g = groups[gi];
-        var items = pickFromGroup(g, favs, excludeNames, 1);
+        var need = (groupCounts && groupCounts[g] != null) ? groupCounts[g] : 1;
+        if (need <= 0) continue;
+        var items = pickFromGroup(g, favs, excludeNames, need);
         if (items.length === 0) {
           missingGroups.push(g);
         } else {
@@ -8289,12 +8493,6 @@
         var labels = missingGroups.map(function (g) { return QO_GROUP_LABELS[g] || g; });
         showStatus('No available favourites in: ' + labels.join(', ') + '. Star more dishes!', 'error');
         return;
-      }
-
-      // 4th item if requested
-      if (count >= 4) {
-        var extra = pickRandom4th(favs, picked, excludeNames);
-        if (extra) picked.push(extra);
       }
 
       // Use saved rice preference
@@ -8427,11 +8625,15 @@
   <div class="qo-overlay" id="qoOverlay" onclick="closeQuickOrderSheet()"></div>
   <div class="qo-sheet" id="qoSheet">
     <div class="qo-sheet-title"><span class="icon">bolt</span> Quick Order</div>
-    <div class="qo-section-label">How many items?</div>
+    <div class="qo-section-label-row">
+      <div class="qo-section-label" style="margin-bottom:0">How many items?</div>
+      <button class="qo-config-toggle" id="qoCatConfigBtn" onclick="toggleCategoryConfig()" title="Configure per-category counts"><span class="icon" style="font-size:16px">tune</span></button>
+    </div>
     <div class="qo-count-row">
       <button class="qo-count-btn active" data-count="3" onclick="selectQoCount(this)">3 items</button>
       <button class="qo-count-btn" data-count="4" onclick="selectQoCount(this)">4 items</button>
     </div>
+    <div class="qo-cat-config" id="qoCatConfig"></div>
     <div class="qo-section-label">Strategy</div>
     <div class="qo-strategy-list">
       <button class="qo-strategy-btn active" data-strategy="repeat" onclick="selectQoStrategy(this)">
