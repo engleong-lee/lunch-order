@@ -5092,12 +5092,20 @@
       });
     }
 
+    var _savePrefsTimer = null;
+    function _debouncedSaveUserPrefs(name, prefs) {
+      clearTimeout(_savePrefsTimer);
+      _savePrefsTimer = setTimeout(function () {
+        try { google.script.run.withFailureHandler(function () {}).saveUserPrefs(name, prefs); } catch (e) {}
+      }, 2000);
+    }
+
     function saveFavourites(arr) {
       _favouritesCache = arr;
       cachePut('favourites', JSON.stringify(arr));
       var name = getGlobalName();
       if (name) {
-        try { google.script.run.withFailureHandler(function () {}).saveUserPrefs(name, { favourites: arr }); } catch (e) {}
+        _debouncedSaveUserPrefs(name, { favourites: arr });
       }
     }
 
@@ -5113,7 +5121,7 @@
       cachePut('quickOrderPrefs', JSON.stringify(prefs));
       var name = getGlobalName();
       if (name) {
-        try { google.script.run.withFailureHandler(function () {}).saveUserPrefs(name, { quickOrderPrefs: prefs }); } catch (e) {}
+        _debouncedSaveUserPrefs(name, { quickOrderPrefs: prefs });
       }
     }
 
