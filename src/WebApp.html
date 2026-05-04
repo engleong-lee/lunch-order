@@ -8391,6 +8391,9 @@
       }
       updateSidebarItems();
 
+      // Immediately update receipt strip so it reflects new order before server round-trip
+      updatePaymentStatus(true, currentOrderPaid);
+
       // Submit (hide loading bar — submit button shows its own indicator)
       hideLoadingBar();
       submitOrder();
