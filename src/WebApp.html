@@ -3732,7 +3732,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     .sticky-footer .sf-left {
       display: flex;
@@ -3769,6 +3770,8 @@
       align-items: center;
       justify-content: flex-end;
       gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
     }
     .sticky-footer .sf-place-order {
       background: var(--cta);
@@ -3785,6 +3788,10 @@
       transition: var(--transition);
       font-family: inherit;
       white-space: nowrap;
+      min-width: 0;
+      flex-shrink: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .sticky-footer .sf-place-order:hover {
       background: var(--cta-hover);
@@ -4358,9 +4365,11 @@
       gap: 8px;
       padding-bottom: 10px;
       border-bottom: 0.5px solid rgba(255,255,255,0.15);
+      flex-wrap: wrap;
     }
     .sticky-footer .sf-action {
       flex: 1;
+      min-width: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
