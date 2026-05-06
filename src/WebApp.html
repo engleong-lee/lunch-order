@@ -12,7 +12,7 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600&display=swap"
     rel="stylesheet">
   <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-25..200&icon_names=add,bar_chart,bolt,calendar_today,check,check_circle,close,content_paste,credit_card,delete,description,directions_car,download,edit,edit_note,error,folder,folder_open,hourglass_top,inventory_2,lightbulb,lock,lock_open,lunch_dining,mail,pause_circle,payments,person,refresh,restaurant,rice_bowl,rocket_launch,save,savings,schedule,search,settings,shopping_cart,tips_and_updates,trending_down,tune,waving_hand"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-25..200&icon_names=add,bar_chart,bolt,calendar_today,check,check_circle,close,content_paste,credit_card,delete,description,directions_car,download,edit,edit_note,error,expand_less,expand_more,folder,folder_open,hourglass_top,inventory_2,lightbulb,lock,lock_open,lunch_dining,mail,pause_circle,payments,person,refresh,restaurant,rice_bowl,rocket_launch,save,savings,schedule,search,settings,shopping_cart,tips_and_updates,trending_down,tune,waving_hand"
     rel="stylesheet">
   <style>
     :root {
@@ -3798,6 +3798,106 @@
       background: var(--cta-hover);
     }
 
+    /* ===================== Expand panel (mobile order summary) ============ */
+    .sf-expand-panel {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 4px;
+    }
+    .sticky-footer.sf-expanded .sf-expand-panel {
+      display: flex;
+    }
+    .sf-expand-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+    }
+    .sf-expand-close {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.55);
+      cursor: pointer;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+    }
+    .sf-expand-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      overflow-y: auto;
+    }
+    .sf-expand-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.9);
+      white-space: nowrap;
+      max-width: 100%;
+    }
+    .sf-expand-chip .chip-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sf-expand-chip .chip-note {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 80px;
+    }
+    .sf-expand-chip .chip-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .sf-expand-chip .chip-btn:hover {
+      color: white;
+    }
+    .sf-expand-chip .chip-btn .icon {
+      font-size: 16px;
+    }
+    .sf-item-count {
+      cursor: pointer;
+      display: inline-flex !important;
+      align-items: center;
+      gap: 4px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sf-chevron {
+      font-size: 18px !important;
+      transition: transform 0.2s ease;
+      color: rgba(255,255,255,0.5);
+    }
+    .sticky-footer.sf-expanded .sf-chevron {
+      transform: rotate(180deg);
+    }
+    /* Backdrop overlay when panel is open */
+    .sf-expand-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 49;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(2px);
+    }
+
     /* ===================== Updated menu item styling ===================== */
     .menu-item {
       display: block;
@@ -4729,8 +4829,17 @@
             <button class="sf-action sf-action-cancel" onclick="cancelExistingOrder()" id="cancelBtn"><span class="icon">close</span> Cancel</button>
           </div>
 
+          <!-- Expandable order summary panel -->
+          <div class="sf-expand-panel" id="sfExpandPanel">
+            <div class="sf-expand-header">
+              <span>Your Selection</span>
+              <button class="sf-expand-close" onclick="collapseExpandPanel()" aria-label="Close"><span class="icon">expand_more</span></button>
+            </div>
+            <div class="sf-expand-chips" id="sfExpandChips"></div>
+          </div>
+
           <div class="sf-main">
-            <div class="sf-label" id="sfItemCount">0 items</div>
+            <div class="sf-label sf-item-count" id="sfItemCount" onclick="toggleExpandPanel()">0 items <span class="icon sf-chevron">expand_less</span></div>
             <div class="sf-right">
               <div class="sf-stepper">
                 <button class="sf-step-btn" id="priceMinusBtn" onclick="adjustPrice(-1)" aria-label="Decrease price">−</button>
@@ -6145,6 +6254,7 @@
       updateSelectedDisplay();
       updatePrice();
       updateMenuItemDisabledState();
+      updateSidebarItems();
     }
 
     // Update selected items display
@@ -6226,6 +6336,7 @@
       selectedItems[index].note = note;
       closeItemNoteModal();
       updateSelectedDisplay();
+      updateSidebarItems();
     }
 
     // Close item note modal
@@ -6253,9 +6364,8 @@
       updateSelectedDisplay();
       updatePrice();
       updateMenuItemDisabledState();
+      updateSidebarItems();
     }
-
-    // Select rice option
     function selectRice(element) {
       document.querySelectorAll('.rice-option').forEach(el => el.classList.remove('selected'));
       element.classList.add('selected');
@@ -6386,6 +6496,7 @@
     }
 
     function clearOrder() {
+      collapseExpandPanel();
       selectedItems = [];
       document.querySelectorAll('.menu-item.selected').forEach(el => el.classList.remove('selected'));
       document.getElementById('notes').value = '';
@@ -6409,6 +6520,7 @@
 
     // Submit order
     function submitOrder() {
+      collapseExpandPanel();
       // Check if ordering is still open
       if (!orderingOpen) {
         if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
@@ -8066,10 +8178,87 @@
       // Update mobile sticky footer item count + preview
       const sfCount = document.getElementById('sfItemCount');
       const sfPreview = document.getElementById('sfItemsPreview');
-      if (sfCount) sfCount.textContent = selectedItems.length + ' item' + (selectedItems.length !== 1 ? 's' : '');
+      if (sfCount) {
+        const countText = selectedItems.length + ' item' + (selectedItems.length !== 1 ? 's' : '');
+        // Preserve the chevron icon inside sfItemCount
+        const chevron = sfCount.querySelector('.sf-chevron');
+        sfCount.textContent = countText + ' ';
+        if (chevron) sfCount.appendChild(chevron);
+        else {
+          const span = document.createElement('span');
+          span.className = 'icon sf-chevron';
+          span.textContent = 'expand_less';
+          sfCount.appendChild(span);
+        }
+      }
       if (sfPreview) {
         sfPreview.textContent = selectedItems.map(it => stripBrackets(it.name)).join('・');
       }
+      // Also update the expand panel chips if it's open
+      renderExpandChips();
+    }
+
+    // ==================== EXPAND PANEL (mobile order summary) ====================
+
+    function toggleExpandPanel() {
+      const footer = document.getElementById('stickyFooter');
+      if (!footer) return;
+      if (footer.classList.contains('sf-expanded')) {
+        collapseExpandPanel();
+      } else {
+        expandPanel();
+      }
+    }
+
+    function expandPanel() {
+      const footer = document.getElementById('stickyFooter');
+      if (!footer || selectedItems.length === 0) return;
+      footer.classList.add('sf-expanded');
+      renderExpandChips();
+      // Add backdrop
+      let bd = document.getElementById('sfExpandBackdrop');
+      if (!bd) {
+        bd = document.createElement('div');
+        bd.className = 'sf-expand-backdrop';
+        bd.id = 'sfExpandBackdrop';
+        bd.onclick = collapseExpandPanel;
+        document.body.appendChild(bd);
+      }
+    }
+
+    function collapseExpandPanel() {
+      const footer = document.getElementById('stickyFooter');
+      if (footer) footer.classList.remove('sf-expanded');
+      const bd = document.getElementById('sfExpandBackdrop');
+      if (bd) bd.remove();
+    }
+
+    function renderExpandChips() {
+      const container = document.getElementById('sfExpandChips');
+      if (!container) return;
+      if (selectedItems.length === 0) {
+        container.innerHTML = '<span style="color:rgba(255,255,255,0.4);font-size:12px">No items selected</span>';
+        return;
+      }
+      container.innerHTML = selectedItems.map((item, i) => {
+        const name = stripBrackets(item.name);
+        const noteHtml = item.note
+          ? `<span class="chip-note">${item.note}</span>`
+          : '';
+        return `<div class="sf-expand-chip">
+          <span class="chip-name">${name}</span>
+          ${noteHtml}
+          <button class="chip-btn" onclick="event.stopPropagation(); openItemNoteModal(${i})" title="Edit note"><span class="icon">edit</span></button>
+          <button class="chip-btn" onclick="event.stopPropagation(); removeItemFromExpand(${i})" title="Remove">×</button>
+        </div>`;
+      }).join('');
+    }
+
+    function removeItemFromExpand(index) {
+      removeItem(index);
+      renderExpandChips();
+      // Auto-collapse if no items left
+      if (selectedItems.length === 0) collapseExpandPanel();
     }
 
     // Sync sidebar rice buttons with main rice options
