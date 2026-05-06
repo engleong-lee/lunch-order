@@ -3067,12 +3067,20 @@
     /* Responsive */
     @media (max-width: 400px) {
       .container {
-        padding: 0 6px 120px;
+        padding: 0 0 120px;
       }
 
       .card {
         padding: 16px;
-        border-radius: var(--radius-md);
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+      }
+
+      .card-menu {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
       }
 
       .menu-item {
