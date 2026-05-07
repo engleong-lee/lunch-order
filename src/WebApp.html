@@ -6609,6 +6609,9 @@
             isEditMode = true;
             document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
             if (sidebarBtn) sidebarBtn.textContent = 'Update order →';
+            // Set sequence number badge
+            var seqEl = document.getElementById('oscSeq');
+            if (seqEl) seqEl.textContent = result.row || '';
             updatePaymentStatus(true, currentOrderPaid);
             // Enable Pay and Cancel buttons (order exists now)
             setOrderButtonsEnabled(true);
@@ -7190,6 +7193,9 @@
             document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
             var _sb3 = document.getElementById('sidebarPlaceOrder');
             if (_sb3) _sb3.textContent = 'Update order →';
+            // Set sequence number badge
+            var _seqEl = document.getElementById('oscSeq');
+            if (_seqEl) _seqEl.textContent = result.row || '';
             setOrderButtonsEnabled(true);
             // Sync name globally
             setGlobalName(userName);
