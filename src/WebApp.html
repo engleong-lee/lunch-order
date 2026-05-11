@@ -4867,11 +4867,11 @@
             </div>
           </div>
 
-          <!-- Edit-mode action row: Cancel | Pay | Update Order -->
+          <!-- Edit-mode action row: Cancel | Pay | Update -->
           <div class="sf-edit-actions" id="orderActionsGroup" style="display: none;">
             <button class="sf-action sf-action-cancel" onclick="cancelExistingOrder()" id="cancelBtn"><span class="icon">close</span> Cancel</button>
             <button class="sf-action sf-action-pay" onclick="showPaymentModal()" id="payBtn"><span class="icon">payments</span> Pay</button>
-            <button class="sf-action sf-action-update" onclick="submitOrder()" id="updateBtn"><span class="icon">save</span> Update Order</button>
+            <button class="sf-action sf-action-update" onclick="submitOrder()" id="updateBtn"><span class="icon">save</span> Update</button>
           </div>
 
           <div class="sf-hint" id="priceHint"></div>
@@ -6612,7 +6612,7 @@
           if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
           btn.disabled = false;
           btn.innerHTML = '<span class="icon">check_circle</span> Place Order';
-          if (updateBtn) { updateBtn.disabled = false; updateBtn.innerHTML = '<span class="icon">save</span> Update Order'; }
+          if (updateBtn) { updateBtn.disabled = false; updateBtn.innerHTML = '<span class="icon">save</span> Update'; }
           if (sidebarBtn) {
             sidebarBtn.disabled = false;
             sidebarBtn.textContent = isEditMode ? 'Update order →' : 'Place order →';
@@ -6642,7 +6642,7 @@
           if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
           btn.disabled = false;
           btn.innerHTML = '<span class="icon">check_circle</span> Place Order';
-          if (updateBtn) { updateBtn.disabled = false; updateBtn.innerHTML = '<span class="icon">save</span> Update Order'; }
+          if (updateBtn) { updateBtn.disabled = false; updateBtn.innerHTML = '<span class="icon">save</span> Update'; }
           if (sidebarBtn) {
             sidebarBtn.disabled = false;
             sidebarBtn.textContent = isEditMode ? 'Update order →' : 'Place order →';
