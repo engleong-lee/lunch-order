@@ -4478,13 +4478,12 @@
     .orders-summary-card .stat-value { color: var(--brand-700); }
     .orders-summary-card .summary-divider { background: rgba(176,125,79,0.2); }
 
-    /* Sticky footer actions — warm */
-    .sticky-footer .sf-actions {
+    /* Sticky footer edit-mode actions row */
+    .sticky-footer .sf-edit-actions {
       display: flex;
       gap: 8px;
-      padding-bottom: 10px;
-      border-bottom: 0.5px solid rgba(255,255,255,0.15);
-      flex-wrap: wrap;
+      padding-top: 10px;
+      border-top: 0.5px solid rgba(255,255,255,0.15);
     }
     .sticky-footer .sf-action {
       flex: 1;
@@ -4493,35 +4492,41 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 500;
+      padding: 10px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
       font-family: inherit;
       white-space: nowrap;
-      border: 0.5px solid transparent;
+      border: none;
     }
     .sticky-footer .sf-action .icon { font-size: 1.2em; }
-    .sticky-footer .sf-action-pay {
-      background: rgba(255,255,255,0.92);
-      color: var(--green-700);
-      border-color: rgba(255,255,255,0.6);
-    }
-    .sticky-footer .sf-action-pay:hover { background: white; }
-    .sticky-footer .sf-action-pay .icon { color: var(--green-600); }
-    .sticky-footer .sf-action-clear {
-      background: rgba(255,255,255,0.12);
-      color: white;
-      border-color: rgba(255,255,255,0.25);
-    }
-    .sticky-footer .sf-action-clear:hover { background: rgba(255,255,255,0.2); }
     .sticky-footer .sf-action-cancel {
-      background: rgba(239,68,68,0.9);
+      background: rgba(220,38,38,0.95);
       color: white;
     }
     .sticky-footer .sf-action-cancel:hover { background: #dc2626; }
+    .sticky-footer .sf-action-pay {
+      background: rgba(255,255,255,0.92);
+      color: var(--ink-800);
+    }
+    .sticky-footer .sf-action-pay:hover { background: white; }
+    .sticky-footer .sf-action-pay .icon { color: var(--ink-600); }
+    .sticky-footer .sf-action-update {
+      background: var(--cta);
+      color: white;
+    }
+    .sticky-footer .sf-action-update:hover { background: var(--cta-hover); }
+
+    /* Edit mode: hide stepper + Place Order, show item count & price only */
+    .sticky-footer.edit-mode .sf-stepper { display: none; }
+    .sticky-footer.edit-mode .sf-place-order { display: none; }
+    .sticky-footer.edit-mode .sf-right {
+      flex: 0 0 auto;
+      justify-content: flex-end;
+    }
 
     /* Paid state — no layout changes, footer stays fixed */
 
@@ -4839,12 +4844,6 @@
 
         <!-- Sticky Footer (mobile): Price + Place Order -->
         <div class="sticky-footer" id="stickyFooter">
-          <!-- Action Buttons (Pay/Clear/Cancel — shown when order exists) -->
-          <div class="sf-actions" id="orderActionsGroup" style="display: none;">
-            <button class="sf-action sf-action-pay" onclick="showPaymentModal()" id="payBtn"><span class="icon">payments</span> Pay</button>
-            <button class="sf-action sf-action-cancel" onclick="cancelExistingOrder()" id="cancelBtn"><span class="icon">close</span> Cancel</button>
-          </div>
-
           <!-- Expandable order summary panel -->
           <div class="sf-expand-panel" id="sfExpandPanel">
             <div class="sf-expand-header">
@@ -4867,6 +4866,14 @@
               </button>
             </div>
           </div>
+
+          <!-- Edit-mode action row: Cancel | Pay | Update Order -->
+          <div class="sf-edit-actions" id="orderActionsGroup" style="display: none;">
+            <button class="sf-action sf-action-cancel" onclick="cancelExistingOrder()" id="cancelBtn"><span class="icon">close</span> Cancel</button>
+            <button class="sf-action sf-action-pay" onclick="showPaymentModal()" id="payBtn"><span class="icon">payments</span> Pay</button>
+            <button class="sf-action sf-action-update" onclick="submitOrder()" id="updateBtn"><span class="icon">save</span> Update Order</button>
+          </div>
+
           <div class="sf-hint" id="priceHint"></div>
         </div>
       </div><!-- End orderContent -->
@@ -6490,23 +6497,25 @@
     function updateSubmitButtonState() {
       const priceEl = document.getElementById('priceAmount');
       const btn = document.getElementById('submitBtn');
-      if (!priceEl || !btn) return;
+      const updateBtn = document.getElementById('updateBtn');
+      if (!priceEl) return;
       const price = parseFloat(priceEl.textContent) || 0;
       const invalid = price <= 0;
-      btn.style.opacity = invalid ? '0.5' : '';
-      btn.style.cursor = invalid ? 'not-allowed' : '';
-      btn.title = invalid ? 'Price must be greater than RM 0' : '';
-      if (invalid) {
-        btn.setAttribute('aria-disabled', 'true');
-      } else {
-        btn.removeAttribute('aria-disabled');
-      }
+      [btn, updateBtn].forEach(function (b) {
+        if (!b) return;
+        b.style.opacity = invalid ? '0.5' : '';
+        b.style.cursor = invalid ? 'not-allowed' : '';
+        b.title = invalid ? 'Price must be greater than RM 0' : '';
+        if (invalid) b.setAttribute('aria-disabled', 'true');
+        else b.removeAttribute('aria-disabled');
+      });
     }
 
     // Clear order
     // Show or hide Pay, Clear, Cancel buttons based on order state
     function setOrderButtonsEnabled(enabled) {
       document.getElementById('orderActionsGroup').style.display = enabled ? 'flex' : 'none';
+      document.getElementById('stickyFooter').classList.toggle('edit-mode', enabled);
       const sidebarActions = document.getElementById('sidebarActionsGroup');
       if (sidebarActions) sidebarActions.style.display = enabled ? 'flex' : 'none';
     }
@@ -6568,9 +6577,15 @@
       }
 
       const btn = document.getElementById('submitBtn');
+      const updateBtn = document.getElementById('updateBtn');
       const sidebarBtn = document.getElementById('sidebarPlaceOrder');
       btn.disabled = true;
-      btn.textContent = isEditMode ? '⏳ Updating...' : '⏳ Submitting...';
+      if (isEditMode && updateBtn) {
+        updateBtn.disabled = true;
+        updateBtn.textContent = '⏳ Updating...';
+      } else {
+        btn.textContent = '⏳ Submitting...';
+      }
       if (sidebarBtn) {
         sidebarBtn.disabled = true;
         sidebarBtn.textContent = isEditMode ? '⏳ Updating...' : '⏳ Submitting...';
@@ -6596,7 +6611,8 @@
         .withSuccessHandler(function (result) {
           if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
           btn.disabled = false;
-          btn.innerHTML = isEditMode ? '<span class="icon">save</span> Update Order' : '<span class="icon">check_circle</span> Place Order';
+          btn.innerHTML = '<span class="icon">check_circle</span> Place Order';
+          if (updateBtn) { updateBtn.disabled = false; updateBtn.innerHTML = '<span class="icon">save</span> Update Order'; }
           if (sidebarBtn) {
             sidebarBtn.disabled = false;
             sidebarBtn.textContent = isEditMode ? 'Update order →' : 'Place order →';
@@ -6605,7 +6621,6 @@
           if (result.success) {
             // After successful submit, enter edit mode (order now exists)
             isEditMode = true;
-            document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
             if (sidebarBtn) sidebarBtn.textContent = 'Update order →';
             // Set sequence number badge
             var seqEl = document.getElementById('oscSeq');
@@ -6626,7 +6641,8 @@
         .withFailureHandler(function (error) {
           if (_qoLoadingActive) { hideLoadingBar(); _qoLoadingActive = false; }
           btn.disabled = false;
-          btn.innerHTML = isEditMode ? '<span class="icon">save</span> Update Order' : '<span class="icon">check_circle</span> Place Order';
+          btn.innerHTML = '<span class="icon">check_circle</span> Place Order';
+          if (updateBtn) { updateBtn.disabled = false; updateBtn.innerHTML = '<span class="icon">save</span> Update Order'; }
           if (sidebarBtn) {
             sidebarBtn.disabled = false;
             sidebarBtn.textContent = isEditMode ? 'Update order →' : 'Place order →';
@@ -6916,7 +6932,6 @@
       isEditMode = true;
       currentOrderPaid = orderData.paid;
       applyStickyFooterPaidState(!!orderData.paid);
-      document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
       var _sb1 = document.getElementById('sidebarPlaceOrder');
       if (_sb1) _sb1.textContent = 'Update order →';
 
@@ -7188,7 +7203,7 @@
             showAllOrdersStatus(`Order copied from ${fromName}!`, 'success');
             // Update state for Order tab (in background)
             isEditMode = true;
-            document.getElementById('submitBtn').innerHTML = '<span class="icon">save</span> Update Order';
+            setOrderButtonsEnabled(true);
             var _sb3 = document.getElementById('sidebarPlaceOrder');
             if (_sb3) _sb3.textContent = 'Update order →';
             // Set sequence number badge
