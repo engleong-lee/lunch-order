@@ -742,6 +742,7 @@ function setupNewOrderSheet(sheet) {
   sheet.getRange(specialRow, 5).setValue('💵');
   sheet.getRange(specialRow + 1, 2).setValue('(少饭) less rice');
   sheet.getRange(specialRow + 2, 2).setValue('(不要饭) no rice');
+  sheet.getRange(specialRow + 3, 2).setValue('(多饭) more rice');
   
   const headerRange = sheet.getRange('A1:G1');
   headerRange.setFontWeight('bold');
@@ -882,10 +883,12 @@ function submitOrder(orderData) {
       orderString += ' (少饭)';
     } else if (orderData.riceOption === 'none') {
       orderString += ' (不要饭)';
+    } else if (orderData.riceOption === 'more') {
+      orderString += ' (多饭)';
     }
     
     if (orderData.notes && orderData.notes.trim()) {
-      orderString += ` (${orderData.notes.trim()})`;
+      orderString += ` 【${orderData.notes.trim()}】`;
     }
     
     let price = orderData.price || calculatePrice(orderData.items);
@@ -1107,21 +1110,24 @@ function getOrderByName(userName) {
     } else if (orderText.includes('(不要饭)')) {
       riceOption = 'none';
       orderText = orderText.replace('(不要饭)', '').trim();
+    } else if (orderText.includes('(多饭)')) {
+      riceOption = 'more';
+      orderText = orderText.replace('(多饭)', '').trim();
     }
     
-    // Extract special notes - only if string ends with ") (...)" pattern
-    // This means there's an item note followed by special notes
-    // e.g., "酿豆腐 (more doufu) (extra spicy)" → special notes = "extra spicy"
-    const doubleParenMatch = orderText.match(/\)\s*\(([^)]+)\)$/);
-    if (doubleParenMatch) {
-      notes = doubleParenMatch[1];
-      orderText = orderText.replace(/\s*\([^)]+\)$/, '').trim();
+    // Extract special notes — stored in 【...】 brackets (new format)
+    // Also handle legacy (...) format for older orders
+    const squareBracketMatch = orderText.match(/\s*【([^】]+)】\s*$/);
+    if (squareBracketMatch) {
+      notes = squareBracketMatch[1];
+      orderText = orderText.replace(/\s*【[^】]+】\s*$/, '').trim();
     } else {
-      // Check if the last item (after final +) has NO item note but ends with (...)
-      // This would be special notes on an item without its own note
-      // e.g., "蒸水蛋 + 麻辣香锅菜 (extra spicy)" where 麻辣香锅菜 has no bracket in menu
-      // We'll handle this by checking if last part's parentheses content looks like special notes
-      // For now, assume if it ends with ) and there's no double pattern, it's an item note
+      // Legacy: try double-paren pattern ") (...)" at end
+      const doubleParenMatch = orderText.match(/\)\s*\(([^)]+)\)$/);
+      if (doubleParenMatch) {
+        notes = doubleParenMatch[1];
+        orderText = orderText.replace(/\s*\([^)]+\)$/, '').trim();
+      }
     }
     
     // Split items by " + "
@@ -1557,8 +1563,8 @@ function getOrderStatistics(userName) {
         totalSpent += !isNaN(price) ? price : 0;
         
         // Clean up order text
-        // Remove rice portion info in parentheses: (normal), (less), (none)
-        orderText = orderText.replace(/\s*\((normal|less|none)\)/gi, '');
+        // Remove rice portion info in parentheses: (normal), (less), (none), (more)
+        orderText = orderText.replace(/\s*\((normal|less|none|more)\)/gi, '');
         // Remove notes after 📝
         orderText = orderText.replace(/📝.*$/g, '');
         // Remove English translations (anything after space if it contains English letters)
@@ -1754,12 +1760,14 @@ function getPreviousOrders(userName, count) {
       }
     }
 
-    // Sort descending (most recent first)
+    // Sort descending (most recent first), cap search to 30 sheets
     orderSheets.sort((a, b) => b.name.localeCompare(a.name));
+    const MAX_SHEETS_TO_SEARCH = 30;
 
     const previousOrders = [];
 
-    for (const sheetInfo of orderSheets) {
+    for (let si = 0; si < Math.min(orderSheets.length, MAX_SHEETS_TO_SEARCH); si++) {
+      const sheetInfo = orderSheets[si];
       if (previousOrders.length >= count) break;
 
       const sheet = sheetInfo.sheet;
@@ -1786,6 +1794,23 @@ function getPreviousOrders(userName, count) {
           } else if (orderText.includes('(不要饭)')) {
             riceOption = 'none';
             orderText = orderText.replace('(不要饭)', '').trim();
+          } else if (orderText.includes('(多饭)')) {
+            riceOption = 'more';
+            orderText = orderText.replace('(多饭)', '').trim();
+          }
+
+          // Extract order-level notes — 【...】 (new) or legacy double-paren
+          let notes = '';
+          const sqMatch = orderText.match(/\s*【([^】]+)】\s*$/);
+          if (sqMatch) {
+            notes = sqMatch[1];
+            orderText = orderText.replace(/\s*【[^】]+】\s*$/, '').trim();
+          } else {
+            const dpMatch = orderText.match(/\)\s*\(([^)]+)\)$/);
+            if (dpMatch) {
+              notes = dpMatch[1];
+              orderText = orderText.replace(/\s*\([^)]+\)$/, '').trim();
+            }
           }
 
           // Split items by " + "
@@ -1797,6 +1822,7 @@ function getPreviousOrders(userName, count) {
             orderText: what,
             items: items,
             riceOption: riceOption,
+            notes: notes,
             price: price
           });
           break; // Only one order per day per user, move to next sheet
@@ -1823,4 +1849,95 @@ function getPaymentQRImage() {
   const fileId = '1wRvkPHxrIFAGT1aMyNUt59uGmXWymthe';
   // Use lh3.googleusercontent.com format which works better for embedding
   return 'https://lh3.googleusercontent.com/d/' + fileId;
+}
+
+// ==================== USER PREFERENCES ====================
+const PREFS_SHEET_NAME = 'Preferences';
+const PREFS_COLUMNS = { NAME: 1, FAVOURITES: 2, QUICK_ORDER: 3 };
+
+/**
+ * Get or create the Preferences sheet.
+ */
+function getPrefsSheet() {
+  const ss = getSpreadsheet();
+  let sheet = ss.getSheetByName(PREFS_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(PREFS_SHEET_NAME);
+    sheet.getRange(1, PREFS_COLUMNS.NAME).setValue('Name');
+    sheet.getRange(1, PREFS_COLUMNS.FAVOURITES).setValue('Favourites');
+    sheet.getRange(1, PREFS_COLUMNS.QUICK_ORDER).setValue('QuickOrderPrefs');
+    sheet.setColumnWidth(PREFS_COLUMNS.NAME, 120);
+    sheet.setColumnWidth(PREFS_COLUMNS.FAVOURITES, 400);
+    sheet.setColumnWidth(PREFS_COLUMNS.QUICK_ORDER, 200);
+    sheet.getRange(1, 1, 1, 3).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+/**
+ * Find user row in Preferences sheet (case-insensitive). Returns row number or -1.
+ */
+function findPrefsRow(sheet, userName) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return -1;
+  const names = sheet.getRange(2, PREFS_COLUMNS.NAME, lastRow - 1, 1).getValues();
+  const target = userName.trim().toLowerCase();
+  for (let i = 0; i < names.length; i++) {
+    if (names[i][0] && names[i][0].toString().trim().toLowerCase() === target) return i + 2;
+  }
+  return -1;
+}
+
+/**
+ * Get user preferences (favourites + quick order prefs).
+ * @param {string} userName
+ * @returns {{ success: boolean, favourites: string[], quickOrderPrefs: object }}
+ */
+function getUserPrefs(userName) {
+  try {
+    if (!userName || !userName.trim()) return { success: false, message: 'No name provided.' };
+    const sheet = getPrefsSheet();
+    const row = findPrefsRow(sheet, userName);
+    if (row < 0) return { success: true, favourites: [], quickOrderPrefs: {} };
+    const data = sheet.getRange(row, PREFS_COLUMNS.FAVOURITES, 1, 2).getValues()[0];
+    let favourites = [];
+    let quickOrderPrefs = {};
+    try { favourites = JSON.parse(data[0] || '[]'); } catch (e) {}
+    try { quickOrderPrefs = JSON.parse(data[1] || '{}'); } catch (e) {}
+    return { success: true, favourites: favourites, quickOrderPrefs: quickOrderPrefs };
+  } catch (error) {
+    return { success: false, message: 'Error: ' + error.message };
+  }
+}
+
+/**
+ * Save user preferences.
+ * @param {string} userName
+ * @param {{ favourites?: string[], quickOrderPrefs?: object }} prefs
+ */
+function saveUserPrefs(userName, prefs) {
+  try {
+    if (!userName || !userName.trim()) return { success: false, message: 'No name provided.' };
+    const lock = LockService.getScriptLock();
+    lock.waitLock(10000); // wait up to 10s for concurrent writes
+    try {
+      const sheet = getPrefsSheet();
+      let row = findPrefsRow(sheet, userName);
+      if (row < 0) {
+        row = sheet.getLastRow() + 1;
+        sheet.getRange(row, PREFS_COLUMNS.NAME).setValue(userName.trim());
+      }
+      if (prefs.favourites !== undefined) {
+        sheet.getRange(row, PREFS_COLUMNS.FAVOURITES).setValue(JSON.stringify(prefs.favourites));
+      }
+      if (prefs.quickOrderPrefs !== undefined) {
+        sheet.getRange(row, PREFS_COLUMNS.QUICK_ORDER).setValue(JSON.stringify(prefs.quickOrderPrefs));
+      }
+      return { success: true };
+    } finally {
+      lock.releaseLock();
+    }
+  } catch (error) {
+    return { success: false, message: 'Error: ' + error.message };
+  }
 }
