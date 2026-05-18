@@ -8719,7 +8719,10 @@
               showStatus('None of your previous items are on today\'s menu.', 'error');
               return;
             }
-            // If user wanted more items than last order had, add from favourites
+            // Trim to requested count, or pad from favourites
+            if (items.length > count) {
+              items = items.slice(0, count);
+            }
             while (items.length < count) {
               var extra = pickRandom4th(_favouritesCache, items, []);
               if (!extra) break;
@@ -8728,8 +8731,8 @@
             // Restore rice from last order, save it
             var riceOpt = lastOrder.riceOption || 'normal';
             cachePut('lastRice', riceOpt);
-            // Pass notes + price so repeat is an exact copy
-            var allMatched = items.length === lastOrder.items.length;
+            // Reuse last order price only if items match exactly
+            var allMatched = items.length === lastOrder.items.length && count === lastOrder.items.length;
             quickOrderFillAndSubmit(items, riceOpt, lastOrder.notes || '', allMatched ? lastOrder.price : 0);
           })
           .withFailureHandler(function (err) {
