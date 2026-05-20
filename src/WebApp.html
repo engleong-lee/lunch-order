@@ -4,7 +4,7 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="theme-color" content="#8B5E3C">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -140,6 +140,11 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    /* Eliminate 300ms tap delay on Android (especially inside iframes) */
+    a, button, [onclick], .selected-tag, .remove, .menu-item, .sf-action, .chip-btn {
+      touch-action: manipulation;
     }
 
     html,
@@ -1116,8 +1121,8 @@
       font-size: 0.85rem;
       line-height: 1;
       margin-left: 2px;
-      width: 18px;
-      height: 18px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1148,10 +1153,11 @@
       bottom: 0;
       background: rgba(0, 0, 0, 0.5);
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       z-index: 10000;
       padding: 20px;
+      padding-top: 15vh;
       backdrop-filter: blur(4px);
     }
 
@@ -3858,11 +3864,12 @@
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 999px;
-      padding: 6px 10px;
+      padding: 6px 6px 6px 10px;
       font-size: 13px;
       color: rgba(255,255,255,0.9);
       white-space: nowrap;
       max-width: 100%;
+      cursor: pointer;
     }
     .sf-expand-chip .chip-name {
       overflow: hidden;
@@ -3886,6 +3893,19 @@
       font-size: 14px;
       flex-shrink: 0;
     }
+    .sf-expand-chip .chip-btn-edit {
+      pointer-events: none;
+    }
+    .sf-expand-chip .chip-btn-delete {
+      width: 32px;
+      height: 32px;
+      justify-content: center;
+      border-radius: 50%;
+      margin-left: 2px;
+    }
+    .sf-expand-chip .chip-btn-delete:hover {
+      background: rgba(255,255,255,0.15);
+    }
     .sf-expand-chip .chip-btn:hover {
       color: white;
     }
@@ -3907,13 +3927,19 @@
     .sticky-footer.sf-expanded .sf-chevron {
       transform: rotate(180deg);
     }
-    /* Backdrop overlay when panel is open */
+    /* Backdrop overlay when panel is open — always in DOM, toggled via .active */
     .sf-expand-backdrop {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       z-index: 49;
-      background: rgba(0,0,0,0.25);
-      backdrop-filter: blur(2px);
+      background: rgba(0,0,0,0.3);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .sf-expand-backdrop.active {
+      pointer-events: auto;
+      opacity: 1;
     }
 
     /* ===================== Updated menu item styling ===================== */
@@ -4842,6 +4868,7 @@
         </div><!-- end order-layout -->
 
         <!-- Sticky Footer (mobile): Price + Place Order -->
+        <div class="sf-expand-backdrop" id="sfExpandBackdrop"></div>
         <div class="sticky-footer" id="stickyFooter">
           <!-- Expandable order summary panel -->
           <div class="sf-expand-panel" id="sfExpandPanel">
@@ -6369,7 +6396,8 @@
     // Save item note
     function saveItemNote(index) {
       const input = document.getElementById('itemNoteInput');
-      const note = input.value.trim();
+      // Capture value before any blur/keyboard dismiss that might clear IME composition
+      const note = input ? input.value.trim() : '';
 
       selectedItems[index].note = note;
       closeItemNoteModal();
@@ -7376,7 +7404,7 @@
       // Trigger pop-in on next frame so the transition fires from the initial state.
       requestAnimationFrame(function () { toast.classList.add('show'); });
       // Auto-dismiss after 10 seconds
-      _payToastTimer = setTimeout(function () { dismissPaymentToast(); }, 10000);
+      _payToastTimer = setTimeout(function () { dismissPaymentToast(); }, 3500);
     }
 
     function showOrderPlacedToast(isUpdate) {
@@ -8267,14 +8295,10 @@
       if (!footer || selectedItems.length === 0) return;
       footer.classList.add('sf-expanded');
       renderExpandChips();
-      // Add backdrop
-      let bd = document.getElementById('sfExpandBackdrop');
-      if (!bd) {
-        bd = document.createElement('div');
-        bd.className = 'sf-expand-backdrop';
-        bd.id = 'sfExpandBackdrop';
+      const bd = document.getElementById('sfExpandBackdrop');
+      if (bd) {
+        bd.classList.add('active');
         bd.onclick = collapseExpandPanel;
-        document.body.appendChild(bd);
       }
     }
 
@@ -8282,7 +8306,7 @@
       const footer = document.getElementById('stickyFooter');
       if (footer) footer.classList.remove('sf-expanded');
       const bd = document.getElementById('sfExpandBackdrop');
-      if (bd) bd.remove();
+      if (bd) bd.classList.remove('active');
     }
 
     function renderExpandChips() {
@@ -8297,11 +8321,11 @@
         const noteHtml = item.note
           ? `<span class="chip-note">${item.note}</span>`
           : '';
-        return `<div class="sf-expand-chip">
+        return `<div class="sf-expand-chip" onclick="openItemNoteModal(${i})" title="Tap to edit note">
+          <span class="chip-btn chip-btn-edit"><span class="icon">edit</span></span>
           <span class="chip-name">${name}</span>
           ${noteHtml}
-          <button class="chip-btn" onclick="event.stopPropagation(); openItemNoteModal(${i})" title="Edit note"><span class="icon">edit</span></button>
-          <button class="chip-btn" onclick="event.stopPropagation(); removeItemFromExpand(${i})" title="Remove">×</button>
+          <button class="chip-btn chip-btn-delete" onclick="event.stopPropagation(); removeItemFromExpand(${i})" title="Remove">×</button>
         </div>`;
       }).join('');
     }
