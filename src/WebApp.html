@@ -5321,6 +5321,22 @@
         document.getElementById('nameModalInput').focus();
         return;
       }
+      // Prevent duplicate orders: block/warn name change when order exists
+      var oldName = getGlobalName();
+      if (isEditMode && oldName && name !== oldName) {
+        if (!currentOrderPaid) {
+          // Unpaid order exists — block name change
+          closeNameModal();
+          alert('You have an unpaid order under "' + oldName + '". Please cancel or pay for it first before changing your name.');
+          return;
+        } else {
+          // Paid order — warn and let user decide
+          if (!confirm('You have a paid order under "' + oldName + '". That order will remain and won\'t be cancelled. You\'ll be starting a new order as "' + name + '".\n\nProceed?')) {
+            closeNameModal();
+            return;
+          }
+        }
+      }
       setGlobalName(name);
       saveUserName(name);
       updateNamePill();
