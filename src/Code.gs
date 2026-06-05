@@ -27,7 +27,10 @@ const CONFIG = {
     PRICE: 4,
     PAID: 5,
     ADMIN: 6
-  }
+  },
+  // Remark written into the Admin column for unpaid orders removed when ordering closes
+  SKIPPED_PREFIX: 'SKIPPED',
+  SKIPPED_REMARK: 'SKIPPED: order skipped because it was removed (unpaid)'
 };
 
 // ==================== WEB APP ENTRY POINT ====================
@@ -558,18 +561,74 @@ function closeOrderingForToday() {
     // Set F1 to "CLOSED"
     todaySheet.getRange('F1').setValue('CLOSED');
     
+    // Move unpaid orders to the bottom and flag them as skipped.
+    // Paid orders are compacted to the top (preserving their order); unpaid orders
+    // are pushed below them with a remark in the Admin column so they are excluded
+    // from the summary and hidden in the "All Orders" view.
+    const skippedCount = skipUnpaidOrders(todaySheet);
+    
     SpreadsheetApp.flush();
     lock.releaseLock();
     
+    let message = 'Ordering closed for ' + formatDateForDisplay(todaySheetName) + '. No more orders can be added.';
+    if (skippedCount > 0) {
+      message += ` ${skippedCount} unpaid order(s) were skipped and moved to the bottom.`;
+    }
+    
     return { 
       success: true, 
-      message: 'Ordering closed for ' + formatDateForDisplay(todaySheetName) + '. No more orders can be added.'
+      message: message
     };
     
   } catch (error) {
     try { lock.releaseLock(); } catch(e) {}
     return { success: false, message: 'Error: ' + error.message };
   }
+}
+
+/**
+ * Reorders the order block so paid orders stay at the top (compacted, in order)
+ * and unpaid orders are moved to the bottom, each flagged with a SKIPPED remark
+ * in the Admin column. Returns the number of unpaid orders that were skipped.
+ * @param {Sheet} sheet - today's order sheet
+ * @returns {number} - count of skipped (unpaid) orders
+ */
+function skipUnpaidOrders(sheet) {
+  // Read WHO..ADMIN (B..F) for the whole order block
+  const range = sheet.getRange(CONFIG.ORDER_START_ROW, CONFIG.COLUMNS.WHO, CONFIG.MAX_ORDERS, 5);
+  const values = range.getValues();
+  
+  const paidRows = [];
+  const unpaidRows = [];
+  
+  for (let i = 0; i < values.length; i++) {
+    const who = (values[i][0] || '').toString().trim();
+    if (who === '') continue; // empty row
+    const isPaid = values[i][3] ? true : false;
+    if (isPaid) {
+      paidRows.push(values[i]);
+    } else {
+      unpaidRows.push(values[i]);
+    }
+  }
+  
+  if (unpaidRows.length === 0) return 0;
+  
+  // Rebuild the block: paid first (Admin column renumbered), then unpaid with remark
+  const newValues = [];
+  paidRows.forEach((r, idx) => {
+    const rowNum = idx + 1;
+    newValues.push([r[0], r[1], r[2], r[3], `${rowNum}. ${r[1]} ${r[2]}`]);
+  });
+  unpaidRows.forEach(r => {
+    newValues.push([r[0], r[1], r[2], r[3], CONFIG.SKIPPED_REMARK]);
+  });
+  while (newValues.length < CONFIG.MAX_ORDERS) {
+    newValues.push(['', '', '', '', '']);
+  }
+  
+  range.setValues(newValues);
+  return unpaidRows.length;
 }
 
 /**
@@ -1275,7 +1334,8 @@ function getTodayOrders() {
       };
     }
     
-    const dataRange = sheet.getRange(CONFIG.ORDER_START_ROW, CONFIG.COLUMNS.WHO, CONFIG.MAX_ORDERS, 4);
+    // Read WHO..ADMIN (5 cols) so we can detect skipped orders via the remark in the Admin column
+    const dataRange = sheet.getRange(CONFIG.ORDER_START_ROW, CONFIG.COLUMNS.WHO, CONFIG.MAX_ORDERS, 5);
     const values = dataRange.getValues();
     
     const orders = [];
@@ -1283,10 +1343,13 @@ function getTodayOrders() {
     
     for (let i = 0; i < values.length; i++) {
       if (values[i][0] && values[i][0].toString().trim() !== '') {
+        // Skip orders that were removed when ordering was closed (unpaid)
+        const admin = (values[i][4] || '').toString();
+        if (admin.indexOf(CONFIG.SKIPPED_PREFIX) === 0) continue;
         const price = parseFloat(values[i][2]) || 0;
         totalAmount += price;
         orders.push({
-          row: i + 1,
+          row: orders.length + 1,
           name: values[i][0],
           order: values[i][1],
           price: price,
