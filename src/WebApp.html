@@ -3675,6 +3675,8 @@
       color: var(--cta);
       font-variant-numeric: tabular-nums;
       letter-spacing: -0.02em;
+      min-width: 104px;
+      text-align: right;
     }
     .sidebar-place-order {
       width: 100%;
@@ -4849,8 +4851,8 @@
                 </div>
                 <div class="sidebar-total-right">
                   <div class="sidebar-stepper">
-                    <button class="sf-step-btn" onclick="adjustPrice(-1)">−</button>
-                    <button class="sf-step-btn" onclick="adjustPrice(1)">+</button>
+                    <button class="sf-step-btn" id="sidebarPriceMinusBtn" onclick="adjustPrice(-0.5)">−</button>
+                    <button class="sf-step-btn" id="sidebarPricePlusBtn" onclick="adjustPrice(0.5)">+</button>
                   </div>
                   <span class="sidebar-total-amount" id="sidebarTotalAmount">RM0</span>
                 </div>
@@ -4883,8 +4885,8 @@
             <div class="sf-label sf-item-count" id="sfItemCount" onclick="toggleExpandPanel()">0 items <span class="icon sf-chevron">expand_less</span></div>
             <div class="sf-right">
               <div class="sf-stepper">
-                <button class="sf-step-btn" id="priceMinusBtn" onclick="adjustPrice(-1)" aria-label="Decrease price">−</button>
-                <button class="sf-step-btn" id="pricePlusBtn" onclick="adjustPrice(1)" aria-label="Increase price">+</button>
+                <button class="sf-step-btn" id="priceMinusBtn" onclick="adjustPrice(-0.5)" aria-label="Decrease price">−</button>
+                <button class="sf-step-btn" id="pricePlusBtn" onclick="adjustPrice(0.5)" aria-label="Increase price">+</button>
               </div>
               <div class="sf-amount"><span class="sf-currency">RM</span><span id="priceAmount">0</span></div>
               <button class="sf-place-order" id="submitBtn" onclick="submitOrder()">
@@ -6438,75 +6440,74 @@
       riceOption = element.dataset.value;
     }
 
+    // Round to 1 decimal place to avoid floating-point artefacts (e.g. 9.4999999).
+    function roundPrice(p) { return Math.round(p * 10) / 10; }
+
+    // Base (tier or fixed) price, before any manual +/- override.
+    function computeBasePrice() {
+      const fixedPriceItem = selectedItems.find(item => item.fixedPrice);
+      if (fixedPriceItem) return fixedPriceItem.fixedPrice;
+      const count = selectedItems.length;
+      if (count === 0) return 0;
+      if (count <= 2) return 6;
+      if (count === 3) return 8;
+      return Math.min(12, 6 + (count - 2) * 2);
+    }
+
+    // Enable/disable a stepper button with consistent styling.
+    function setStepBtnDisabled(btn, disabled) {
+      if (!btn) return;
+      btn.disabled = disabled;
+      btn.style.opacity = disabled ? '0.3' : '';
+      btn.style.cursor = disabled ? 'not-allowed' : '';
+    }
+
     // Calculate and update price
     function updatePrice() {
-      // If custom price is set, use it
-      if (customPrice !== null) {
-        document.getElementById('priceAmount').textContent = customPrice;
-        const stepElCustom = document.getElementById('priceStepValue');
-        if (stepElCustom) stepElCustom.textContent = customPrice;
-        updateSubmitButtonState();
-        return;
-      }
-
-      let price = 0;
-
       const fixedPriceItem = selectedItems.find(item => item.fixedPrice);
-      if (fixedPriceItem) {
-        price = fixedPriceItem.fixedPrice;
-      } else {
-        const count = selectedItems.length;
-        if (count <= 2) price = 6;
-        else if (count === 3) price = 8;
-        else price = Math.min(12, 6 + (count - 2) * 2);
-      }
-
+      let price = (customPrice !== null) ? customPrice : computeBasePrice();
       if (selectedItems.length === 0) price = 0;
+      price = roundPrice(price);
 
       document.getElementById('priceAmount').textContent = price;
       const stepEl = document.getElementById('priceStepValue');
       if (stepEl) stepEl.textContent = price;
       updateSubmitButtonState();
 
-      // Disable +/- buttons when a fixed-price item is selected
-      const hasFixedPrice = selectedItems.some(item => item.fixedPrice);
-      const minusBtn = document.getElementById('priceMinusBtn');
-      const plusBtn = document.getElementById('pricePlusBtn');
-      const hint = document.getElementById('priceHint');
-      if (hasFixedPrice) {
-        minusBtn.disabled = true;
-        plusBtn.disabled = true;
-        minusBtn.style.opacity = '0.3';
-        plusBtn.style.opacity = '0.3';
-        minusBtn.style.cursor = 'not-allowed';
-        plusBtn.style.cursor = 'not-allowed';
-        if (hint) hint.textContent = 'Fixed price item';
+      // Stepper buttons exist in both the mobile footer and the desktop sidebar.
+      const minusBtns = [document.getElementById('priceMinusBtn'), document.getElementById('sidebarPriceMinusBtn')];
+      const plusBtns = [document.getElementById('pricePlusBtn'), document.getElementById('sidebarPricePlusBtn')];
+
+      let minusDisabled, plusDisabled;
+      if (fixedPriceItem) {
+        // Fixed-price items may only sit at the fixed price or fixed price + 0.5.
+        const base = fixedPriceItem.fixedPrice;
+        minusDisabled = price <= base + 0.001;       // at base → cannot go lower
+        plusDisabled = price >= base + 0.5 - 0.001;  // at base + 0.5 → cannot go higher
       } else {
-        minusBtn.disabled = false;
-        plusBtn.disabled = false;
-        minusBtn.style.opacity = '';
-        plusBtn.style.opacity = '';
-        minusBtn.style.cursor = '';
-        plusBtn.style.cursor = '';
-        if (hint) hint.textContent = '';
+        minusDisabled = price <= 0;                  // never below 0
+        plusDisabled = false;
       }
+      minusBtns.forEach(b => setStepBtnDisabled(b, minusDisabled));
+      plusBtns.forEach(b => setStepBtnDisabled(b, plusDisabled));
     }
 
-    // Adjust price manually with +/- buttons
+    // Adjust price manually with +/- buttons (0.5 steps).
     function adjustPrice(delta) {
-      // Block adjustment when a fixed-price item is selected
-      const hasFixedPrice = selectedItems.some(item => item.fixedPrice);
-      if (hasFixedPrice) return;
-
+      const fixedPriceItem = selectedItems.find(item => item.fixedPrice);
       const priceEl = document.getElementById('priceAmount');
-      let currentPrice = parseFloat(priceEl.textContent) || 0;
-      let newPrice = Math.max(0, currentPrice + delta); // Don't go below 0
+      let newPrice = (parseFloat(priceEl.textContent) || 0) + delta;
 
-      customPrice = newPrice;
-      priceEl.textContent = newPrice;
-      const stepEl = document.getElementById('priceStepValue');
-      if (stepEl) stepEl.textContent = newPrice;
-      updateSubmitButtonState();
+      if (fixedPriceItem) {
+        // Clamp to [fixedPrice, fixedPrice + 0.5].
+        const base = fixedPriceItem.fixedPrice;
+        newPrice = Math.min(base + 0.5, Math.max(base, newPrice));
+      } else {
+        newPrice = Math.max(0, newPrice); // Don't go below 0
+      }
+
+      customPrice = roundPrice(newPrice);
+      updatePrice();
       updateSidebarItems();
     }
 
@@ -6959,14 +6960,10 @@
       // Set the actual price from the order (user may have customized it)
       if (orderData.price) {
         customPrice = orderData.price; // Keep the saved price as custom
-        document.getElementById('priceAmount').textContent = orderData.price;
-        const stepEl = document.getElementById('priceStepValue');
-        if (stepEl) stepEl.textContent = orderData.price;
-        updateSubmitButtonState();
       } else {
         customPrice = null;
-        updatePrice();
       }
+      updatePrice();
 
       // Re-sync sidebar after price is set
       updateSidebarItems();
@@ -8698,13 +8695,8 @@
       // Set price: use last order's price if provided, otherwise recalculate
       if (orderPrice && orderPrice > 0) {
         customPrice = orderPrice;
-        document.getElementById('priceAmount').textContent = orderPrice;
-        var stepEl = document.getElementById('priceStepValue');
-        if (stepEl) stepEl.textContent = orderPrice;
-        updateSubmitButtonState();
-      } else {
-        updatePrice();
       }
+      updatePrice();
       updateSidebarItems();
 
       // Immediately update receipt strip so it reflects new order before server round-trip
